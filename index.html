@@ -60,9 +60,10 @@
     </div>
   </div>
   <div class="cosmax__buy-center">
-      <a href="https://www.instagram.com/telegramteatr/" target="_blank" class="buy btn-reset">Купить в инсте</a>
+      <a href="https://www.instagram.com/telegramteatr/" target="_blank">Купить в инсте</a>
     <style>.tinkoffPayRow{display:block;margin:1%;width:160px;}</style>
     <center>
+      <h2 class="header__logo">Оплатить по карте</h2>
 <script src="https://securepay.tinkoff.ru/html/payForm/js/tinkoff_v2.js"></script>
 <form name="TinkoffPayForm" onsubmit="pay(this); return false;">
   <input class="tinkoffPayRow" type="hidden" name="terminalkey" value="TinkoffBankTest">
@@ -71,7 +72,7 @@
     <input class="tinkoffPayRow" type="text" placeholder="300" name="amount" required>
     <input class="tinkoffPayRow" type="text" placeholder="Ваше имя" name="name">
     <input class="tinkoffPayRow" type="text" placeholder="Телефон" name="phone">
-    <input class="tinkoffPayRow" type="submit" value="Оплатить">
+    <input class="tinkoffPayRow" class="buy btn-reset" type="submit" value="Оплатить">
 </form>
       </center>
   </div>
