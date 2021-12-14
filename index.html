@@ -36,7 +36,7 @@
 
       <section class="cosmax">
   <div class="container cosmax__container">
-    <h1 class="cosmax__title">Спектакль КОСМАКС</h2>
+    <h2 class="cosmax__title">Спектакль КОСМАКС</h2>
     <p class="cosmax__descr">
       3 и 4 января в 19:00
       <br>
@@ -52,35 +52,28 @@
         <h3 class="slider-title">Листай</h3>
       </div>
       <div class="swiper-slide slide-3">
-        <h3 class="slider-title">Листай – Листай</h3>
+        <h3 class="slider-title">Листай-Листай</h3>
       </div>
       <div class="swiper-slide slide-4">
-        <h3 class="slider-title">Листай – Листай – Листай</h3>
+        <h3 class="slider-title">Листай-Листай-Листай</h3>
       </div>
     </div>
   </div>
   <div class="cosmax__buy-center">
-   <style>.tinkoffPayRow{display:block;margin:1%;width:160px;}</style>
-    <center>
-      <h1>Оплатить по карте</h1>
-<style>.tinkoffPayRow{display:block;margin:1%;width:160px;}</style>
-<script src="https://rest-api-test.tinkoff.ru/html/payForm/js/tinkoff_v2.js"></script>
-<form name="TinkoffPayForm" onsubmit="pay(this); return false;">
- <input class="tinkoffPayRow" type="hidden" name="terminalkey" value="1639410988422DEMO">
- <input class="tinkoffPayRow" type="hidden" name="frame" value="false">
- <input class="tinkoffPayRow" type="hidden" name="language" value="ru">
- <input class="tinkoffPayRow" type="text" placeholder="Введите сумму" name="amount"
-required>
- <input class="tinkoffPayRow" type="hidden" placeholder="Номер заказа" name="order">
- <input class="tinkoffPayRow" type="hidden" placeholder="Описание заказа"
-name="description">
- <input class="tinkoffPayRow" type="text" placeholder="Ваше имя" name="name">
- <input class="tinkoffPayRow" type="hidden" placeholder="E-mail" name="email">
- <input class="tinkoffPayRow" type="hidden" placeholder="Контактный телефон"
-name="phone">
- <input class="tinkoffPayRow" type="submit" value="Оплатить">
-</form>
-      </center>
+    <div class="cosmax__buy-center">
+        <h2>Оплатить по карте</h2>
+        <style>.tinkoffPayRow{display:block;margin:4%;width:160px;}</style>
+        <script src="https://securepay.tinkoff.ru/html/payForm/js/tinkoff_v2.js"></script>
+        <form name="TinkoffPayForm" onsubmit="pay(this); return false;" class="cosmax__pay">
+          <input class="tinkoffPayRow" type="hidden" name="terminalkey" value="1639410988422DEMO">
+          <input class="tinkoffPayRow" type="hidden" name="frame" value="true">
+          <input class="tinkoffPayRow" type="hidden" name="language" value="ru">
+          <input class="tinkoffPayRow" type="text" placeholder="Введите сумму" name="amount" required="" value="300">
+          <input class="tinkoffPayRow" type="text" placeholder="Имя" name="name" required="">
+          <input class="tinkoffPayRow" type="text" placeholder="Телефон" name="phone" required="">
+          <input class="tinkoffPayRow buy" type="submit" value="Оплатить">
+        </form>
+    </div>
   </div>
 
 </section>
@@ -91,7 +84,7 @@ name="phone">
     <footer class="footer">
   <div class="container footer__container flex">
     <div class="footer__column footer__column--first">
-      <h2 class="footer__title">Телеграм вацап вайбер (нет):</h2>
+      <h2 class="footer__title">ТЕЛЕГРАМ ВАЦАП ВАЙБЕР (НЕТ):</h2>
       <a href="tel:+79099797909">+79099797909</a>
 
       <h2 class="footer__title">E-mail:</h2>
