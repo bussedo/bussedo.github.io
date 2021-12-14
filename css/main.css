@@ -129,6 +129,10 @@ body {
 .cosmax__container {
   text-align: center; }
 
+.cosmax__pay {
+  display: inline-block;
+  justify-content: center; }
+
 .slider-container {
   width: 100%;
   overflow-x: hidden;
@@ -227,7 +231,7 @@ body {
   object-fit: cover; }
 
 .buy {
-  padding: 33px 80px;
+  padding: 13px 26px;
   border-radius: 8px;
   font-size: 12px;
   line-height: 14px;
@@ -239,7 +243,8 @@ body {
   z-index: 5;
   transition: background-color 0.3s;
   margin-top: 50px;
-  display: inline-block; }
+  display: inline-block;
+  cursor: pointer; }
 
 .buy a {
   color: white; }
@@ -439,7 +444,7 @@ body {
     flex-wrap: wrap; }
   .footer__column--first {
     padding-bottom: 0; }
-  .footer__column--two {
+  .footer__column--two, .footer__column--first {
     width: 100%; }
   .slider-container .swiper-slide {
     width: calc(100% - 60px); }
