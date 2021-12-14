@@ -64,18 +64,21 @@
     <center>
       <h1>Оплатить по карте</h1>
 <style>.tinkoffPayRow{display:block;margin:1%;width:160px;}</style>
-<script src="https://securepay.tinkoff.ru/html/payForm/js/tinkoff_v2.js"></script>
+<script src="https://rest-api-test.tinkoff.ru/html/payForm/js/tinkoff_v2.js"></script>
 <form name="TinkoffPayForm" onsubmit="pay(this); return false;">
-  <input class="tinkoffPayRow" type="hidden" name="terminalkey" value="TinkoffBankTest">
-  <input class="tinkoffPayRow" type="hidden" name="frame" value="true">
-  <input class="tinkoffPayRow" type="hidden" name="language" value="ru"> 
-    <input class="tinkoffPayRow" type="text" placeholder="Введите сумму" name="amount" required>
-    <input class="tinkoffPayRow" type="hidden" placeholder="Номер заказа" name="order">
-    <input class="tinkoffPayRow" type="hidden" placeholder="Описание заказа" name="description">
-    <input class="tinkoffPayRow" type="text" placeholder="Имя" name="name">
-    <input class="tinkoffPayRow" type="hidden" placeholder="E-mail" name="email">
-    <input class="tinkoffPayRow" type="text" placeholder="Телефон" name="phone">
-    <input class="tinkoffPayRow" type="submit" value="Оплатить">
+ <input class="tinkoffPayRow" type="hidden" name="terminalkey" value="1639410988422DEMO">
+ <input class="tinkoffPayRow" type="hidden" name="frame" value="false">
+ <input class="tinkoffPayRow" type="hidden" name="language" value="ru">
+ <input class="tinkoffPayRow" type="text" placeholder="Введите сумму" name="amount"
+required>
+ <input class="tinkoffPayRow" type="hidden" placeholder="Номер заказа" name="order">
+ <input class="tinkoffPayRow" type="hidden" placeholder="Описание заказа"
+name="description">
+ <input class="tinkoffPayRow" type="text" placeholder="Ваше имя" name="name">
+ <input class="tinkoffPayRow" type="hidden" placeholder="E-mail" name="email">
+ <input class="tinkoffPayRow" type="hidden" placeholder="Контактный телефон"
+name="phone">
+ <input class="tinkoffPayRow" type="submit" value="Оплатить">
 </form>
       </center>
   </div>
