@@ -93,8 +93,8 @@ body {
 
 .about {
   position: relative;
-  height: 100vh;
-  min-height: 660px;
+  height: 70vh;
+  min-height: 460px;
   background-image: url(../img/bg.jpg);
   background-position: center;
   background-size: cover;
@@ -255,6 +255,9 @@ body {
 .cosmax__buy-center {
   text-align: center;
   margin-bottom: 50px; }
+
+.tinkoffPayRow {
+  margin: 0; }
 
 .footer {
   border-top: 1px solid #b3b3b3;
