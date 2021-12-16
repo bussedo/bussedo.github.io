@@ -35,8 +35,8 @@
 
       <section class="cosmax">
   <div class="cosmax__buy-center">
-    <h2>Оплатить по карте</h2>
-    <style>.tinkoffPayRow{display:block;margin:4%;width:160px;}</style>
+    <h2 class="cosmax__title">Оплатить по карте</h2>
+    <style>.tinkoffPayRow{width:160px;}</style>
     <script src="https://securepay.tinkoff.ru/html/payForm/js/tinkoff_v2.js"></script>
     <form name="TinkoffPayForm" onsubmit="pay(this); return false;" class="cosmax__pay">
       <input class="tinkoffPayRow" type="hidden" name="terminalkey" value="1639410988422">
@@ -44,8 +44,12 @@
       <input class="tinkoffPayRow" type="hidden" name="language" value="ru">
       <input class="tinkoffPayRow" type="hidden" placeholder="Введите сумму" name="amount" required="" value="500">
       <p>
-        <input class="tinkoffPayRow" type="text" placeholder="Имя и дата" name="name" required="">
+        <input class="tinkoffPayRow" type="text" placeholder="Имя" name="name" required="">
       </p>
+      <input class="" type="radio" placeholder="3 января" name="description" id="jan3" value="3 января" checked>
+      <label for="jan3">3 января</label>
+      <input class="" type="radio" placeholder="4 января" name="description" id="jan4" value="4 января">
+      <label for="jan4">4 января</label>
       <div class="cosmax__buy-center">
         <input class="tinkoffPayRow buy" type="submit" value="Оплатить">
       </div>
@@ -70,6 +74,7 @@
   </div>
 
 </section>
+
 
 
     </main>
