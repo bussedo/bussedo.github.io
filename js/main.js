@@ -1,3 +1,7 @@
+"use strict";
+"use strict";
+"use strict";
+
 /**
   * название функции
   *
@@ -68,9 +72,11 @@ ok.onclick = function (event) {
   up = up.trim();
 
   if (up == 'SANGRITA4') {
+    red.style.color = 'black';
     red.innerHTML = "\u041F\u0440\u043E\u043C\u043E\u043A\u043E\u0434 \u043F\u0440\u0438\u043C\u0435\u043D\u0451\u043D, <br> \u0446\u0435\u043D\u0430 \u0431\u0438\u043B\u0435\u0442\u0430 250 \u0440\u0443\u0431.";
     price.value = '250';
   } else if (up == 'TATARTRIP') {
+    red.style.color = 'black';
     red.innerHTML = "\u041F\u0440\u043E\u043C\u043E\u043A\u043E\u0434 \u043F\u0440\u0438\u043C\u0435\u043D\u0451\u043D, <br> \u0446\u0435\u043D\u0430 \u0431\u0438\u043B\u0435\u0442\u0430 170 \u0440\u0443\u0431.";
     price.value = '170';
   } else {
