@@ -1,11 +1,3 @@
-"use strict";
-
-console.log('global');
-"use strict";
-
-console.log('maxgraph');
-"use strict";
-
 /**
   * название функции
   *
