@@ -7,26 +7,26 @@
   <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <meta name="theme-color" content="#111111">
-  <title>Telegram teatr — Телеграм–театр</title>
+  <title>Telegram teatr — Телеграм – театр — Theatre</title>
   <link rel="stylesheet" href="css/vendor.css">
   <link rel="stylesheet" href="css/main.css">
-  
-  <!-- Yandex.Metrika counter -->
-<script type="text/javascript" >
-   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-   m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
-   ym(86882791, "init", {
-        clickmap:true,
-        trackLinks:true,
-        accurateTrackBounce:true,
-        webvisor:true
-   });
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/86882791" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
-  
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript" >
+    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+      m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+    (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+    ym(86882791, "init", {
+      clickmap:true,
+      trackLinks:true,
+      accurateTrackBounce:true,
+      webvisor:true
+    });
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/86882791" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+  <!-- /Yandex.Metrika counter -->
+
 </head>
 
 <body>
@@ -43,14 +43,15 @@
     <div class="about__us">
       <h2 class="cosmax__title">Спектакль КОСМАКС</h2>
       <p class="cosmax__descr">
-        3 или 4 января в 19:00
+        3 и 4 января в 19:00
         <br>
-        цена: 500 руб.
+        цена: 300 руб.
       </p>
   </div>
 </section>
 
       <section class="cosmax">
+  <img class="about__figure" src="img/about-figure.svg" alt="" ria-hidden="true">
   <div class="cosmax__buy-center">
     <h2 class="cosmax__title">Оплатить по карте</h2>
     <style>.tinkoffPayRow{width:160px;}</style>
@@ -59,19 +60,28 @@
       <input class="tinkoffPayRow" type="hidden" name="terminalkey" value="1639410988422">
       <input class="tinkoffPayRow" type="hidden" name="frame" value="true">
       <input class="tinkoffPayRow" type="hidden" name="language" value="ru">
-      <input class="tinkoffPayRow" type="hidden" placeholder="Введите сумму" name="amount" required="" value="500">
-     <p> <input class="tinkoffPayRow" type="text" placeholder="Телефон" name="phone"> </p>
+      <input class="tinkoffPayRow price" type="hidden" placeholder="Введите сумму" name="amount" required="" value="300">
       <p>
-        <input class="tinkoffPayRow" type="text" placeholder="ФИО" name="name" required="">
+        <input class="tinkoffPayRow name" type="text" placeholder="Телефон" name="phone" required="">
       </p>
+      <p>
+        <input class="tinkoffPayRow name" type="text" placeholder="ФИО" name="name" required="">
+      </p>
+
       <input class="" type="radio" placeholder="3 января" name="description" id="jan3" value="3 января" checked>
       <label for="jan3">3 января</label>
       <input class="" type="radio" placeholder="4 января" name="description" id="jan4" value="4 января">
       <label for="jan4">4 января</label>
+      <div class="promokod">
+        <p>Промокод (при наличии)</p>
+        <div class="promokod__line">
+          <input type="text" class="promokod__input name" value="">
+          <button class="ok btn-reset btn">OK</button>
+        </div>
+        <p class="red"></p>
+      </div>
       <div class="cosmax__buy-center">
-        <br>
-        <br>
-        <input class="tinkoffPayRow buy" type="submit" value="Оплатить">
+        <input class="tinkoffPayRow buy btn" type="submit" value="Оплатить">
       </div>
     </form>
   </div>
@@ -124,7 +134,7 @@
   </div>
 </footer>
 
-    
+
   </div>
   <script src="js/vendor.js"></script>
   <script src="js/main.js"></script>
