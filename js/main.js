@@ -1,3 +1,11 @@
+"use strict";
+
+console.log('global');
+"use strict";
+
+console.log('maxgraph');
+"use strict";
+
 /**
   * название функции
   *
@@ -37,15 +45,15 @@ var swiperSlider2 = new Swiper(swiper2, {
   loop: true,
   slidesPerView: 'auto',
   spaceBetween: 105
-});
-burger.addEventListener('click', function () {
-  var burger_lines = document.querySelectorAll('.burger__line');
-  burger_lines.forEach(function (el) {
-    el.classList.toggle('active');
-  });
-  menu.classList.toggle('active');
-  body.classList.toggle('active');
-});
+}); // burger.addEventListener('click', () =>  {
+//   const burger_lines = document.querySelectorAll('.burger__line');
+//   burger_lines.forEach((el) => {
+//     el.classList.toggle('active');
+//   });
+//   menu.classList.toggle('active');
+//   body.classList.toggle('active');
+// });
+
 playButtonsFirst.forEach(function (el) {
   el.addEventListener('click', function (e) {
     var video = e.currentTarget.closest('.main-slider__media').querySelector('video');
@@ -56,4 +64,38 @@ playButtonsFirst.forEach(function (el) {
     }, 1000);
   });
 });
+var price = document.querySelector('.price');
+var buy = document.querySelector('.buy');
+var ok = document.querySelector('.ok');
+var promokod = document.querySelector('.promokod__input');
+var red = document.querySelector('.red'); // let sangrita = 'SANGRITA';
+
+ok.onclick = function (event) {
+  event.preventDefault();
+  var up = promokod.value.toUpperCase();
+  up = up.trim();
+
+  if (up == 'SANGRITA4') {
+    red.innerHTML = "\u041F\u0440\u043E\u043C\u043E\u043A\u043E\u0434 \u043F\u0440\u0438\u043C\u0435\u043D\u0451\u043D, <br> \u0446\u0435\u043D\u0430 \u0431\u0438\u043B\u0435\u0442\u0430 250 \u0440\u0443\u0431.";
+    price.value = '250';
+  } else if (up == 'TATARTRIP') {
+    red.innerHTML = "\u041F\u0440\u043E\u043C\u043E\u043A\u043E\u0434 \u043F\u0440\u0438\u043C\u0435\u043D\u0451\u043D, <br> \u0446\u0435\u043D\u0430 \u0431\u0438\u043B\u0435\u0442\u0430 170 \u0440\u0443\u0431.";
+    price.value = '170';
+  } else {
+    red.innerHTML = 'Промокод не найден';
+  }
+}; // const check = function (event) {
+//   event.preventDefault();
+//   if (promokod.value !== '') {
+//     console.log(promokod.value.length )
+//     let up = promokod.value.toUpperCase();
+//     if (up == 'SANGRITA') {
+//       red.innerHTML = 'Промо ОК'
+//       price.value = '400';
+//     } else  {
+//       red.innerHTML = 'Промо не ОК'
+//     }
+//   }
+// };
+//
 //# sourceMappingURL=main.js.map
