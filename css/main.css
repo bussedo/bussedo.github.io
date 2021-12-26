@@ -133,7 +133,8 @@ body {
     text-align: center; }
   .cosmax__pay {
     display: inline-block;
-    justify-content: center; }
+    justify-content: center;
+    max-width: 200px; }
   .cosmax__title {
     margin: 0;
     margin-top: 20px; }
@@ -256,9 +257,9 @@ body {
   border: none; }
 
 .ok {
-  max-width: 40px;
+  max-width: 100%;
   padding: 13px 10px;
-  margin-left: 5px; }
+  margin-top: 10px; }
 
 .buy {
   padding: 13px 26px;
@@ -277,18 +278,14 @@ body {
   border-radius: 4px;
   border: 1px solid #444b58;
   padding: 10px 15px;
-  width: 160px; }
+  width: 200px; }
 
 .red {
   color: #cc4949; }
 
-.promokod {
+.promokod__line {
   display: flex;
   flex-direction: column; }
-  .promokod__line {
-    display: flex;
-    justify-content: flex-end;
-    justify-items: center; }
 
 .about__figure {
   position: absolute;
