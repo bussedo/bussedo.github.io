@@ -73,11 +73,11 @@ ok.onclick = function (event) {
 
   if (up == 'SANGRITA4') {
     red.style.color = 'black';
-    red.innerHTML = "\u041F\u0440\u043E\u043C\u043E\u043A\u043E\u0434 \u043F\u0440\u0438\u043C\u0435\u043D\u0451\u043D, <br> \u0446\u0435\u043D\u0430 \u0431\u0438\u043B\u0435\u0442\u0430 250 \u0440\u0443\u0431.";
+    red.innerHTML = "Промокод применён, <br>цена билета 220 руб";
     price.value = '220';
   } else if (up == 'TATARTRIP') {
     red.style.color = 'black';
-    red.innerHTML = "Промокод применён, <br>цена билета 250 руб.";
+    red.innerHTML = "Промокод применён, <br>цена билета 170 руб.";
     price.value = '170';
   } else {
     red.innerHTML = 'Промокод не найден';
