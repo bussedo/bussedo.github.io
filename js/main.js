@@ -37,6 +37,9 @@ swiperSlider1.on('transitionEnd', function () {
   });
 });
 var swiperSlider2 = new Swiper(swiper2, {
+   autoplay: {
+    delay: 3000,
+  },
   centeredSlides: true,
   loop: true,
   slidesPerView: 'auto',
@@ -82,18 +85,6 @@ ok.onclick = function (event) {
   } else {
     red.innerHTML = 'Промокод не найден';
   }
-}; // const check = function (event) {
-//   event.preventDefault();
-//   if (promokod.value !== '') {
-//     console.log(promokod.value.length )
-//     let up = promokod.value.toUpperCase();
-//     if (up == 'SANGRITA') {
-//       red.innerHTML = 'Промо ОК'
-//       price.value = '400';
-//     } else  {
-//       red.innerHTML = 'Промо не ОК'
-//     }
-//   }
-// };
-//
+}; 
+
 //# sourceMappingURL=main.js.map
