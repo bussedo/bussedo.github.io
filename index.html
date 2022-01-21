@@ -49,70 +49,40 @@
         цена: от 300 до 500 руб.
       </p>
   </div>
-</section>
-
-      <section class="cosmax">
-  <img class="about__figure" src="img/about-figure.svg" alt="" ria-hidden="true">
-  <div class="cosmax__buy-center">
-    <h2 class="cosmax__title">Оплатить по обычной карте (300 рублей):</h2>
-    <style>.tinkoffPayRow{width:200px;}</style>
-    <script src="https://securepay.tinkoff.ru/html/payForm/js/tinkoff_v2.js"></script>
-    <form name="TinkoffPayForm" onsubmit="pay(this); return false;" class="cosmax__pay">
-      <input class="tinkoffPayRow" type="hidden" name="terminalkey" value="1639410988422">
-      <input class="tinkoffPayRow" type="hidden" name="frame" value="true">
-      <input class="tinkoffPayRow" type="hidden" name="language" value="ru">
-      <input class="tinkoffPayRow price" type="hidden" placeholder="Введите сумму" name="amount" required="" value="300">
-      <p>
-        <input class="tinkoffPayRow name" type="text" placeholder="Телефон" name="phone" required="">
-      </p>
-      <p>
-        <input class="tinkoffPayRow name" type="text" placeholder="ФИО" name="name" required="">
-      </p>
-
-      <input class="" type="radio" placeholder="28 января" name="description" id="jan28" value="28 января" checked>
-      <label for="jan28">28 января</label>
-      <div class="promokod">
-        <p>Промокод (при наличии)</p>
-        <div class="promokod__line">
-          <input type="text" class="promokod__input name" value="">
-          <button class="ok btn-reset btn">Применить</button>
-        </div>
-        <p class="red"></p>
-      </div>
-      <div class="cosmax__buy-center">
-        <input class="tinkoffPayRow buy btn" type="submit" value="Оплатить">
-      </div>
-    </form>
-  </div>
-        
-        
+</section>       
 	      
 	      
-       <script>
-    /* Настройка */
-    var dealerName = 'YandexTicketsDealer';
-    var dealer = window[dealerName] = window[dealerName] || [];
+   <div id="ya-widget-frame"></div>
+	<script>
+	/* Настройка */
+	var dealerName = 'YandexTicketsDealer';
+	var dealer = window[dealerName] = window[dealerName] || [];
 
-    dealer.push(['setDefaultClientKey', '7d05271e-0ddc-4896-99c2-02cbd11337dc']);
-    dealer.push(['setDefaultRegionId', 41]);
+	dealer.push(['setDefaultClientKey', '7d05271e-0ddc-4896-99c2-02cbd11337dc']);
+        dealer.push(['setDefaultRegionId', 41]);
 
-    /* Загрузка */
-    (function () {
-        var rnd = '?' + new Date().getTime() * Math.random();
-        var script = document.createElement('script');
-        var target = document.getElementsByTagName('script')[0];
-        script.async = true;
-        script.src = 'https://widget.afisha.yandex.ru/dealer/dealer.js' + rnd;
-        target.parentNode.insertBefore(script, target);
-    })();
-</script>
-	      <script id="yandex-button" type="text/html">
-    <b style="color:#333 !important; font-size:15px !important; font-family:Arial, Helvetica Neue, Helvetica, sans-serif !important; font-weight:normal !important; line-height:36px !important; text-decoration:none !important; white-space:nowrap !important; display:inline-block !important; vertical-align:middle; background:#ffde41 !important; border-radius:2px !important; padding:0 16px !important; cursor:pointer; margin:0">Купить билет</b>
-</script>
-	     <center> <h2 class="cosmax__title">Оплатить по пушкинской карте:</h2></center>
-	      <p>
-	     <center> <y:ticket data-session-id="ticketsteam-2373@6402092" data-template="yandex-button"></y:ticket> </center>
-	      
+	YandexTicketsDealer.push(['getDealer', function (dealer) {
+		const widget = dealer.Widget('ticketsteam-2373@6402092', 'session', {
+			target: document.getElementById('ya-widget-frame'),
+			onRequestClose: function() {
+				widget.unmount();
+				widget.destroy();
+			},
+		});
+
+		widget.mount({ style: { height: '600px' } });
+	}]);
+
+	/* Загрузка */
+	(function () {
+		var rnd = '?' + new Date().getTime() * Math.random();
+		var script = document.createElement('script');
+		var target = document.getElementsByTagName('script')[0];
+		script.async = true;
+		script.src = 'https://widget.afisha.yandex.ru/dealer/dealer.js'+rnd;
+		target.parentNode.insertBefore(script, target);
+	})();
+</script>      
 	      
 	      
 	      
