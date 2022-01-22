@@ -271,8 +271,6 @@ body {
 .buy:hover {
   background-color: #cc4949; }
 
-.tinkoffPayRow {
-  margin: 0; }
 
 .name {
   border-radius: 4px;
@@ -388,6 +386,11 @@ body {
   width: 600px;
   height: 300px; }
 
+#ya-widget-frame {
+  max-width: 550px;
+  margin: auto;
+}
+
 @media (max-width: 1200px) {
   .map {
     width: 500px; } }
@@ -455,6 +458,11 @@ body {
     width: 400px; } }
 
 @media (max-width: 768px) {
+  #ya-widget-frame {
+    max-width: none;
+    margin: auto;
+  }
+
   .first__slider-btn {
     width: 11px;
     height: 11px;
