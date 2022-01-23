@@ -400,6 +400,11 @@ body {
 .btn__copy {
   padding: 9px 13px;
 }
+
+.btn__copy:hover {
+  background-color: #cc4949;
+}
+
 @media (max-width: 1200px) {
   .map {
     width: 500px; } }
