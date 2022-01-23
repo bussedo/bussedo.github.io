@@ -391,6 +391,15 @@ body {
   margin: auto;
 }
 
+.discont {
+  max-width: 128px;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.btn__copy {
+  padding: 9px 13px;
+}
 @media (max-width: 1200px) {
   .map {
     width: 500px; } }
