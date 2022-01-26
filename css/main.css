@@ -398,13 +398,18 @@ body {
 }
 
 .discont {
-  max-width: 128px;
-  padding: 5px 10px;
-  border-radius: 4px;
+  max-width: 143px;
+  padding: 15px 9px;
+  border-radius: 15px;
+  text-align: center;
 }
 
 .btn__copy {
   padding: 9px 13px;
+}
+
+.cosmax__text {
+  padding: 10px 20px;
 }
 
 .btn__copy:hover {
