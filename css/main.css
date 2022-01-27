@@ -131,10 +131,6 @@ body {
   background-color: #F3F6F6; }
   .cosmax__container {
     text-align: center; }
-  .cosmax__pay {
-    display: inline-block;
-    justify-content: center;
-    max-width: 200px; }
   .cosmax__title {
     margin: 0;
     margin-top: 20px; }
@@ -222,12 +218,6 @@ body {
 
 .slide-4 {
   background-image: url("../img/videos-slider-4.jpg"); }
-
-.slide-5 {
-  background-image: url("../img/videos-slider-5.jpg"); }
-
-.slide-6 {
-  background-image: url("../img/videos-slider-6.jpg"); }
 
 .slide-play {
   position: absolute;
@@ -407,15 +397,30 @@ body {
 .btn__copy {
   padding: 9px 13px;
 }
+.cosmax__yandex {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}
+.btn__pay {
+  display: block;
+  text-align: center;
+  padding: 9px 13px;
+  max-width: 200px;
+  background: #fef339;
+  color: black;
+  font-style: inherit;
+}
+.btn__pay:hover {
+  background: #d2ca34;
+}
 
 .cosmax__text {
   padding: 10px 20px;
 }
-
 .btn__copy:hover {
   background-color: #cc4949;
 }
-
 @media (max-width: 1200px) {
   .map {
     width: 500px; } }
