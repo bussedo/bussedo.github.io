@@ -219,6 +219,12 @@ body {
 .slide-4 {
   background-image: url("../img/videos-slider-4.jpg"); }
 
+.slide-5 {
+  background-image: url("../img/videos-slider-5.jpg"); }
+
+.slide-6 {
+  background-image: url("../img/videos-slider-6.jpg"); }
+
 .slide-play {
   position: absolute;
   left: 35px;
