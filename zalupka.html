@@ -1,150 +1,60 @@
 <!DOCTYPE html>
 <html lang="ru">
- 
-  <head>
+<head>
     <meta charset="UTF-8">
-    <title>КВН "Марийская залупка"</title>
+    <title>Свадебная ведущая Галина и Рыжий Игорь</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-		* {
-			margin: 0;
-			padding: 0;
-			box-sizing: border-box;
-		}
-
-		body {
-			font-family: Arial, sans-serif;
-			background-color: #222;
-			color: #fff;
-			line-height: 1.5;
-			overflow-x: hidden;
-		}
-
-		header {
-			display: flex;
-			align-items: center;
-			height: 70px;
-			padding: 0 20px;
-			background-color: #FFA500;
-		}
-
-		h1 {
-			font-size: 2rem;
-			margin: 0;
-			color: #222;
-			text-shadow: 2px 2px #FFA500;
-		}
-
-		section {
-			padding: 50px 20px;
-			text-align: center;
-		}
-
-		.parallax {
-			background-image: bakkk.jpg;
-			background-size: cover;
-			background-attachment: fixed;
-			background-position: center;
-			height: 100vh;
-			position: relative;
-		}
-
-		.parallax:before {
-			content: '';
-			background-color: rgba(0, 0, 0, 0.4);
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-		}
-
-		.parallax-content {
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
-			color: #fff;
-			text-shadow: 2px 2px #222;
-			z-index: 1;
-		}
-
-		.shutki {
-			background-color: #FFA500;
-			color: #222;
-		}
-
-		.shutki h2 {
-			font-size: 1.5rem;
-			margin-bottom: 20px;
-			text-shadow: 2px 2px #fff;
-		}
-
-		.video {
-			background-color: #222;
-		}
-
-		.video h2 {
-			font-size: 1.5rem;
-			margin-bottom: 20px;
-			color: #FFA500;
-			text-shadow: 2px 2px #222;
-		}
-
-		iframe {
-			width: 100%;
-			height: 500px;
-			border: none;
-			margin-bottom: 20px;
-		}
-
-		@media (max-width: 767px) {
-			h1 {
-				font-size: 1.5rem;
-			}
-
-			iframe {
-				height: 300px;
-			}
-		}
-	</style>
-  </head>
-  
-  
-  <body>
-    <header>
-      <nav>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <nav>
         <ul>
-          <li><a href="#">Главная</a></li>
-          <li><a href="#">Лучшие шутки</a></li>
-          <li><a href="#">Видео</a></li>
-          <li><a href="#">Контакты</a></li>
+            <li><a href="#">Главная</a></li>
+            <li><a href="#">О нас</a></li>
+            <li><a href="#">Услуги</a></li>
+            <li><a href="#">Отзывы</a></li>
+            <li><a href="#">Контакты</a></li>
         </ul>
-      </nav>
-    </header>
-    <section class="parallax">
-      <h1>КВН "Марийская залупка"</h1>
-      <h2>Мы лучшие!</h2>
-    </section>
-    <section>
-      <div class="container">
-        <h3>Лучшие шутки</h3>
-        <ul>
-          <li>Зачем петь, если можно жрать?</li>
-          <li>Мой мозг не рассчитан на такие переходы, мне нужно говорить о чем-то по-настоящему умном.</li>
-          <li>Я человек настроения, и у меня нет настроения.</li>
-        </ul>
-      </div>
-    </section>
-    <section class="parallax2">
-      <div class="container">
-        <h3>Видео</h3>
-        <iframe width="560" height="315" src="https://youtu.be/sxvr1_0nUyM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-      
-      </div>
-    </section>
-    <footer>
-      <p>КВН "Марийская залупка", 2023</p>
-    </footer>
-  </body>
-</html>
+    </nav>
+</header>
+<section class="hero">
+    <h1>Свадебная ведущая Галина и Рыжий Игорь</h1>
+    <p>Создадим незабываемую атмосферу на вашей свадьбе!</p>
+    <a href="#services" class="btn">Узнать больше</a>
+</section>
+<section class="services" id="services">
+    <h2>Наши услуги</h2>
+    <ul>
+        <li>Ведущая на свадьбе</li>
+        <li>Проведение церемонии</li>
+        <li>Фото- и видеосъемка</li>
+        <li>Музыкальное сопровождение</li>
+    </ul>
+    <a href="#contact" class="btn">Связаться с нами</a>
+</section>
+<section class="reviews">
+    <h2>Отзывы наших клиентов</h2>
+    <ul>
+        <li>
+            <h3>Алексей и Екатерина</h3>
+            <p>Спасибо Галине и Игорю за прекрасную организацию нашей свадьбы! Все было на высшем уровне, мы остались очень довольны.</p>
+        </li>
+        <li>
+            <h3>Дмитрий и Ольга</h3>
+            <p>Все было сделано идеально! Мы наслаждались каждой минутой своей свадьбы, благодаря Галине и Игорю. Очень рекомендуем их услуги!</p>
+        </li>
+    </ul>
+</section>
+<section class="contact" id="contact">
+    <h2>Свяжитесь с нами</h2>
+    <form>
+        <label for="name">Имя:</label>
+        <input type="text" id="name" name="name" required>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <label for="message">Сообщение:</label>
+        <textarea id="message" name="message" required></textarea>
+        <button type="submit" class="btn">Отправить</button>
+    </form>
+	</section>
