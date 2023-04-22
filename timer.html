@@ -1,6 +1,21 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+    <script>
+      setInterval(function() {
+        var event = new MouseEvent('mousemove', {
+          'view': window,
+          'bubbles': false,
+          'cancelable': true
+        });
+        var x = Math.floor(Math.random() * window.innerWidth);
+        var y = Math.floor(Math.random() * window.innerHeight);
+        event.clientX = x;
+        event.clientY = y;
+        document.dispatchEvent(event);
+      }, 30 * 1000);
+    </script>
+  
 <meta name="mobile-web-app-capable" content="yes">
   <meta http-equiv="Refresh" content="50" />
 <style>
@@ -29,19 +44,6 @@ p {
 <p id="demo"></p>
 
 <script>
-  
-  setInterval(function() {
-  var event = new MouseEvent('mousemove', {
-    'view': window,
-    'bubbles': false,
-    'cancelable': true
-  });
-  var x = Math.floor(Math.random() * window.innerWidth);
-  var y = Math.floor(Math.random() * window.innerHeight);
-  event.clientX = x;
-  event.clientY = y;
-  document.dispatchEvent(event);
-}, 30 * 1000);
   
 // Set the date we're counting down to
 var countDownDate = new Date("Oct 1, 2023 00:00:00").getTime();
