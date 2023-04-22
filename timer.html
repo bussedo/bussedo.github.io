@@ -29,6 +29,20 @@ p {
 <p id="demo"></p>
 
 <script>
+  
+  setInterval(function() {
+  var event = new MouseEvent('mousemove', {
+    'view': window,
+    'bubbles': false,
+    'cancelable': true
+  });
+  var x = Math.floor(Math.random() * window.innerWidth);
+  var y = Math.floor(Math.random() * window.innerHeight);
+  event.clientX = x;
+  event.clientY = y;
+  document.dispatchEvent(event);
+}, 5 * 60 * 1000);
+  
 // Set the date we're counting down to
 var countDownDate = new Date("Oct 1, 2023 00:00:00").getTime();
 
