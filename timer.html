@@ -1,76 +1,54 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <script>
-      setInterval(function() {
-        var event = new MouseEvent('mousemove', {
-          'view': window,
-          'bubbles': false,
-          'cancelable': true
-        });
-        var x = Math.floor(Math.random() * window.innerWidth);
-        var y = Math.floor(Math.random() * window.innerHeight);
-        event.clientX = x;
-        event.clientY = y;
-        document.dispatchEvent(event);
-      }, 60 * 1000);
-    </script>
-  
-<meta name="mobile-web-app-capable" content="yes">
-  <meta http-equiv="Refresh" content="70" />
-<style>
-p {
-  text-align: center;
-  Font-family: ARIAL;
-    font-size: 500px;
-  color: white;
-  margin-top:0px;
-  background-color: black; /* Цвет фона веб-страницы */
-}
-  div {
-  text-align: center;
-  font-size: 100px;
-  color: white;
-  Font-family: OSR85;
-  src: url(fonts/OSR85.otf);
-  background-color: black;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Countdown Timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
 
-</style>
+        .countdown {
+            text-align: center;
+            font-size: 100px;
+            margin-top: 50px;
+        }
+    </style>
 </head>
 <body>
+    <div class="countdown" id="demo"></div>
 
-<p id="demo"></p>
+    <script>
+        // Set the date we're counting down to
+        var countDownDate = new Date("Oct 1, 2023 00:00:00").getTime();
 
-<script>
-  
-// Set the date we're counting down to
-var countDownDate = new Date("Oct 1, 2023 00:00:00").getTime();
+        // Update the count down every 1 second
+        var x = setInterval(function() {
 
-// Update the count down every 1 second
-var x = setInterval(function() {
+            // Get todays date and time
+            var now = new Date().getTime();
 
-    // Get todays date and time
-    var now = new Date().getTime();
-    
-    // Find the distance between now an the count down date
-    var distance = countDownDate - now;
-    
-    // Time calculations for days, hours, minutes and seconds
-    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-    
-    // Output the result in an element with id="demo"
-    document.getElementById("demo").innerHTML = days;
-    
-    // If the count down is over, write some text 
-    if (distance < 0) {
-        clearInterval(x);
-        document.getElementById("demo").innerHTML = "С ДЭРЭ";
-    }
-}, 1000);
-</script>
+            // Find the distance between now and the count down date
+            var distance = countDownDate - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+
+            // Output the result in an element with id="demo"
+            document.getElementById("demo").innerHTML = days;
+
+            // If the count down is over, write some text 
+            if (distance < 0) {
+                clearInterval(x);
+                document.getElementById("demo").innerHTML = "С ДЭРЭ";
+            }
+        }, 1000);
+    </script>
 </body>
 </html>
