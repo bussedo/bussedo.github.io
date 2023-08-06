@@ -12,7 +12,8 @@
 		}
 		h1 {
 			text-align: center;
-			margin-top: 50px;
+			margin-top: 30px; /* Уменьшим отступ сверху */
+			margin-bottom: 20px; /* Добавим отступ снизу */
 			color: #333;
 		}
 		.container {
@@ -29,15 +30,15 @@
 		}
 		.link {
 			display: block;
-			margin-bottom: 30px;
-			padding: 20px;
+			margin-bottom: 20px; /* Уменьшим отступ между кнопками */
+			padding: 25px; /* Увеличим размер отступов вокруг кнопок */
 			border-radius: 5px;
 			background-color: #fff;
 			box-shadow: 0px 3px 6px rgba(0,0,0,0.16);
 			transition: all 0.3s ease;
 			text-decoration: none;
 			color: #333;
-			font-size: 24px;
+			font-size: 32px; /* Увеличим размер шрифта для кнопок */
 			font-weight: bold;
 		}
 		.link:hover {
@@ -47,20 +48,13 @@
 		}
 
 		/* Адаптация для мобильных устройств */
-		@media only screen and (max-width: 600px) {
+		@media only screen and (max-width: 1080px) {
 			h1 {
-				font-size: 28px;
-			}
-			.container {
-				height: auto;
-				padding: 20px;
-			}
-			.links {
-				margin-top: 20px;
+				font-size: 24px; /* Уменьшим размер заголовка для Redmi Note 10 */
 			}
 			.link {
-				font-size: 100px; /* Увеличиваем размер шрифта для кнопок */
-				padding: 35px; /* Увеличиваем размер отступов вокруг кнопок */
+				font-size: 28px; /* Уменьшим размер шрифта для кнопок на Redmi Note 10 */
+				padding: 30px; /* Уменьшим размер отступов вокруг кнопок на Redmi Note 10 */
 			}
 		}
 	</style>
@@ -77,3 +71,4 @@
 	</div>
 </body>
 </html>
+
