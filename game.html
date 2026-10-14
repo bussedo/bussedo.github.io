@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Кулинарный спринт: Миссия 20 октября</title>
+  <title> Выжить до аванса Кишибе: Миссия 20 октября</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -117,7 +117,7 @@
       color: var(--text-muted);
     }
 
-    input[type="number"], input[type="text"], select {
+    input[type="number"], select {
       background: #0f172a;
       border: 1px solid var(--border);
       color: var(--text);
@@ -169,17 +169,9 @@
       background: var(--accent-hover);
     }
 
-    button.secondary {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 8px 12px;
-      font-size: 0.8rem;
-    }
-
-    button.secondary:hover {
-      border-color: var(--accent);
-      color: var(--text);
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
     .history-item {
@@ -207,11 +199,11 @@
     .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
     .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
 
-    .sync-actions {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-      margin-top: 8px;
+    .sync-status {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
     }
   </style>
 </head>
@@ -220,10 +212,10 @@
 <div class="app-container">
   <header>
     <h1>Кулинарный спринт 🎯</h1>
-    <p>Миссия: продержаться до аванса 20 октября (лимит 600 ₽/день)</p>
+    <p>Миссия: пройти отрезок до аванса 20 октября (600 ₽/день)</p>
+    <div class="sync-status" id="cloud-status">Подключение к облаку...</div>
   </header>
 
-  <!-- Сводка статуса -->
   <div class="card">
     <div class="stats-grid">
       <div class="stat-box">
@@ -247,12 +239,11 @@
     </div>
   </div>
 
-  <!-- Форма добавления дня -->
   <div class="card">
     <h2 style="font-size: 1rem; margin-bottom: 12px; color: var(--accent);">Записать траты за день</h2>
     
     <div class="form-group">
-      <label for="day-select">Выберите день:</label>
+      <label for="day-select">День спринта:</label>
       <select id="day-select">
         <option value="15.10">15 октября (Чт)</option>
         <option value="16.10">16 октября (Пт)</option>
@@ -270,54 +261,88 @@
 
     <div class="checkbox-group">
       <label class="checkbox-label">
-        <input type="checkbox" id bonus-cook />
-        <span>👨‍🍳 «Шеф-повар дома» (+20 XP): сварили суп/горячее на 2-3 дня</span>
+        <input type="checkbox" id="bonus-cook" />
+        <span>👨‍🍳 «Шеф-повар СИМА» (+20 XP): сварили суп/горячее на 2-3 дня</span>
       </label>
       <label class="checkbox-label">
-        <input type="checkbox" id bonus-nodelivery />
-        <span>☕ «Анти-доставка» (+15 XP): без кофе навынос и готовой кулинарии</span>
+        <input type="checkbox" id="bonus-nodelivery" />
+        <span>☕ «Анти-доставка ПЭПА» (+15 XP): без импульсивных покупок кофе и выпечки</span>
       </label>
       <label class="checkbox-label">
-        <input type="checkbox" id bonus-zero />
-        <span>🧊 «Нулевой день» (+40 XP): ели строго домашние запасы (0 ₽ трат)</span>
+        <input type="checkbox" id="bonus-zero" />
+        <span>🧊 «Нулевой день» (+40 XP): 0 ₽ трат, доедали домашние запасы</span>
       </label>
     </div>
 
-    <button onclick="recordDay()" style="width: 100%;">Сохранить результат дня</button>
+    <button id="save-btn" onclick="recordDay()" style="width: 100%;">Сохранить в общий профиль</button>
   </div>
 
-  <!-- История дней -->
   <div class="card">
-    <h2 style="font-size: 1rem; margin-bottom: 12px; color: var(--accent);">Журнал спринта</h2>
-    <div id="history-list"></div>
-  </div>
-
-  <!-- Синхронизация между устройствами -->
-  <div class="card" style="text-align: center;">
-    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">
-      Для синхронизации с Катей передайте строку данных через экспорт/импорт.
-    </p>
-    <div class="sync-actions">
-      <button class="secondary" onclick="exportData()">Экспорт (Копировать)</button>
-      <button class="secondary" onclick="importData()">Импорт данных</button>
-      <button class="secondary" onclick="resetGame()" style="color: var(--danger);">Сброс</button>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <h2 style="font-size: 1rem; color: var(--accent);">Журнал спринта</h2>
+      <button onclick="loadDataFromCloud()" style="padding: 4px 8px; font-size: 0.75rem; background: transparent; border: 1px solid var(--border); color: var(--text-muted);">🔄 Обновить</button>
     </div>
+    <div id="history-list"></div>
   </div>
 </div>
 
 <script>
+  const BIN_ID = "6acffa28ac6210605a321908";
+  const API_KEY = "\$2a\$10\$Gxs0gCaDe/F93Ls1ECP8eOP7USSJ2G6MkTjafbN5TESoS19C8CMTS";
   const DAILY_LIMIT = 600;
 
-  const defaultState = {
+  let state = {
     xp: 100,
     bank: 0,
     history: []
   };
 
-  let state = JSON.parse(localStorage.getItem("budget_game_state")) || defaultState;
+  async function loadDataFromCloud() {
+    const statusEl = document.getElementById("cloud-status");
+    statusEl.innerText = "Загрузка общих данных...";
+    try {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+        headers: { "X-Master-Key": API_KEY }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.record && typeof data.record.xp === "number") {
+          state = data.record;
+        }
+        statusEl.innerText = "🟢 Облако синхронизировано";
+      } else {
+        statusEl.innerText = "Режим офлайн (проверьте права доступа)";
+      }
+    } catch (e) {
+      statusEl.innerText = "Ошибка подключения к сети";
+    }
+    render();
+  }
 
-  function saveState() {
-    localStorage.setItem("budget_game_state", JSON.stringify(state));
+  async function syncToCloud() {
+    const statusEl = document.getElementById("cloud-status");
+    const saveBtn = document.getElementById("save-btn");
+    statusEl.innerText = "Сохранение в облако...";
+    saveBtn.disabled = true;
+
+    try {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Master-Key": API_KEY
+        },
+        body: JSON.stringify(state)
+      });
+      if (res.ok) {
+        statusEl.innerText = "🟢 Данные сохранены для обоих!";
+      } else {
+        statusEl.innerText = "Ошибка при сохранении";
+      }
+    } catch (e) {
+      statusEl.innerText = "Сбой сети при сохранении";
+    }
+    saveBtn.disabled = false;
     render();
   }
 
@@ -327,7 +352,7 @@
     return { name: "🥉 Бронза (Базовый уровень)", percent: Math.max(0, ((xp - 100) / (140 - 100)) * 100), label: `${xp} / 140 XP` };
   }
 
-  function recordDay() {
+  async function recordDay() {
     const daySelect = document.getElementById("day-select");
     const spendInput = document.getElementById("spend-input");
     const bonusCook = document.getElementById("bonus-cook").checked;
@@ -338,11 +363,15 @@
     const spend = bonusZero ? 0 : parseFloat(spendInput.value);
 
     if (isNaN(spend) && !bonusZero) {
-      alert("Пожалуйста, введите сумму расходов!");
+      alert("Введите сумму расходов за день!");
       return;
     }
 
-    // Проверка на перезапись того же дня
+    if (!Array.isArray(state.history)) {
+      state.history = [];
+    }
+
+    // Если день уже заполняли, удаляем старый результат для перезаписи
     state.history = state.history.filter(item => item.day !== day);
 
     let xpGained = 0;
@@ -389,13 +418,12 @@
       ].filter(Boolean)
     });
 
-    // Сброс формы
     spendInput.value = "";
     document.getElementById("bonus-cook").checked = false;
     document.getElementById("bonus-nodelivery").checked = false;
     document.getElementById("bonus-zero").checked = false;
 
-    saveState();
+    await syncToCloud();
   }
 
   function render() {
@@ -410,8 +438,8 @@
     const historyEl = document.getElementById("history-list");
     historyEl.innerHTML = "";
 
-    if (state.history.length === 0) {
-      historyEl.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px;">Пока нет записей. Ждём итогов 15 октября!</div>`;
+    if (!state.history || state.history.length === 0) {
+      historyEl.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px;">Пока нет записей. Старт спринта 15 октября!</div>`;
       return;
     }
 
@@ -422,7 +450,7 @@
         <div>
           <div style="font-weight: 600;">${item.day}: ${item.spend} ₽</div>
           <div style="font-size: 0.75rem; color: var(--text-muted);">
-            ${item.bonuses.length ? "Бонусы: " + item.bonuses.join(", ") : "Базовый день"}
+            ${item.bonuses && item.bonuses.length ? "Бонусы: " + item.bonuses.join(", ") : "Базовый день"}
           </div>
         </div>
         <div style="text-align: right;">
@@ -436,40 +464,7 @@
     });
   }
 
-  function exportData() {
-    const raw = JSON.stringify(state);
-    navigator.clipboard.writeText(raw).then(() => {
-      alert("Данные игры скопированы в буфер обмена! Отправьте эту строчку Кате.");
-    }).catch(() => {
-      prompt("Скопируйте эту строку вручную:", raw);
-    });
-  }
-
-  function importData() {
-    const incoming = prompt("Вставьте строку данных, полученную от партнёра:");
-    if (!incoming) return;
-    try {
-      const parsed = JSON.parse(incoming);
-      if (typeof parsed.xp === "number" && Array.isArray(parsed.history)) {
-        state = parsed;
-        saveState();
-        alert("Данные успешно синхронизированы!");
-      } else {
-        alert("Неверный формат данных!");
-      }
-    } catch (e) {
-      alert("Ошибка при чтении данных. Проверьте правильность строки.");
-    }
-  }
-
-  function resetGame() {
-    if (confirm("Вы уверены, что хотите сбросить весь прогресс игры?")) {
-      state = { ...defaultState };
-      saveState();
-    }
-  }
-
-  render();
+  loadDataFromCloud();
 </script>
 </body>
 </html>
