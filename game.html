@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Кулинарный спринт: Миссия 20 октября</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    header {
+      text-align: center;
+      padding: 12px 0;
+    }
+
+    header h1 {
+      font-size: 1.25rem;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    header p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .stat-box {
+      background: rgba(15, 23, 42, 0.6);
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+
+    .stat-val {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .progress-bar-bg {
+      background: var(--border);
+      height: 10px;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-bar-fill {
+      background: var(--accent);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    input[type="number"], input[type="text"], select {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .checkbox-label input {
+      accent-color: var(--accent);
+      width: 16px;
+      height: 16px;
+    }
+
+    button {
+      background: var(--accent);
+      color: #0f172a;
+      font-weight: 600;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: var(--accent-hover);
+    }
+
+    button.secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 8px 12px;
+      font-size: 0.8rem;
+    }
+
+    button.secondary:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.85rem;
+    }
+
+    .history-item:last-child {
+      border-bottom: none;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-success { background: rgba(34, 197, 94, 0.2); color: var(--success); }
+    .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+    .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+    .sync-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <header>
+    <h1>Кулинарный спринт 🎯</h1>
+    <p>Миссия: продержаться до аванса 20 октября (лимит 600 ₽/день)</p>
+  </header>
+
+  <!-- Сводка статуса -->
+  <div class="card">
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-val" id="xp-val">100</div>
+        <div class="stat-label">Очки опыта (XP)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="bank-val">0 ₽</div>
+        <div class="stat-label">Банк свободы</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 14px;">
+      <div style="display: flex; justify-content: space-between; font-size: 0.8rem;">
+        <span id="rank-name">Бронза (Базовый уровень)</span>
+        <span id="rank-progress-text">100 / 140 XP</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="rank-progress-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Форма добавления дня -->
+  <div class="card">
+    <h2 style="font-size: 1rem; margin-bottom: 12px; color: var(--accent);">Записать траты за день</h2>
+    
+    <div class="form-group">
+      <label for="day-select">Выберите день:</label>
+      <select id="day-select">
+        <option value="15.10">15 октября (Чт)</option>
+        <option value="16.10">16 октября (Пт)</option>
+        <option value="17.10">17 октября (Сб)</option>
+        <option value="18.10">18 октября (Вс)</option>
+        <option value="19.10">19 октября (Пн)</option>
+        <option value="20.10">20 октября (Вт — финиш!)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="spend-input">Потрачено на еду за день (₽):</label>
+      <input type="number" id="spend-input" placeholder="Например: 420" min="0" />
+    </div>
+
+    <div class="checkbox-group">
+      <label class="checkbox-label">
+        <input type="checkbox" id bonus-cook />
+        <span>👨‍🍳 «Шеф-повар дома» (+20 XP): сварили суп/горячее на 2-3 дня</span>
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id bonus-nodelivery />
+        <span>☕ «Анти-доставка» (+15 XP): без кофе навынос и готовой кулинарии</span>
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id bonus-zero />
+        <span>🧊 «Нулевой день» (+40 XP): ели строго домашние запасы (0 ₽ трат)</span>
+      </label>
+    </div>
+
+    <button onclick="recordDay()" style="width: 100%;">Сохранить результат дня</button>
+  </div>
+
+  <!-- История дней -->
+  <div class="card">
+    <h2 style="font-size: 1rem; margin-bottom: 12px; color: var(--accent);">Журнал спринта</h2>
+    <div id="history-list"></div>
+  </div>
+
+  <!-- Синхронизация между устройствами -->
+  <div class="card" style="text-align: center;">
+    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">
+      Для синхронизации с Катей передайте строку данных через экспорт/импорт.
+    </p>
+    <div class="sync-actions">
+      <button class="secondary" onclick="exportData()">Экспорт (Копировать)</button>
+      <button class="secondary" onclick="importData()">Импорт данных</button>
+      <button class="secondary" onclick="resetGame()" style="color: var(--danger);">Сброс</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const DAILY_LIMIT = 600;
+
+  const defaultState = {
+    xp: 100,
+    bank: 0,
+    history: []
+  };
+
+  let state = JSON.parse(localStorage.getItem("budget_game_state")) || defaultState;
+
+  function saveState() {
+    localStorage.setItem("budget_game_state", JSON.stringify(state));
+    render();
+  }
+
+  function calculateRank(xp) {
+    if (xp >= 191) return { name: "🥇 Золото (Магистр бюджета)", percent: 100, label: `${xp} XP` };
+    if (xp >= 141) return { name: "🥈 Серебро (Разумный менеджер)", percent: ((xp - 141) / (191 - 141)) * 100, label: `${xp} / 191 XP` };
+    return { name: "🥉 Бронза (Базовый уровень)", percent: Math.max(0, ((xp - 100) / (140 - 100)) * 100), label: `${xp} / 140 XP` };
+  }
+
+  function recordDay() {
+    const daySelect = document.getElementById("day-select");
+    const spendInput = document.getElementById("spend-input");
+    const bonusCook = document.getElementById("bonus-cook").checked;
+    const bonusNoDelivery = document.getElementById("bonus-nodelivery").checked;
+    const bonusZero = document.getElementById("bonus-zero").checked;
+
+    const day = daySelect.value;
+    const spend = bonusZero ? 0 : parseFloat(spendInput.value);
+
+    if (isNaN(spend) && !bonusZero) {
+      alert("Пожалуйста, введите сумму расходов!");
+      return;
+    }
+
+    // Проверка на перезапись того же дня
+    state.history = state.history.filter(item => item.day !== day);
+
+    let xpGained = 0;
+    let bankAdded = 0;
+    let statusClass = "badge-success";
+    let statusText = "Идеально";
+
+    if (spend <= 450) {
+      xpGained += 30;
+      bankAdded = DAILY_LIMIT - spend;
+      statusClass = "badge-success";
+      statusText = `Норма (-${DAILY_LIMIT - spend} ₽)`;
+    } else if (spend <= 600) {
+      xpGained += 15;
+      statusClass = "badge-warning";
+      statusText = "В лимите";
+    } else if (spend <= 750) {
+      xpGained -= 10;
+      statusClass = "badge-danger";
+      statusText = `Перерасход (+${spend - DAILY_LIMIT} ₽)`;
+    } else {
+      xpGained -= 25;
+      statusClass = "badge-danger";
+      statusText = `Красная зона (+${spend - DAILY_LIMIT} ₽)`;
+    }
+
+    if (bonusCook) xpGained += 20;
+    if (bonusNoDelivery) xpGained += 15;
+    if (bonusZero) xpGained += 40;
+
+    state.xp += xpGained;
+    state.bank += bankAdded;
+
+    state.history.push({
+      day,
+      spend,
+      xpGained,
+      statusClass,
+      statusText,
+      bonuses: [
+        bonusCook ? "Шеф" : null,
+        bonusNoDelivery ? "Анти-доставка" : null,
+        bonusZero ? "0 ₽ день" : null
+      ].filter(Boolean)
+    });
+
+    // Сброс формы
+    spendInput.value = "";
+    document.getElementById("bonus-cook").checked = false;
+    document.getElementById("bonus-nodelivery").checked = false;
+    document.getElementById("bonus-zero").checked = false;
+
+    saveState();
+  }
+
+  function render() {
+    document.getElementById("xp-val").innerText = state.xp;
+    document.getElementById("bank-val").innerText = `${state.bank} ₽`;
+
+    const rank = calculateRank(state.xp);
+    document.getElementById("rank-name").innerText = rank.name;
+    document.getElementById("rank-progress-text").innerText = rank.label;
+    document.getElementById("rank-progress-bar").style.width = `${Math.min(100, Math.max(0, rank.percent))}%`;
+
+    const historyEl = document.getElementById("history-list");
+    historyEl.innerHTML = "";
+
+    if (state.history.length === 0) {
+      historyEl.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px;">Пока нет записей. Ждём итогов 15 октября!</div>`;
+      return;
+    }
+
+    state.history.slice().reverse().forEach(item => {
+      const row = document.createElement("div");
+      row.className = "history-item";
+      row.innerHTML = `
+        <div>
+          <div style="font-weight: 600;">${item.day}: ${item.spend} ₽</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">
+            ${item.bonuses.length ? "Бонусы: " + item.bonuses.join(", ") : "Базовый день"}
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <span class="badge ${item.statusClass}">${item.statusText}</span>
+          <div style="font-size: 0.8rem; font-weight: 700; color: ${item.xpGained >= 0 ? 'var(--success)' : 'var(--danger)'}">
+            ${item.xpGained >= 0 ? '+' : ''}${item.xpGained} XP
+          </div>
+        </div>
+      `;
+      historyEl.appendChild(row);
+    });
+  }
+
+  function exportData() {
+    const raw = JSON.stringify(state);
+    navigator.clipboard.writeText(raw).then(() => {
+      alert("Данные игры скопированы в буфер обмена! Отправьте эту строчку Кате.");
+    }).catch(() => {
+      prompt("Скопируйте эту строку вручную:", raw);
+    });
+  }
+
+  function importData() {
+    const incoming = prompt("Вставьте строку данных, полученную от партнёра:");
+    if (!incoming) return;
+    try {
+      const parsed = JSON.parse(incoming);
+      if (typeof parsed.xp === "number" && Array.isArray(parsed.history)) {
+        state = parsed;
+        saveState();
+        alert("Данные успешно синхронизированы!");
+      } else {
+        alert("Неверный формат данных!");
+      }
+    } catch (e) {
+      alert("Ошибка при чтении данных. Проверьте правильность строки.");
+    }
+  }
+
+  function resetGame() {
+    if (confirm("Вы уверены, что хотите сбросить весь прогресс игры?")) {
+      state = { ...defaultState };
+      saveState();
+    }
+  }
+
+  render();
+</script>
+</body>
+</html>
