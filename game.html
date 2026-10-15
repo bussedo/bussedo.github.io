@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title> Выжить до аванса Кишибе: Миссия 20 октября</title>
+  <title>КИШИБЕ И КЕЩЕК БАДЖЕТ</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -43,18 +43,42 @@
 
     header {
       text-align: center;
-      padding: 12px 0;
+      padding: 8px 0;
     }
 
     header h1 {
-      font-size: 1.25rem;
+      font-size: 1.3rem;
       color: var(--accent);
       margin-bottom: 4px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
 
     header p {
       font-size: 0.85rem;
       color: var(--text-muted);
+    }
+
+    .sync-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .countdown-card {
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px dashed var(--accent);
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .countdown-timer {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: 1.5px;
+      font-variant-numeric: tabular-nums;
     }
 
     .card {
@@ -90,44 +114,52 @@
       margin-top: 4px;
     }
 
+    .today-meter {
+      margin-top: 14px;
+      background: rgba(15, 23, 42, 0.4);
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
     .progress-bar-bg {
       background: var(--border);
-      height: 10px;
-      border-radius: 5px;
+      height: 8px;
+      border-radius: 4px;
       overflow: hidden;
-      margin-top: 10px;
+      margin-top: 6px;
     }
 
     .progress-bar-fill {
-      background: var(--accent);
+      background: var(--success);
       height: 100%;
       width: 0%;
-      transition: width 0.3s ease;
+      transition: width 0.3s ease, background-color 0.3s ease;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      margin-bottom: 12px;
+      gap: 6px;
+      margin-bottom: 10px;
     }
 
     label {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
     }
 
-    input[type="number"], select {
+    input[type="number"], input[type="text"], select {
       background: #0f172a;
       border: 1px solid var(--border);
       color: var(--text);
       padding: 10px 12px;
       border-radius: 8px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       outline: none;
     }
 
-    input:focus {
+    input:focus, select:focus {
       border-color: var(--accent);
     }
 
@@ -142,7 +174,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       cursor: pointer;
       color: var(--text);
     }
@@ -174,16 +206,16 @@
       cursor: not-allowed;
     }
 
-    .history-item {
+    .tx-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px;
+      padding: 10px 0;
       border-bottom: 1px solid var(--border);
       font-size: 0.85rem;
     }
 
-    .history-item:last-child {
+    .tx-item:last-child {
       border-bottom: none;
     }
 
@@ -191,19 +223,23 @@
       display: inline-block;
       padding: 2px 6px;
       border-radius: 4px;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: 600;
     }
 
-    .badge-success { background: rgba(34, 197, 94, 0.2); color: var(--success); }
-    .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
-    .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+    .badge-food { background: rgba(56, 189, 248, 0.2); color: var(--accent); }
+    .badge-cats { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+    .badge-other { background: rgba(148, 163, 184, 0.2); color: var(--text-muted); }
 
-    .sync-status {
-      text-align: center;
+    .del-btn {
+      background: transparent;
+      color: var(--danger);
+      padding: 2px 6px;
       font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-top: 4px;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 4px;
+      cursor: pointer;
+      margin-left: 8px;
     }
   </style>
 </head>
@@ -211,11 +247,20 @@
 
 <div class="app-container">
   <header>
-    <h1>Кишибе челендж 🎯</h1>
-    <p>Миссия: пройти отрезок до аванса 20 октября (600 ₽/день)</p>
+    <h1>Кишибе спринт 🎯</h1>
+    <p>Бюджет еды: 600 ₽/день (до аванса 20 октября)</p>
     <div class="sync-status" id="cloud-status">Подключение к облаку...</div>
   </header>
 
+  <!-- Блок обратного отсчета -->
+  <div class="countdown-card">
+    <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px;">
+      До закрытия суток (бонус +10 XP при 0 ₽ на еду):
+    </div>
+    <div class="countdown-timer" id="countdown">--:--:--</div>
+  </div>
+
+  <!-- Сводка очков и банка -->
   <div class="card">
     <div class="stats-grid">
       <div class="stat-box">
@@ -228,93 +273,131 @@
       </div>
     </div>
 
-    <div style="margin-top: 14px;">
+    <!-- Индикатор за день -->
+    <div class="today-meter">
       <div style="display: flex; justify-content: space-between; font-size: 0.8rem;">
-        <span id="rank-name">Бронза (Базовый уровень)</span>
-        <span id="rank-progress-text">100 / 140 XP</span>
+        <span>Еда за <span id="active-day-label">15.10</span>:</span>
+        <span id="today-spent-label"><b>0 ₽</b> / 600 ₽</span>
       </div>
       <div class="progress-bar-bg">
-        <div class="progress-bar-fill" id="rank-progress-bar"></div>
+        <div class="progress-bar-fill" id="today-progress-bar"></div>
       </div>
     </div>
   </div>
 
+  <!-- Форма добавления чека -->
   <div class="card">
-    <h2 style="font-size: 1rem; margin-bottom: 12px; color: var(--accent);">Записать траты за день</h2>
+    <h2 style="font-size: 1rem; margin-bottom: 12px; color: var(--accent);">Добавить чек</h2>
     
     <div class="form-group">
-      <label for="day-select">День спринта:</label>
-      <select id="day-select">
+      <label for="day-select">День:</label>
+      <select id="day-select" onchange="render()">
         <option value="15.10">15 октября (Чт)</option>
         <option value="16.10">16 октября (Пт)</option>
         <option value="17.10">17 октября (Сб)</option>
         <option value="18.10">18 октября (Вс)</option>
         <option value="19.10">19 октября (Пн)</option>
-        <option value="20.10">20 октября (Вт — финиш!)</option>
+        <option value="20.10">20 октября (Вт — финиш)</option>
       </select>
     </div>
 
     <div class="form-group">
-      <label for="spend-input">Потрачено на еду за день (₽):</label>
-      <input type="number" id="spend-input" placeholder="Например: 420" min="0" />
+      <label for="category-select">Категория:</label>
+      <select id="category-select">
+        <option value="food">🍽 Еда дома / продукты (в лимит 600 ₽)</option>
+        <option value="cats">🐱 Кошки (из резерва корма)</option>
+        <option value="other">🚌 Проезд / Прочее</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="amount-input">Сумма (₽):</label>
+      <input type="number" id="amount-input" placeholder="Например: 115" min="0" />
+    </div>
+
+    <div class="form-group">
+      <label for="desc-input">Описание (что куплено / кто):</label>
+      <input type="text" id="desc-input" placeholder="Например: Магнит (Катя)" />
     </div>
 
     <div class="checkbox-group">
       <label class="checkbox-label">
         <input type="checkbox" id="bonus-cook" />
-        <span>👨‍🍳 «Шеф-повар СИМА» (+20 XP): сварили суп/горячее на 2-3 дня</span>
+        <span>👨‍🍳 «Шеф дома СИМА» (+20 XP): сварили суп/горячее на 2-3 дня</span>
       </label>
       <label class="checkbox-label">
         <input type="checkbox" id="bonus-nodelivery" />
-        <span>☕ «Анти-доставка ПЭПА» (+15 XP): без импульсивных покупок кофе и выпечки</span>
-      </label>
-      <label class="checkbox-label">
-        <input type="checkbox" id="bonus-zero" />
-        <span>🧊 «Нулевой день» (+40 XP): 0 ₽ трат, доедали домашние запасы</span>
+        <span>☕ «Анти-доставка ПЭПЭ» (+15 XP): без кофе навынос и готовой еды</span>
       </label>
     </div>
 
-    <button id="save-btn" onclick="recordDay()" style="width: 100%;">Сохранить в общий профиль</button>
+    <button id="save-btn" onclick="addExpense()" style="width: 100%;">Внести чек</button>
   </div>
 
+  <!-- Журнал операций -->
   <div class="card">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-      <h2 style="font-size: 1rem; color: var(--accent);">Журнал спринта</h2>
-      <button onclick="loadDataFromCloud()" style="padding: 4px 8px; font-size: 0.75rem; background: transparent; border: 1px solid var(--border); color: var(--text-muted);">🔄 Обновить</button>
+      <h2 style="font-size: 1rem; color: var(--accent);">Все траты спринта</h2>
+      <button onclick="loadDataFromCloud()" style="padding: 4px 8px; font-size: 0.75rem; background: transparent; border: 1px solid var(--border); color: var(--text-muted);">🔄</button>
     </div>
-    <div id="history-list"></div>
+    <div id="tx-list"></div>
+
+    <div style="margin-top: 16px; border-top: 1px solid var(--border); padding-top: 10px; text-align: center;">
+      <button onclick="fixCurrentState()" style="background: transparent; border: 1px dashed var(--warning); color: var(--warning); font-size: 0.75rem; padding: 6px 12px;">
+        ⚙️ Синхронизировать 4 чека за 15 октября
+      </button>
+    </div>
   </div>
 </div>
 
 <script>
   const BIN_ID = "6acffa28ac6210605a321908";
   const API_KEY = "\$2a\$10\$Gxs0gCaDe/F93Ls1ECP8eOP7USSJ2G6MkTjafbN5TESoS19C8CMTS";
-  const DAILY_LIMIT = 600;
+  const DAILY_FOOD_LIMIT = 600;
 
   let state = {
-    xp: 100,
-    bank: 0,
-    history: []
+    transactions: [],
+    bonusesByDay: {}
   };
+
+  // Таймер обратного отсчета до конца суток (23:59:59)
+  function updateCountdown() {
+    const now = new Date();
+    const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+    const diff = endOfDay - now;
+
+    if (diff <= 0) {
+      document.getElementById("countdown").innerText = "00:00:00";
+      return;
+    }
+
+    const hours = String(Math.floor((diff / (1000 * 60 * 60)) % 24)).padStart(2, "0");
+    const minutes = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, "0");
+    const seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, "0");
+
+    document.getElementById("countdown").innerText = `${hours}:${minutes}:${seconds}`;
+  }
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
 
   async function loadDataFromCloud() {
     const statusEl = document.getElementById("cloud-status");
-    statusEl.innerText = "Загрузка общих данных...";
+    statusEl.innerText = "Загрузка данных...";
     try {
       const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
         headers: { "X-Master-Key": API_KEY }
       });
       if (res.ok) {
         const data = await res.json();
-        if (data.record && typeof data.record.xp === "number") {
+        if (data.record && Array.isArray(data.record.transactions)) {
           state = data.record;
         }
         statusEl.innerText = "🟢 Облако синхронизировано";
       } else {
-        statusEl.innerText = "Режим офлайн (проверьте права доступа)";
+        statusEl.innerText = "Офлайн-режим";
       }
     } catch (e) {
-      statusEl.innerText = "Ошибка подключения к сети";
+      statusEl.innerText = "Сбой сети";
     }
     render();
   }
@@ -322,7 +405,7 @@
   async function syncToCloud() {
     const statusEl = document.getElementById("cloud-status");
     const saveBtn = document.getElementById("save-btn");
-    statusEl.innerText = "Сохранение в облако...";
+    statusEl.innerText = "Сохранение...";
     saveBtn.disabled = true;
 
     try {
@@ -335,132 +418,155 @@
         body: JSON.stringify(state)
       });
       if (res.ok) {
-        statusEl.innerText = "🟢 Данные сохранены для обоих!";
+        statusEl.innerText = "🟢 Данные сохранены!";
       } else {
-        statusEl.innerText = "Ошибка при сохранении";
+        statusEl.innerText = "Ошибка записи";
       }
     } catch (e) {
-      statusEl.innerText = "Сбой сети при сохранении";
+      statusEl.innerText = "Ошибка подключения";
     }
     saveBtn.disabled = false;
     render();
   }
 
-  function calculateRank(xp) {
-    if (xp >= 191) return { name: "🥇 Золото (Магистр бюджета)", percent: 100, label: `${xp} XP` };
-    if (xp >= 141) return { name: "🥈 Серебро (Разумный менеджер)", percent: ((xp - 141) / (191 - 141)) * 100, label: `${xp} / 191 XP` };
-    return { name: "🥉 Бронза (Базовый уровень)", percent: Math.max(0, ((xp - 100) / (140 - 100)) * 100), label: `${xp} / 140 XP` };
+  function calculateScore() {
+    let xp = 100;
+    let bank = 0;
+
+    const days = ["15.10", "16.10", "17.10", "18.10", "19.10", "20.10"];
+
+    days.forEach(d => {
+      const dayFoodTxs = (state.transactions || []).filter(t => t.day === d && t.category === "food");
+      const totalFood = dayFoodTxs.reduce((sum, t) => sum + t.amount, 0);
+
+      if (dayFoodTxs.length > 0) {
+        if (totalFood <= 450) {
+          xp += 30;
+          bank += (DAILY_FOOD_LIMIT - totalFood);
+        } else if (totalFood <= 600) {
+          xp += 15;
+        } else if (totalFood <= 750) {
+          xp -= 10;
+        } else {
+          xp -= 25;
+        }
+      } else {
+        // Бонус +10 XP за день без трат на еду
+        const anyTxToday = (state.transactions || []).some(t => t.day === d);
+        if (anyTxToday) {
+          xp += 10;
+        }
+      }
+
+      if (state.bonusesByDay && state.bonusesByDay[d]) {
+        if (state.bonusesByDay[d].cook) xp += 20;
+        if (state.bonusesByDay[d].nodelivery) xp += 15;
+      }
+    });
+
+    return { xp, bank };
   }
 
-  async function recordDay() {
-    const daySelect = document.getElementById("day-select");
-    const spendInput = document.getElementById("spend-input");
+  async function addExpense() {
+    const day = document.getElementById("day-select").value;
+    const category = document.getElementById("category-select").value;
+    const amount = parseFloat(document.getElementById("amount-input").value);
+    const desc = document.getElementById("desc-input").value.trim() || "Без описания";
     const bonusCook = document.getElementById("bonus-cook").checked;
     const bonusNoDelivery = document.getElementById("bonus-nodelivery").checked;
-    const bonusZero = document.getElementById("bonus-zero").checked;
 
-    const day = daySelect.value;
-    const spend = bonusZero ? 0 : parseFloat(spendInput.value);
-
-    if (isNaN(spend) && !bonusZero) {
-      alert("Введите сумму расходов за день!");
+    if (isNaN(amount) || amount <= 0) {
+      alert("Введите сумму чека!");
       return;
     }
 
-    if (!Array.isArray(state.history)) {
-      state.history = [];
-    }
+    if (!Array.isArray(state.transactions)) state.transactions = [];
+    if (!state.bonusesByDay) state.bonusesByDay = {};
 
-    // Если день уже заполняли, удаляем старый результат для перезаписи
-    state.history = state.history.filter(item => item.day !== day);
-
-    let xpGained = 0;
-    let bankAdded = 0;
-    let statusClass = "badge-success";
-    let statusText = "Идеально";
-
-    if (spend <= 450) {
-      xpGained += 30;
-      bankAdded = DAILY_LIMIT - spend;
-      statusClass = "badge-success";
-      statusText = `Норма (-${DAILY_LIMIT - spend} ₽)`;
-    } else if (spend <= 600) {
-      xpGained += 15;
-      statusClass = "badge-warning";
-      statusText = "В лимите";
-    } else if (spend <= 750) {
-      xpGained -= 10;
-      statusClass = "badge-danger";
-      statusText = `Перерасход (+${spend - DAILY_LIMIT} ₽)`;
-    } else {
-      xpGained -= 25;
-      statusClass = "badge-danger";
-      statusText = `Красная зона (+${spend - DAILY_LIMIT} ₽)`;
-    }
-
-    if (bonusCook) xpGained += 20;
-    if (bonusNoDelivery) xpGained += 15;
-    if (bonusZero) xpGained += 40;
-
-    state.xp += xpGained;
-    state.bank += bankAdded;
-
-    state.history.push({
+    state.transactions.push({
+      id: Date.now(),
       day,
-      spend,
-      xpGained,
-      statusClass,
-      statusText,
-      bonuses: [
-        bonusCook ? "Шеф" : null,
-        bonusNoDelivery ? "Анти-доставка" : null,
-        bonusZero ? "0 ₽ день" : null
-      ].filter(Boolean)
+      category,
+      amount,
+      desc
     });
 
-    spendInput.value = "";
+    if (!state.bonusesByDay[day]) state.bonusesByDay[day] = {};
+    if (bonusCook) state.bonusesByDay[day].cook = true;
+    if (bonusNoDelivery) state.bonusesByDay[day].nodelivery = true;
+
+    document.getElementById("amount-input").value = "";
+    document.getElementById("desc-input").value = "";
     document.getElementById("bonus-cook").checked = false;
     document.getElementById("bonus-nodelivery").checked = false;
-    document.getElementById("bonus-zero").checked = false;
+
+    await syncToCloud();
+  }
+
+  async function deleteTx(id) {
+    state.transactions = state.transactions.filter(t => t.id !== id);
+    await syncToCloud();
+  }
+
+  async function fixCurrentState() {
+    if (!confirm("Сбросить некорректно начисленный баланс и загрузить правильные чеки за 15 октября?")) return;
+
+    state.bonusesByDay = { "15.10": { nodelivery: true } };
+    state.transactions = [
+      { id: 1, day: "15.10", category: "food", amount: 115, desc: "Магнит с утра (Катя)" },
+      { id: 2, day: "15.10", category: "cats", amount: 234, desc: "Корм для кошек" },
+      { id: 3, day: "15.10", category: "other", amount: 45, desc: "Проезд" },
+      { id: 4, day: "15.10", category: "other", amount: 45, desc: "Проезд" }
+    ];
 
     await syncToCloud();
   }
 
   function render() {
-    document.getElementById("xp-val").innerText = state.xp;
-    document.getElementById("bank-val").innerText = `${state.bank} ₽`;
+    const activeDay = document.getElementById("day-select").value;
+    document.getElementById("active-day-label").innerText = activeDay;
 
-    const rank = calculateRank(state.xp);
-    document.getElementById("rank-name").innerText = rank.name;
-    document.getElementById("rank-progress-text").innerText = rank.label;
-    document.getElementById("rank-progress-bar").style.width = `${Math.min(100, Math.max(0, rank.percent))}%`;
+    const dayFoodTotal = (state.transactions || [])
+      .filter(t => t.day === activeDay && t.category === "food")
+      .reduce((sum, t) => sum + t.amount, 0);
 
-    const historyEl = document.getElementById("history-list");
-    historyEl.innerHTML = "";
+    document.getElementById("today-spent-label").innerHTML = `<b>${dayFoodTotal} ₽</b> / ${DAILY_FOOD_LIMIT} ₽`;
 
-    if (!state.history || state.history.length === 0) {
-      historyEl.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px;">Пока нет записей. Старт спринта 15 октября!</div>`;
+    const percent = Math.min(100, (dayFoodTotal / DAILY_FOOD_LIMIT) * 100);
+    const bar = document.getElementById("today-progress-bar");
+    bar.style.width = `${percent}%`;
+    bar.style.backgroundColor = dayFoodTotal > DAILY_FOOD_LIMIT ? "var(--danger)" : (dayFoodTotal > 450 ? "var(--warning)" : "var(--success)");
+
+    const score = calculateScore();
+    document.getElementById("xp-val").innerText = score.xp;
+    document.getElementById("bank-val").innerText = `${score.bank} ₽`;
+
+    const txListEl = document.getElementById("tx-list");
+    txListEl.innerHTML = "";
+
+    if (!state.transactions || state.transactions.length === 0) {
+      txListEl.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px;">Пока нет записей трат.</div>`;
       return;
     }
 
-    state.history.slice().reverse().forEach(item => {
+    state.transactions.slice().reverse().forEach(t => {
       const row = document.createElement("div");
-      row.className = "history-item";
+      row.className = "tx-item";
+
+      let catBadge = `<span class="badge badge-food">Еда</span>`;
+      if (t.category === "cats") catBadge = `<span class="badge badge-cats">Кошки</span>`;
+      if (t.category === "other") catBadge = `<span class="badge badge-other">Прочее</span>`;
+
       row.innerHTML = `
         <div>
-          <div style="font-weight: 600;">${item.day}: ${item.spend} ₽</div>
-          <div style="font-size: 0.75rem; color: var(--text-muted);">
-            ${item.bonuses && item.bonuses.length ? "Бонусы: " + item.bonuses.join(", ") : "Базовый день"}
-          </div>
+          <div><b>${t.amount} ₽</b> ${catBadge} <span style="color: var(--text-muted); font-size: 0.75rem;">(${t.day})</span></div>
+          <div style="font-size: 0.8rem; color: var(--text-muted);">${t.desc}</div>
         </div>
-        <div style="text-align: right;">
-          <span class="badge ${item.statusClass}">${item.statusText}</span>
-          <div style="font-size: 0.8rem; font-weight: 700; color: ${item.xpGained >= 0 ? 'var(--success)' : 'var(--danger)'}">
-            ${item.xpGained >= 0 ? '+' : ''}${item.xpGained} XP
-          </div>
+        <div>
+          <button class="del-btn" onclick="deleteTx(${t.id})">✕</button>
         </div>
       `;
-      historyEl.appendChild(row);
+      txListEl.appendChild(row);
     });
   }
 
