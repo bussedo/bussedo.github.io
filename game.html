@@ -89,7 +89,6 @@
       border: 1px solid var(--border);
     }
 
-    /* Сетка на 4 информационных окна */
     .dashboard-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -259,7 +258,7 @@
     <div class="sync-status" id="cloud-status">Подключение к облаку...</div>
   </header>
 
-  <!-- Обратный отсчет до закрытия дня -->
+  <!-- Обратный отсчет до конца дня -->
   <div class="countdown-card">
     <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 2px;">
       До закрытия суток (бонус +10 XP при 0 ₽ на еду):
@@ -267,7 +266,7 @@
     <div class="countdown-timer" id="countdown">--:--:--</div>
   </div>
 
-  <!-- Главная панель: 4 окна балансов -->
+  <!-- 4 окна балансов -->
   <div class="card">
     <div class="dashboard-grid">
       <div class="stat-box">
@@ -284,11 +283,11 @@
       </div>
       <div class="stat-box">
         <div class="stat-val fun" id="fun-val">1 500 ₽</div>
-        <div class="stat-label">Кофе / Радости</div>
+        <div class="stat-label">Кофе / Радости (из Ozon)</div>
       </div>
     </div>
 
-    <!-- Индикатор продуктового лимита за выбранный день -->
+    <!-- Индикатор за день -->
     <div class="today-meter">
       <div style="display: flex; justify-content: space-between; font-size: 0.8rem;">
         <span>Еда за <span id="active-day-label">17.10</span>:</span>
@@ -300,7 +299,7 @@
     </div>
   </div>
 
-  <!-- Форма добавления чека -->
+  <!-- Форма внесения -->
   <div class="card">
     <h2 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--accent);">Внести чек / операцию</h2>
     
@@ -320,7 +319,7 @@
       <label for="category-select">Категория списания:</label>
       <select id="category-select">
         <option value="food">🍽 Еда дома / продукты (из лимита 600 ₽)</option>
-        <option value="fun">☕ Кофе / Радости для себя (из банка 1 500 ₽)</option>
+        <option value="fun">☕ Кофе / Радости (списывается с Ozon)</option>
         <option value="cats">🐱 Кошки (паучи / наполнитель)</option>
         <option value="other">🚌 Проезд / Прочее</option>
       </select>
@@ -350,7 +349,7 @@
     <button id="save-btn" onclick="addExpense()" style="width: 100%;">Записать чек</button>
   </div>
 
-  <!-- Журнал операций -->
+  <!-- Журнал -->
   <div class="card">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
       <h2 style="font-size: 0.95rem; color: var(--accent);">Все траты спринта</h2>
@@ -365,6 +364,7 @@
   const API_KEY = "\$2a\$10\$Gxs0gCaDe/F93Ls1ECP8eOP7USSJ2G6MkTjafbN5TESoS19C8CMTS";
   const DAILY_FOOD_LIMIT = 600;
   const INITIAL_FUN_BUDGET = 1500;
+  // Базовый остаток на вкладе Ozon на утро 17 октября после покупки Pro Plan (2 285 ₽)
   const BASE_OZON_DEPOSIT = 6215;
 
   let state = {
@@ -473,16 +473,24 @@
       }
     });
 
-    // Расчет остатка банка на кофе/приколы (из начальных 1 500 ₽)
+    // Расход на радости/кофе суммарно за весь период
     const spentOnFun = (state.transactions || [])
       .filter(t => t.category === "fun")
       .reduce((sum, t) => sum + t.amount, 0);
     const funRemaining = Math.max(0, INITIAL_FUN_BUDGET - spentOnFun);
 
+    // Все траты на кофе/радости списываются напрямую из вклада Ozon
+    // (так как эти 1 500 ₽ физически лежат внутри баланса Ozon)
+    const extraOzonSpends = (state.transactions || [])
+      .filter(t => t.category === "fun" && t.day !== "15.10" && t.day !== "16.10")
+      .reduce((sum, t) => sum + t.amount, 0);
+
+    const actualOzonDeposit = Math.max(0, BASE_OZON_DEPOSIT - extraOzonSpends);
+
     return {
       xp,
       bankOfFreedom,
-      ozonDeposit: BASE_OZON_DEPOSIT,
+      ozonDeposit: actualOzonDeposit,
       funRemaining
     };
   }
