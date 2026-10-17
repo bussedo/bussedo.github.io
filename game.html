@@ -44,7 +44,7 @@
 
     header {
       text-align: center;
-      padding: 6px 0;
+      padding: 4px 0;
     }
 
     header h1 {
@@ -104,7 +104,7 @@
     }
 
     .stat-val {
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: 700;
       color: var(--accent);
     }
@@ -254,11 +254,11 @@
 <div class="app-container">
   <header>
     <h1>Кишибе спринт 🎯</h1>
-    <p>Финансовый хаб до аванса 20 октября</p>
+    <p>Базовый лимит: 650 ₽/день (до 23 октября)</p>
     <div class="sync-status" id="cloud-status">Подключение к облаку...</div>
   </header>
 
-  <!-- Обратный отсчет до конца дня -->
+  <!-- Таймер суток -->
   <div class="countdown-card">
     <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 2px;">
       До закрытия суток (бонус +10 XP при 0 ₽ на еду):
@@ -278,20 +278,20 @@
         <div class="stat-label">Банк свободы (экономия)</div>
       </div>
       <div class="stat-box">
-        <div class="stat-val ozon" id="ozon-val">6 215 ₽</div>
+        <div class="stat-val ozon" id="ozon-val">4 743 ₽</div>
         <div class="stat-label">Вклад Ozon (12%)</div>
       </div>
       <div class="stat-box">
-        <div class="stat-val fun" id="fun-val">1 500 ₽</div>
-        <div class="stat-label">Кофе / Радости (из Ozon)</div>
+        <div class="stat-val fun" id="fun-val">500 ₽</div>
+        <div class="stat-label">Кофе / Приколы (из Ozon)</div>
       </div>
     </div>
 
-    <!-- Индикатор за день -->
+    <!-- Индикатор текущего дня -->
     <div class="today-meter">
       <div style="display: flex; justify-content: space-between; font-size: 0.8rem;">
         <span>Еда за <span id="active-day-label">17.10</span>:</span>
-        <span id="today-spent-label"><b>0 ₽</b> / 600 ₽</span>
+        <span id="today-spent-label"><b>0 ₽</b> / 650 ₽</span>
       </div>
       <div class="progress-bar-bg">
         <div class="progress-bar-fill" id="today-progress-bar"></div>
@@ -299,29 +299,30 @@
     </div>
   </div>
 
-  <!-- Форма внесения -->
+  <!-- Форма чека -->
   <div class="card">
     <h2 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--accent);">Внести чек / операцию</h2>
     
     <div class="form-group">
       <label for="day-select">День спринта:</label>
       <select id="day-select" onchange="render()">
-        <option value="15.10">15 октября (Чт)</option>
-        <option value="16.10">16 октября (Пт)</option>
         <option value="17.10" selected>17 октября (Сб)</option>
         <option value="18.10">18 октября (Вс)</option>
         <option value="19.10">19 октября (Пн)</option>
-        <option value="20.10">20 октября (Вт — финиш)</option>
+        <option value="20.10">20 октября (Вт)</option>
+        <option value="21.10">21 октября (Ср)</option>
+        <option value="22.10">22 октября (Чт)</option>
+        <option value="23.10">23 октября (Пт — финиш)</option>
       </select>
     </div>
 
     <div class="form-group">
       <label for="category-select">Категория списания:</label>
       <select id="category-select">
-        <option value="food">🍽 Еда дома / продукты (из лимита 600 ₽)</option>
-        <option value="fun">☕ Кофе / Радости (списывается с Ozon)</option>
+        <option value="food">🍽 Еда дома / продукты (из лимита 650 ₽)</option>
+        <option value="fun">☕ Кофе / Приколы (из фонда 500 ₽)</option>
         <option value="cats">🐱 Кошки (паучи / наполнитель)</option>
-        <option value="other">🚌 Проезд / Прочее</option>
+        <option value="other">🚌 Проезд / Аптека / Прочее</option>
       </select>
     </div>
 
@@ -332,27 +333,27 @@
 
     <div class="form-group">
       <label for="desc-input">Описание (что и кто купил):</label>
-      <input type="text" id="desc-input" placeholder="Например: Капучино и круассан" />
+      <input type="text" id="desc-input" placeholder="Например: Магнит (рис, овощи)" />
     </div>
 
     <div class="checkbox-group">
       <label class="checkbox-label">
         <input type="checkbox" id="bonus-cook" />
-        <span>👨‍🍳 «Шеф дома СИМА» (+20 XP): приготовили сами на 2-3 дня</span>
+        <span>👨‍🍳 «Шеф дома СИМА» (+20 XP): сварили суп/рагу на 2-3 дня</span>
       </label>
       <label class="checkbox-label">
         <input type="checkbox" id="bonus-nodelivery" />
-        <span>☕ «Анти-доставка ПЭПЭ» (+15 XP): без доставки фастфуда</span>
+        <span>☕ «Анти-доставка ПЭПЭ» (+15 XP): без доставки готовой еды</span>
       </label>
     </div>
 
     <button id="save-btn" onclick="addExpense()" style="width: 100%;">Записать чек</button>
   </div>
 
-  <!-- Журнал -->
+  <!-- Журнал операций -->
   <div class="card">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-      <h2 style="font-size: 0.95rem; color: var(--accent);">Все траты спринта</h2>
+      <h2 style="font-size: 0.95rem; color: var(--accent);">Журнал расходов</h2>
       <button onclick="loadDataFromCloud()" style="padding: 4px 8px; font-size: 0.75rem; background: transparent; border: 1px solid var(--border); color: var(--text-muted);">🔄</button>
     </div>
     <div id="tx-list"></div>
@@ -362,10 +363,10 @@
 <script>
   const BIN_ID = "6acffa28ac6210605a321908";
   const API_KEY = "\$2a\$10\$Gxs0gCaDe/F93Ls1ECP8eOP7USSJ2G6MkTjafbN5TESoS19C8CMTS";
-  const DAILY_FOOD_LIMIT = 600;
-  const INITIAL_FUN_BUDGET = 1500;
-  // Базовый остаток на вкладе Ozon на утро 17 октября после покупки Pro Plan (2 285 ₽)
-  const BASE_OZON_DEPOSIT = 6215;
+  const DAILY_FOOD_LIMIT = 650;
+  const INITIAL_FUN_BUDGET = 500;
+  // Точный зафиксированный остаток на Ozon на вечер 17 октября
+  const BASE_OZON_DEPOSIT = 4743;
 
   let state = {
     transactions: [],
@@ -444,7 +445,7 @@
     let xp = 100;
     let bankOfFreedom = 0;
 
-    const days = ["15.10", "16.10", "17.10", "18.10", "19.10", "20.10"];
+    const days = ["17.10", "18.10", "19.10", "20.10", "21.10", "22.10", "23.10"];
 
     days.forEach(d => {
       const dayFoodTxs = (state.transactions || []).filter(t => t.day === d && t.category === "food");
@@ -454,13 +455,14 @@
         if (totalFood <= 450) {
           xp += 30;
           bankOfFreedom += (DAILY_FOOD_LIMIT - totalFood);
-        } else if (totalFood <= 600) {
+        } else if (totalFood <= DAILY_FOOD_LIMIT) {
           xp += 15;
           bankOfFreedom += (DAILY_FOOD_LIMIT - totalFood);
-        } else if (totalFood <= 750) {
+        } else if (totalFood <= DAILY_FOOD_LIMIT + 150) {
           xp -= 10;
         } else {
           xp -= 25;
+          bankOfFreedom += (DAILY_FOOD_LIMIT - totalFood);
         }
       } else {
         const anyTxToday = (state.transactions || []).some(t => t.day === d);
@@ -473,23 +475,23 @@
       }
     });
 
-    // Расход на радости/кофе суммарно за весь период
+    // Расход на приколы/кофе из 500 ₽
     const spentOnFun = (state.transactions || [])
-      .filter(t => t.category === "fun")
+      .filter(t => t.category === "fun" && t.id > 1729175000000)
       .reduce((sum, t) => sum + t.amount, 0);
     const funRemaining = Math.max(0, INITIAL_FUN_BUDGET - spentOnFun);
 
-    // Все траты на кофе/радости списываются напрямую из вклада Ozon
-    // (так как эти 1 500 ₽ физически лежат внутри баланса Ozon)
-    const extraOzonSpends = (state.transactions || [])
-      .filter(t => t.category === "fun" && t.day !== "15.10" && t.day !== "16.10")
+    // Новые списания со вклада Ozon после фиксации 4 743 ₽
+    // (любая новая трата категорий fun, cats, other или переводы)
+    const newOzonDeductions = (state.transactions || [])
+      .filter(t => t.id > 1729175000000 && (t.category === "fun" || t.category === "cats" || t.category === "other"))
       .reduce((sum, t) => sum + t.amount, 0);
 
-    const actualOzonDeposit = Math.max(0, BASE_OZON_DEPOSIT - extraOzonSpends);
+    const actualOzonDeposit = Math.max(0, BASE_OZON_DEPOSIT - newOzonDeductions);
 
     return {
       xp,
-      bankOfFreedom,
+      bankOfFreedom: Math.max(0, bankOfFreedom),
       ozonDeposit: actualOzonDeposit,
       funRemaining
     };
@@ -571,7 +573,7 @@
 
       let catBadge = `<span class="badge badge-food">Еда</span>`;
       if (t.category === "cats") catBadge = `<span class="badge badge-cats">Кошки</span>`;
-      if (t.category === "fun") catBadge = `<span class="badge badge-fun">Кофе/Радость</span>`;
+      if (t.category === "fun") catBadge = `<span class="badge badge-fun">Кофе/Приколы</span>`;
       if (t.category === "other") catBadge = `<span class="badge badge-other">Прочее</span>`;
 
       row.innerHTML = `
