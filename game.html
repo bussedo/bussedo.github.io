@@ -1,4 +1,4 @@
-      <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
@@ -109,6 +109,7 @@
       color: var(--accent);
     }
 
+    .stat-val.target { color: var(--accent); }
     .stat-val.yandex { color: var(--purple); }
     .stat-val.fun { color: var(--warning); }
     .stat-val.bank { color: var(--success); }
@@ -167,28 +168,6 @@
 
     input:focus, select:focus {
       border-color: var(--accent);
-    }
-
-    .checkbox-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin: 10px 0;
-    }
-
-    .checkbox-label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.8rem;
-      cursor: pointer;
-      color: var(--text);
-    }
-
-    .checkbox-label input {
-      accent-color: var(--accent);
-      width: 16px;
-      height: 16px;
     }
 
     button {
@@ -255,28 +234,27 @@
 <div class="app-container">
   <header>
     <h1>Кишибе спринт 🎯</h1>
-    <p>Базовый лимит: 650 ₽/день (до 23 октября)</p>
+    <p>Режим накопления: 450 ₽/день (до 23 октября)</p>
     <div class="sync-status" id="cloud-status">Подключение к облаку...</div>
   </header>
 
-  <!-- Таймер суток -->
   <div class="countdown-card">
     <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 2px;">
-      До закрытия суток (бонус +10 XP при 0 ₽ на еду):
+      До закрытия суток:
     </div>
     <div class="countdown-timer" id="countdown">--:--:--</div>
   </div>
 
-  <!-- 4 окна балансов -->
+  <!-- 4 окна: без опыта, только деньги -->
   <div class="card">
     <div class="dashboard-grid">
       <div class="stat-box">
-        <div class="stat-val" id="xp-val">100</div>
-        <div class="stat-label">Очки опыта (XP)</div>
+        <div class="stat-val target" id="saved-target-val">+1 000 ₽</div>
+        <div class="stat-label">🎯 План подушки (при 450 ₽/д)</div>
       </div>
       <div class="stat-box">
         <div class="stat-val bank" id="bank-val">0 ₽</div>
-        <div class="stat-label">Банк свободы (экономия)</div>
+        <div class="stat-label">Сэкономлено от 450 ₽</div>
       </div>
       <div class="stat-box">
         <div class="stat-val yandex" id="yandex-val">14 688 ₽</div>
@@ -292,7 +270,7 @@
     <div class="today-meter">
       <div style="display: flex; justify-content: space-between; font-size: 0.8rem;">
         <span>Еда за <span id="active-day-label">18.10</span>:</span>
-        <span id="today-spent-label"><b>0 ₽</b> / 650 ₽</span>
+        <span id="today-spent-label"><b>0 ₽</b> / 450 ₽</span>
       </div>
       <div class="progress-bar-bg">
         <div class="progress-bar-fill" id="today-progress-bar"></div>
@@ -320,7 +298,7 @@
     <div class="form-group">
       <label for="category-select">Категория списания:</label>
       <select id="category-select">
-        <option value="food">🍽 Еда дома / продукты (из лимита 650 ₽)</option>
+        <option value="food">🍽 Еда дома / продукты (из лимита 450 ₽)</option>
         <option value="fun">☕ Кофе / Приколы (из фонда 500 ₽)</option>
         <option value="cats">🐱 Кошки (паучи / наполнитель)</option>
         <option value="other">🚌 Аптека / Проезд / Прочее</option>
@@ -329,23 +307,12 @@
 
     <div class="form-group">
       <label for="amount-input">Сумма (₽):</label>
-      <input type="number" id="amount-input" placeholder="Например: 415" min="0" />
+      <input type="number" id="amount-input" placeholder="Например: 250" min="0" />
     </div>
 
     <div class="form-group">
       <label for="desc-input">Описание (что куплено):</label>
-      <input type="text" id="desc-input" placeholder="Например: Адиарин (Максавит)" />
-    </div>
-
-    <div class="checkbox-group">
-      <label class="checkbox-label">
-        <input type="checkbox" id="bonus-cook" />
-        <span>👨‍🍳 «Шеф дома СИМА» (+20 XP): сварили суп/рагу на 2-3 дня</span>
-      </label>
-      <label class="checkbox-label">
-        <input type="checkbox" id="bonus-nodelivery" />
-        <span>☕ «Анти-доставка ПЭПЭ» (+15 XP): без доставки готовой еды</span>
-      </label>
+      <input type="text" id="desc-input" placeholder="Например: Гречка, яйца, хлеб" />
     </div>
 
     <button id="save-btn" onclick="addExpense()" style="width: 100%;">Записать чек</button>
@@ -364,15 +331,15 @@
 <script>
   const BIN_ID = "6acffa28ac6210605a321908";
   const API_KEY = "\$2a\$10\$Gxs0gCaDe/F93Ls1ECP8eOP7USSJ2G6MkTjafbN5TESoS19C8CMTS";
-  const DAILY_FOOD_LIMIT = 650;
+  const DAILY_FOOD_LIMIT = 450; // Эконом-лимит
+  const BASELINE_FOOD_LIMIT = 650; // Старый комфортный лимит
   const INITIAL_FUN_BUDGET = 500;
   const TABLET_RESERVE = 10000;
   // Базовый остаток на Яндекс Сейфе («Кубышка») на вечер 18 октября
-  const BASE_YANDEX_TOTAL = 5148;
+  const BASE_YANDEX_TOTAL = 14688;
 
   let state = {
-    transactions: [],
-    bonusesByDay: {}
+    transactions: []
   };
 
   function updateCountdown() {
@@ -444,36 +411,15 @@
   }
 
   function calculateDashboard() {
-    let xp = 100;
     let bankOfFreedom = 0;
-
-    const days = ["17.10", "18.10", "19.10", "20.10", "21.10", "22.10", "23.10"];
+    const days = ["18.10", "19.10", "20.10", "21.10", "22.10", "23.10"];
 
     days.forEach(d => {
       const dayFoodTxs = (state.transactions || []).filter(t => t.day === d && t.category === "food");
       const totalFood = dayFoodTxs.reduce((sum, t) => sum + t.amount, 0);
 
       if (dayFoodTxs.length > 0) {
-        if (totalFood <= 450) {
-          xp += 30;
-          bankOfFreedom += (DAILY_FOOD_LIMIT - totalFood);
-        } else if (totalFood <= DAILY_FOOD_LIMIT) {
-          xp += 15;
-          bankOfFreedom += (DAILY_FOOD_LIMIT - totalFood);
-        } else if (totalFood <= DAILY_FOOD_LIMIT + 150) {
-          xp -= 10;
-        } else {
-          xp -= 25;
-          bankOfFreedom += (DAILY_FOOD_LIMIT - totalFood);
-        }
-      } else {
-        const anyTxToday = (state.transactions || []).some(t => t.day === d);
-        if (anyTxToday) xp += 10;
-      }
-
-      if (state.bonusesByDay && state.bonusesByDay[d]) {
-        if (state.bonusesByDay[d].cook) xp += 20;
-        if (state.bonusesByDay[d].nodelivery) xp += 15;
+        bankOfFreedom += (DAILY_FOOD_LIMIT - totalFood);
       }
     });
 
@@ -483,9 +429,7 @@
       .reduce((sum, t) => sum + t.amount, 0);
     const funRemaining = Math.max(0, INITIAL_FUN_BUDGET - spentOnFun);
 
-    // ВЫЧИТАНИЕ ВСЕХ РАСХОДОВ ИЗ ВКЛАДА ЯНДЕКС:
-    // Все операции, начиная с 18 октября (еда, лекарства, аптеки, кошки, кофе),
-    // уменьшают реальный свободный баланс вклада
+    // Вычитание ВСЕХ расходов за 18.10 и далее из Яндекс Сейфа
     const newExpenses = (state.transactions || [])
       .filter(t => t.day >= "18.10")
       .reduce((sum, t) => sum + t.amount, 0);
@@ -493,8 +437,11 @@
     const actualYandexTotal = Math.max(0, BASE_YANDEX_TOTAL - newExpenses);
     const freeYandexReserve = Math.max(0, actualYandexTotal - TABLET_RESERVE);
 
+    // Сохраняемый фонд: 200 ₽ разницы в день за оставшиеся 5 дней спринта
+    const targetSavings = (BASELINE_FOOD_LIMIT - DAILY_FOOD_LIMIT) * 5;
+
     return {
-      xp,
+      targetSavings,
       bankOfFreedom: Math.max(0, bankOfFreedom),
       yandexTotal: actualYandexTotal,
       freeReserve: freeYandexReserve,
@@ -507,8 +454,6 @@
     const category = document.getElementById("category-select").value;
     const amount = parseFloat(document.getElementById("amount-input").value);
     const desc = document.getElementById("desc-input").value.trim() || "Без описания";
-    const bonusCook = document.getElementById("bonus-cook").checked;
-    const bonusNoDelivery = document.getElementById("bonus-nodelivery").checked;
 
     if (isNaN(amount) || amount <= 0) {
       alert("Введите корректную сумму чека!");
@@ -516,7 +461,6 @@
     }
 
     if (!Array.isArray(state.transactions)) state.transactions = [];
-    if (!state.bonusesByDay) state.bonusesByDay = {};
 
     state.transactions.push({
       id: Date.now(),
@@ -526,14 +470,8 @@
       desc
     });
 
-    if (!state.bonusesByDay[day]) state.bonusesByDay[day] = {};
-    if (bonusCook) state.bonusesByDay[day].cook = true;
-    if (bonusNoDelivery) state.bonusesByDay[day].nodelivery = true;
-
     document.getElementById("amount-input").value = "";
     document.getElementById("desc-input").value = "";
-    document.getElementById("bonus-cook").checked = false;
-    document.getElementById("bonus-nodelivery").checked = false;
 
     await syncToCloud();
   }
@@ -556,10 +494,10 @@
     const percent = Math.min(100, (dayFoodTotal / DAILY_FOOD_LIMIT) * 100);
     const bar = document.getElementById("today-progress-bar");
     bar.style.width = `${percent}%`;
-    bar.style.backgroundColor = dayFoodTotal > DAILY_FOOD_LIMIT ? "var(--danger)" : (dayFoodTotal > 450 ? "var(--warning)" : "var(--success)");
+    bar.style.backgroundColor = dayFoodTotal > DAILY_FOOD_LIMIT ? "var(--danger)" : (dayFoodTotal > 350 ? "var(--warning)" : "var(--success)");
 
     const data = calculateDashboard();
-    document.getElementById("xp-val").innerText = data.xp;
+    document.getElementById("saved-target-val").innerText = `+${data.targetSavings} ₽`;
     document.getElementById("bank-val").innerText = `${data.bankOfFreedom} ₽`;
     document.getElementById("yandex-val").innerText = `${data.yandexTotal.toLocaleString('ru-RU')} ₽`;
     document.getElementById("yandex-sub").innerText = `Свободно: ${data.freeReserve.toLocaleString('ru-RU')} ₽`;
