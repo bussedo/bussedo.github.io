@@ -104,12 +104,12 @@
     }
 
     .stat-val {
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       font-weight: 700;
       color: var(--accent);
     }
 
-    .stat-val.ozon { color: var(--purple); }
+    .stat-val.yandex { color: var(--purple); }
     .stat-val.fun { color: var(--warning); }
     .stat-val.bank { color: var(--success); }
 
@@ -117,6 +117,7 @@
       font-size: 0.72rem;
       color: var(--text-muted);
       margin-top: 4px;
+      line-height: 1.2;
     }
 
     .today-meter {
@@ -278,19 +279,19 @@
         <div class="stat-label">Банк свободы (экономия)</div>
       </div>
       <div class="stat-box">
-        <div class="stat-val ozon" id="ozon-val">4 743 ₽</div>
-        <div class="stat-label">Вклад Ozon (12%)</div>
+        <div class="stat-val yandex" id="yandex-val">14 688 ₽</div>
+        <div class="stat-label" id="yandex-sub">Свободно: 4 688 ₽</div>
       </div>
       <div class="stat-box">
         <div class="stat-val fun" id="fun-val">500 ₽</div>
-        <div class="stat-label">Кофе / Приколы (из Ozon)</div>
+        <div class="stat-label">Кофе / Приколы</div>
       </div>
     </div>
 
     <!-- Индикатор текущего дня -->
     <div class="today-meter">
       <div style="display: flex; justify-content: space-between; font-size: 0.8rem;">
-        <span>Еда за <span id="active-day-label">17.10</span>:</span>
+        <span>Еда за <span id="active-day-label">18.10</span>:</span>
         <span id="today-spent-label"><b>0 ₽</b> / 650 ₽</span>
       </div>
       <div class="progress-bar-bg">
@@ -299,15 +300,15 @@
     </div>
   </div>
 
-  <!-- Форма чека -->
+  <!-- Форма внесения чека -->
   <div class="card">
     <h2 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--accent);">Внести чек / операцию</h2>
     
     <div class="form-group">
       <label for="day-select">День спринта:</label>
       <select id="day-select" onchange="render()">
-        <option value="17.10" selected>17 октября (Сб)</option>
-        <option value="18.10">18 октября (Вс)</option>
+        <option value="17.10">17 октября (Сб)</option>
+        <option value="18.10" selected>18 октября (Вс)</option>
         <option value="19.10">19 октября (Пн)</option>
         <option value="20.10">20 октября (Вт)</option>
         <option value="21.10">21 октября (Ср)</option>
@@ -322,18 +323,18 @@
         <option value="food">🍽 Еда дома / продукты (из лимита 650 ₽)</option>
         <option value="fun">☕ Кофе / Приколы (из фонда 500 ₽)</option>
         <option value="cats">🐱 Кошки (паучи / наполнитель)</option>
-        <option value="other">🚌 Проезд / Аптека / Прочее</option>
+        <option value="other">🚌 Аптека / Проезд / Прочее</option>
       </select>
     </div>
 
     <div class="form-group">
       <label for="amount-input">Сумма (₽):</label>
-      <input type="number" id="amount-input" placeholder="Например: 150" min="0" />
+      <input type="number" id="amount-input" placeholder="Например: 415" min="0" />
     </div>
 
     <div class="form-group">
-      <label for="desc-input">Описание (что и кто купил):</label>
-      <input type="text" id="desc-input" placeholder="Например: Магнит (рис, овощи)" />
+      <label for="desc-input">Описание (что куплено):</label>
+      <input type="text" id="desc-input" placeholder="Например: Адиарин (Максавит)" />
     </div>
 
     <div class="checkbox-group">
@@ -350,7 +351,7 @@
     <button id="save-btn" onclick="addExpense()" style="width: 100%;">Записать чек</button>
   </div>
 
-  <!-- Журнал операций -->
+  <!-- Журнал расходов -->
   <div class="card">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
       <h2 style="font-size: 0.95rem; color: var(--accent);">Журнал расходов</h2>
@@ -365,8 +366,9 @@
   const API_KEY = "\$2a\$10\$Gxs0gCaDe/F93Ls1ECP8eOP7USSJ2G6MkTjafbN5TESoS19C8CMTS";
   const DAILY_FOOD_LIMIT = 650;
   const INITIAL_FUN_BUDGET = 500;
-  // Точный зафиксированный остаток на Ozon на вечер 17 октября
-  const BASE_OZON_DEPOSIT = 4743;
+  const TABLET_RESERVE = 10000;
+  // Базовый остаток на Яндекс Сейфе («Кубышка») на вечер 18 октября
+  const BASE_YANDEX_TOTAL = 14688;
 
   let state = {
     transactions: [],
@@ -475,24 +477,27 @@
       }
     });
 
-    // Расход на приколы/кофе из 500 ₽
+    // Расход на приколы из фонда 500 ₽
     const spentOnFun = (state.transactions || [])
-      .filter(t => t.category === "fun" && t.id > 1729175000000)
+      .filter(t => t.category === "fun" && t.day >= "18.10")
       .reduce((sum, t) => sum + t.amount, 0);
     const funRemaining = Math.max(0, INITIAL_FUN_BUDGET - spentOnFun);
 
-    // Новые списания со вклада Ozon после фиксации 4 743 ₽
-    // (любая новая трата категорий fun, cats, other или переводы)
-    const newOzonDeductions = (state.transactions || [])
-      .filter(t => t.id > 1729175000000 && (t.category === "fun" || t.category === "cats" || t.category === "other"))
+    // ВЫЧИТАНИЕ ВСЕХ РАСХОДОВ ИЗ ВКЛАДА ЯНДЕКС:
+    // Все операции, начиная с 18 октября (еда, лекарства, аптеки, кошки, кофе),
+    // уменьшают реальный свободный баланс вклада
+    const newExpenses = (state.transactions || [])
+      .filter(t => t.day >= "18.10")
       .reduce((sum, t) => sum + t.amount, 0);
 
-    const actualOzonDeposit = Math.max(0, BASE_OZON_DEPOSIT - newOzonDeductions);
+    const actualYandexTotal = Math.max(0, BASE_YANDEX_TOTAL - newExpenses);
+    const freeYandexReserve = Math.max(0, actualYandexTotal - TABLET_RESERVE);
 
     return {
       xp,
       bankOfFreedom: Math.max(0, bankOfFreedom),
-      ozonDeposit: actualOzonDeposit,
+      yandexTotal: actualYandexTotal,
+      freeReserve: freeYandexReserve,
       funRemaining
     };
   }
@@ -556,7 +561,8 @@
     const data = calculateDashboard();
     document.getElementById("xp-val").innerText = data.xp;
     document.getElementById("bank-val").innerText = `${data.bankOfFreedom} ₽`;
-    document.getElementById("ozon-val").innerText = `${data.ozonDeposit.toLocaleString('ru-RU')} ₽`;
+    document.getElementById("yandex-val").innerText = `${data.yandexTotal.toLocaleString('ru-RU')} ₽`;
+    document.getElementById("yandex-sub").innerText = `Свободно: ${data.freeReserve.toLocaleString('ru-RU')} ₽`;
     document.getElementById("fun-val").innerText = `${data.funRemaining.toLocaleString('ru-RU')} ₽`;
 
     const txListEl = document.getElementById("tx-list");
@@ -573,8 +579,8 @@
 
       let catBadge = `<span class="badge badge-food">Еда</span>`;
       if (t.category === "cats") catBadge = `<span class="badge badge-cats">Кошки</span>`;
-      if (t.category === "fun") catBadge = `<span class="badge badge-fun">Кофе/Приколы</span>`;
-      if (t.category === "other") catBadge = `<span class="badge badge-other">Прочее</span>`;
+      if (t.category === "fun") catBadge = `<span class="badge badge-fun">Приколы</span>`;
+      if (t.category === "other") catBadge = `<span class="badge badge-other">Аптека/Прочее</span>`;
 
       row.innerHTML = `
         <div>
