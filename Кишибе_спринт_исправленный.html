@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>КИШИБЕ И КЕЩЕК БАДЖЕТ</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --purple: #c084fc;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    header {
+      text-align: center;
+      padding: 4px 0;
+    }
+
+    header h1 {
+      font-size: 1.25rem;
+      color: var(--accent);
+      margin-bottom: 2px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    header p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .sync-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .stat-box {
+      background: rgba(15, 23, 42, 0.6);
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+
+    .stat-val {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .stat-val.target { color: var(--accent); }
+    .stat-val.yandex { color: var(--purple); }
+    .stat-val.fun { color: var(--warning); }
+    .stat-val.bank { color: var(--success); }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      line-height: 1.2;
+    }
+
+    .today-meter {
+      margin-top: 12px;
+      background: rgba(15, 23, 42, 0.4);
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .progress-bar-bg {
+      background: var(--border);
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .progress-bar-fill {
+      background: var(--success);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease, background-color 0.3s ease;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+
+    label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    input[type="number"], input[type="text"], select {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+    }
+
+    button {
+      background: var(--accent);
+      color: #0f172a;
+      font-weight: 600;
+      border: none;
+      padding: 11px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: var(--accent-hover);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .tx-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.82rem;
+    }
+
+    .tx-item:last-child {
+      border-bottom: none;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-weight: 600;
+    }
+
+    .badge-food { background: rgba(56, 189, 248, 0.2); color: var(--accent); }
+    .badge-cats { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+    .badge-fun { background: rgba(192, 132, 252, 0.2); color: var(--purple); }
+    .badge-other { background: rgba(148, 163, 184, 0.2); color: var(--text-muted); }
+
+    .del-btn {
+      background: transparent;
+      color: var(--danger);
+      padding: 2px 6px;
+      font-size: 0.75rem;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 4px;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <header>
+    <h1>Кишибе спринт 🎯</h1>
+    <p>Режим накопления: 450 ₽/день (до 23 октября)</p>
+    <div class="sync-status" id="cloud-status">Подключение к облаку...</div>
+  </header>
+
+  <!-- 4 окна: без опыта, только деньги -->
+  <div class="card">
+    <div class="dashboard-grid">
+      <div class="stat-box">
+        <div class="stat-val target" id="saved-target-val">+1 000 ₽</div>
+        <div class="stat-label">🎯 План подушки (при 450 ₽/д)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val bank" id="bank-val">0 ₽</div>
+        <div class="stat-label">Сэкономлено от 450 ₽</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val yandex" id="yandex-val">14 688 ₽</div>
+        <div class="stat-label" id="yandex-sub">Свободно: 4 688 ₽</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val fun" id="fun-val">500 ₽</div>
+        <div class="stat-label">Кофе / Приколы</div>
+      </div>
+    </div>
+
+    <!-- Индикатор текущего дня -->
+    <div class="today-meter">
+      <div style="display: flex; justify-content: space-between; font-size: 0.8rem;">
+        <span>Еда за <span id="active-day-label">20.10</span>:</span>
+        <span id="today-spent-label"><b>0 ₽</b> / 450 ₽</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="today-progress-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Редактирование общей копилки -->
+  <div class="card">
+    <h2 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--success);">Общая копилка / деньги в банке</h2>
+    <div class="form-group">
+      <label for="bank-balance-input">Сколько денег сейчас лежит в банке (₽):</label>
+      <input type="number" id="bank-balance-input" min="0" step="0.01" placeholder="Например: 14688" />
+    </div>
+    <button id="bank-save-btn" onclick="saveBankBalance()" style="width: 100%; background: var(--success);">Сохранить остаток</button>
+    <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">Укажи фактическую сумму на текущий момент. После сохранения новые расходы будут вычитаться из неё.</p>
+  </div>
+
+  <!-- Форма внесения чека -->
+  <div class="card">
+    <h2 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--accent);">Внести чек / операцию</h2>
+    
+    <div class="form-group">
+      <label for="day-select">День спринта:</label>
+      <select id="day-select" onchange="render()">
+        <option value="17.10">17 октября (Сб)</option>
+        <option value="18.10">18 октября (Вс)</option>
+        <option value="19.10">19 октября (Пн)</option>
+        <option value="20.10">20 октября (Вт)</option>
+        <option value="21.10">21 октября (Ср)</option>
+        <option value="22.10">22 октября (Чт)</option>
+        <option value="23.10">23 октября (Пт — финиш)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="category-select">Категория списания:</label>
+      <select id="category-select">
+        <option value="food">🍽 Еда дома / продукты (из лимита 450 ₽)</option>
+        <option value="fun">☕ Кофе / Приколы (из фонда 500 ₽)</option>
+        <option value="cats">🐱 Кошки (паучи / наполнитель)</option>
+        <option value="other">🚌 Аптека / Проезд / Прочее</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="amount-input">Сумма (₽):</label>
+      <input type="number" id="amount-input" placeholder="Например: 250" min="0" />
+    </div>
+
+    <div class="form-group">
+      <label for="desc-input">Описание (что куплено):</label>
+      <input type="text" id="desc-input" placeholder="Например: Гречка, яйца, хлеб" />
+    </div>
+
+    <button id="save-btn" onclick="addExpense()" style="width: 100%;">Записать чек</button>
+  </div>
+
+  <!-- Журнал расходов -->
+  <div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+      <h2 style="font-size: 0.95rem; color: var(--accent);">Журнал расходов</h2>
+      <button onclick="loadDataFromCloud()" style="padding: 4px 8px; font-size: 0.75rem; background: transparent; border: 1px solid var(--border); color: var(--text-muted);">🔄</button>
+    </div>
+    <div id="tx-list"></div>
+  </div>
+</div>
+
+<script>
+  const BIN_ID = "6acffa28ac6210605a321908";
+  const API_KEY = "$2a$10$Gxs0gCaDe/F93Ls1ECP8eOP7USSJ2G6MkTjafbN5TESoS19C8CMTS";
+  const DAILY_FOOD_LIMIT = 450;
+  const BASELINE_FOOD_LIMIT = 650;
+  const INITIAL_FUN_BUDGET = 500;
+  const TABLET_RESERVE = 10000;
+  const BASE_YANDEX_TOTAL = 14688;
+
+  let state = { transactions: [] };
+
+  // Автоматически выбираем сегодняшний день, если он есть в спринте.
+  function selectToday() {
+    const select = document.getElementById("day-select");
+    const now = new Date();
+    const todayValue = `${String(now.getDate()).padStart(2, "0")}.${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const todayOption = Array.from(select.options).find(option => option.value === todayValue);
+
+    if (todayOption) {
+      select.value = todayValue;
+    } else {
+      // Если текущая дата вне спринта, выбираем ближайший доступный день.
+      const options = Array.from(select.options);
+      const todayDay = now.getDate();
+      const closest = options.reduce((best, option) => {
+        const optionDay = Number(option.value.split(".")[0]);
+        return Math.abs(optionDay - todayDay) < Math.abs(Number(best.value.split(".")[0]) - todayDay) ? option : best;
+      }, options[0]);
+      select.value = closest.value;
+    }
+  }
+
+  async function loadDataFromCloud() {
+    const statusEl = document.getElementById("cloud-status");
+    statusEl.innerText = "Синхронизация...";
+    try {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+        headers: { "X-Master-Key": API_KEY }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.record && Array.isArray(data.record.transactions)) {
+          state = data.record;
+        }
+        if (!Array.isArray(state.transactions)) state.transactions = [];
+        statusEl.innerText = "🟢 Облако синхронизировано";
+      } else {
+        statusEl.innerText = "Офлайн-режим";
+      }
+    } catch (e) {
+      statusEl.innerText = "Сбой сети";
+    }
+    selectToday();
+    const bankInput = document.getElementById("bank-balance-input");
+    if (bankInput) {
+      const currentBankBalance = Number.isFinite(Number(state.bankBalance))
+        ? Number(state.bankBalance)
+        : BASE_YANDEX_TOTAL;
+      bankInput.value = currentBankBalance;
+    }
+    render();
+  }
+
+  async function syncToCloud() {
+    const statusEl = document.getElementById("cloud-status");
+    const saveBtn = document.getElementById("save-btn");
+    const bankSaveBtn = document.getElementById("bank-save-btn");
+    statusEl.innerText = "Сохранение...";
+    if (saveBtn) saveBtn.disabled = true;
+    if (bankSaveBtn) bankSaveBtn.disabled = true;
+
+    try {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Master-Key": API_KEY
+        },
+        body: JSON.stringify(state)
+      });
+      if (res.ok) {
+        statusEl.innerText = "🟢 Данные сохранены!";
+      } else {
+        statusEl.innerText = "Ошибка записи";
+      }
+    } catch (e) {
+      statusEl.innerText = "Ошибка подключения";
+    }
+    if (saveBtn) saveBtn.disabled = false;
+    if (bankSaveBtn) bankSaveBtn.disabled = false;
+    render();
+  }
+
+  async function saveBankBalance() {
+    const input = document.getElementById("bank-balance-input");
+    const amount = Number(input.value);
+    if (input.value.trim() === "" || !Number.isFinite(amount) || amount < 0) {
+      alert("Введите корректный остаток в копилке (0 или больше).");
+      return;
+    }
+    // Это фактический остаток на момент сохранения. Учитываем только расходы,
+    // добавленные после этого момента, чтобы старые чеки не вычитались повторно.
+    state.bankBalance = amount;
+    state.bankBalanceUpdatedAt = Date.now();
+    await syncToCloud();
+  }
+
+  function calculateDashboard() {
+    let bankOfFreedom = 0;
+    const days = ["18.10", "19.10", "20.10", "21.10", "22.10", "23.10"];
+
+    days.forEach(d => {
+      const dayFoodTxs = (state.transactions || []).filter(t => t.day === d && t.category === "food");
+      const totalFood = dayFoodTxs.reduce((sum, t) => sum + Number(t.amount || 0), 0);
+      if (dayFoodTxs.length > 0) {
+        bankOfFreedom += (DAILY_FOOD_LIMIT - totalFood);
+      }
+    });
+
+    const spentOnFun = (state.transactions || [])
+      .filter(t => t.category === "fun" && t.day >= "18.10")
+      .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+    const funRemaining = Math.max(0, INITIAL_FUN_BUDGET - spentOnFun);
+
+    let actualYandexTotal;
+    if (Number.isFinite(Number(state.bankBalance)) && Number.isFinite(Number(state.bankBalanceUpdatedAt))) {
+      const expensesAfterAdjustment = (state.transactions || [])
+        .filter(t => Number(t.createdAt || 0) > Number(state.bankBalanceUpdatedAt))
+        .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+      actualYandexTotal = Math.max(0, Number(state.bankBalance) - expensesAfterAdjustment);
+    } else {
+      const newExpenses = (state.transactions || [])
+        .filter(t => t.day >= "18.10")
+        .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+      actualYandexTotal = Math.max(0, BASE_YANDEX_TOTAL - newExpenses);
+    }
+
+    const freeYandexReserve = Math.max(0, actualYandexTotal - TABLET_RESERVE);
+    const targetSavings = (BASELINE_FOOD_LIMIT - DAILY_FOOD_LIMIT) * 5;
+
+    return {
+      targetSavings,
+      bankOfFreedom: Math.max(0, bankOfFreedom),
+      yandexTotal: actualYandexTotal,
+      freeReserve: freeYandexReserve,
+      funRemaining
+    };
+  }
+
+  async function addExpense() {
+    const day = document.getElementById("day-select").value;
+    const category = document.getElementById("category-select").value;
+    const amount = parseFloat(document.getElementById("amount-input").value);
+    const desc = document.getElementById("desc-input").value.trim() || "Без описания";
+
+    if (isNaN(amount) || amount <= 0) {
+      alert("Введите корректную сумму чека!");
+      return;
+    }
+
+    if (!Array.isArray(state.transactions)) state.transactions = [];
+    state.transactions.push({
+      id: Date.now(),
+      createdAt: Date.now(),
+      day,
+      category,
+      amount,
+      desc
+    });
+
+    document.getElementById("amount-input").value = "";
+    document.getElementById("desc-input").value = "";
+    await syncToCloud();
+  }
+
+  async function deleteTx(id) {
+    state.transactions = state.transactions.filter(t => t.id !== id);
+    await syncToCloud();
+  }
+
+  function render() {
+    const activeDay = document.getElementById("day-select").value;
+    document.getElementById("active-day-label").innerText = activeDay;
+
+    const dayFoodTotal = (state.transactions || [])
+      .filter(t => t.day === activeDay && t.category === "food")
+      .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+
+    document.getElementById("today-spent-label").innerHTML = `<b>${dayFoodTotal.toLocaleString("ru-RU")} ₽</b> / ${DAILY_FOOD_LIMIT} ₽`;
+
+    const percent = Math.min(100, (dayFoodTotal / DAILY_FOOD_LIMIT) * 100);
+    const bar = document.getElementById("today-progress-bar");
+    bar.style.width = `${percent}%`;
+    bar.style.backgroundColor = dayFoodTotal > DAILY_FOOD_LIMIT
+      ? "var(--danger)"
+      : (dayFoodTotal > 350 ? "var(--warning)" : "var(--success)");
+
+    const data = calculateDashboard();
+    document.getElementById("saved-target-val").innerText = `+${data.targetSavings.toLocaleString("ru-RU")} ₽`;
+    document.getElementById("bank-val").innerText = `${data.bankOfFreedom.toLocaleString("ru-RU")} ₽`;
+    document.getElementById("yandex-val").innerText = `${data.yandexTotal.toLocaleString("ru-RU")} ₽`;
+    document.getElementById("yandex-sub").innerText = `Свободно: ${data.freeReserve.toLocaleString("ru-RU")} ₽`;
+    document.getElementById("fun-val").innerText = `${data.funRemaining.toLocaleString("ru-RU")} ₽`;
+
+    const txListEl = document.getElementById("tx-list");
+    txListEl.innerHTML = "";
+
+    if (!state.transactions || state.transactions.length === 0) {
+      txListEl.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px;">Пока нет записей.</div>`;
+      return;
+    }
+
+    state.transactions.slice().reverse().forEach(t => {
+      const row = document.createElement("div");
+      row.className = "tx-item";
+
+      let catBadge = `<span class="badge badge-food">Еда</span>`;
+      if (t.category === "cats") catBadge = `<span class="badge badge-cats">Кошки</span>`;
+      if (t.category === "fun") catBadge = `<span class="badge badge-fun">Приколы</span>`;
+      if (t.category === "other") catBadge = `<span class="badge badge-other">Аптека/Прочее</span>`;
+
+      const left = document.createElement("div");
+      const title = document.createElement("div");
+      const amountEl = document.createElement("b");
+      amountEl.textContent = `${Number(t.amount || 0).toLocaleString("ru-RU")} ₽`;
+      title.appendChild(amountEl);
+      title.insertAdjacentHTML("beforeend", ` ${catBadge} `);
+      const dateSpan = document.createElement("span");
+      dateSpan.style.cssText = "color: var(--text-muted); font-size: 0.75rem;";
+      dateSpan.textContent = `(${t.day})`;
+      title.appendChild(dateSpan);
+
+      const descEl = document.createElement("div");
+      descEl.style.cssText = "font-size: 0.8rem; color: var(--text-muted);";
+      descEl.textContent = t.desc || "Без описания";
+      left.append(title, descEl);
+
+      const right = document.createElement("div");
+      const del = document.createElement("button");
+      del.className = "del-btn";
+      del.textContent = "✕";
+      del.onclick = () => deleteTx(t.id);
+      right.appendChild(del);
+      row.append(left, right);
+      txListEl.appendChild(row);
+    });
+  }
+
+  selectToday();
+  loadDataFromCloud();
+</script>
+</body>
+</html>
