@@ -3,93 +3,259 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Приветствие в стиле Apple</title>
+    <title>Корни / Воспоминания</title>
     <style>
-        /* Черный глубокий фон в стиле Apple */
+        /* Базовые стили в стиле Apple */
+        html {
+            scroll-behavior: smooth; /* Плавный скролл по кнопкам */
+        }
+        
         body {
             margin: 0;
             padding: 0;
             background-color: #000000;
             color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            box-sizing: border-box;
+        }
+
+        /* Общие стили для полноэкранных секций */
+        .section {
+            min-height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* Контейнер для текста */
-        .welcome-container {
+            padding: 40px 20px;
+            box-sizing: border-box;
             text-align: center;
-            padding: 20px;
+            position: relative;
         }
 
-        /* Стили текста приветствия */
-        .welcome-text {
-            font-size: 3.5rem;
+        /* --- СЕКЦИЯ 1: ИНТРО --- */
+        .intro-section {
+            justify-content: space-between; /* Распределяем элементы: верх, центр, низ */
+        }
+
+        /* Заглушка сверху для идеального центра */
+        .top-spacer {
+            height: 40px;
+        }
+
+        .main-content {
+            max-width: 650px;
+            width: 100%;
+        }
+
+        /* Печатный текст деда */
+        .ded-greeting {
+            font-size: 3rem;
             font-weight: 700;
             letter-spacing: -0.02em;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
+            margin-bottom: 30px;
+            min-height: 80px;
+            display: inline-block;
+            position: relative;
         }
 
-        /* Класс, который активирует анимацию появления */
-        .welcome-text.visible {
+        /* Синий каретка-курсор */
+        .ded-greeting::after {
+            content: '|';
+            position: relative;
+            margin-left: 4px;
+            color: #0071e3;
+            animation: blink 0.7s infinite;
+        }
+
+        /* Контейнер для текста, который проявится ПОСЛЕ анимации букв */
+        .fade-in-content {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1.5s ease 0.5s, transform 1.5s ease 0.5s;
+        }
+
+        .fade-in-content.visible {
             opacity: 1;
             transform: translateY(0);
         }
 
-        /* Адаптивность для мобильных экранов */
+        /* Заголовок приглашения */
+        .main-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin-bottom: 20px;
+            color: #f5f5f7;
+        }
+
+        /* Текстовый абзац с вопросами */
+        .description-text {
+            font-size: 1.15rem;
+            font-weight: 400;
+            line-height: 1.6;
+            color: #86868b; /* Приглушенный серый */
+        }
+
+        /* --- КНОПКИ НАВИГАЦИИ (НА СЛЕДУЮЩИЕ ЭКРАНЫ) --- */
+        .nav-container {
+            padding-bottom: 40px;
+            opacity: 0;
+            transition: opacity 1.5s ease 1s;
+        }
+        
+        .nav-container.visible {
+            opacity: 1;
+        }
+
+        .scroll-btn {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 14px 28px;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .scroll-btn:hover {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(2px);
+        }
+
+        /* Стрелочка вниз */
+        .scroll-btn::after {
+            content: '↓';
+            font-weight: bold;
+        }
+
+        /* --- СЕКЦИЯ 2: ВОСПОМИНАНИЯ (ЗАГОТОВКА) --- */
+        .memories-section {
+            background-color: #0a0a0c; /* Чуть отличающийся оттенок черного для разделения */
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .memories-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+        }
+
+        /* Анимации */
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* Адаптивность для мобильных телефонов */
         @media (max-width: 600px) {
-            .welcome-text {
-                font-size: 2.2rem;
-            }
+            .ded-greeting { font-size: 1.8rem; min-height: 60px; }
+            .main-title { font-size: 1.4rem; }
+            .description-text { font-size: 1rem; }
+            .memories-title { font-size: 1.8rem; }
         }
     </style>
 </head>
 <body>
 
-    <div class="welcome-container">
-        <h1 id="greeting" class="welcome-text"></h1>
-    </div>
+    <!-- ЭКРАН 1: ПРИВЕТСТВИЕ И ИНТРО -->
+    <section class="section intro-section">
+        <div class="top-spacer"></div>
+
+        <div class="main-content">
+            <!-- Эффект печатной машинки -->
+            <h1 id="ded-text" class="ded-greeting"></h1>
+
+            <!-- Появляющийся блок с текстом -->
+            <div id="intro-content" class="fade-in-content">
+                <h2 class="main-title">Мы приглашаем вас в путешествие по семейным историям</h2>
+                <p class="description-text">
+                    Давайте вместе вспомним, кто мы? Откуда? И куда идем? На каком языке говорим или говорили в детстве? Кого из семьи стесняемся? Почему в детстве мы боялись своего происхождения?
+                </p>
+            </div>
+        </div>
+
+        <!-- Кнопка скролла вниз -->
+        <div id="nav-block" class="nav-container">
+            <button class="scroll-btn" onclick="scrollToMemories()">Читать воспоминания</button>
+        </div>
+    </section>
+
+    <!-- ЭКРАН 2: ВОСПОМИНАНИЯ (Сюда перекинет при клике) -->
+    <section id="memories" class="section memories-section">
+        <h2 class="memories-title">Воспоминания</h2>
+        <p class="description-text" style="max-width: 600px;">
+            Здесь начнется хроника памяти. Сюда можно добавлять архивные тексты, аудиозаписи, старые фотографии или интерактивные элементы вашего театрального экспириенса.
+        </p>
+    </section>
 
     <script>
-        // Массив с фразами на разных языках. 
-        // Вы можете заменить тексты в кавычках на любые другие.
-        const greetings = [
-            "Salut, eu sunt bunicul tău",    // Молдавский
-            "Hallo, ich bin dein Opa",       // Немецкий
-            "Сәлам, мин синең бабаң"         // Татарский
+        // Две фразы: сначала Марийский, затем Русский
+        const dedPhrases = [
+            "Салам, мый тыйын кочатулат", // 1. Марийский
+            "Привет, я твой дед"           // 2. Русский
         ];
 
-        // Если нужен Марийский (луговомарийский): "Салам, мый тыйын кочатулат"
+        const textElement = document.getElementById("ded-text");
+        const introContent = document.getElementById("intro-content");
+        const navBlock = document.getElementById("nav-block");
+        
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
 
-        let currentIndex = 0;
-        const greetingElement = document.getElementById("greeting");
+        function typeWriter() {
+            const currentText = dedPhrases[phraseIndex];
 
-        function showNextGreeting() {
-            // 1. Убираем текст (плавное затухание и уход вниз)
-            greetingElement.classList.remove("visible");
+            if (isDeleting) {
+                textElement.textContent = currentText.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                textElement.textContent = currentText.substring(0, charIndex + 1);
+                charIndex++;
+            }
 
-            // 2. Ждем, пока текст полностью скроется (800мс), затем меняем фразу
-            setTimeout(() => {
-                greetingElement.textContent = greetings[currentIndex];
-                
-                // Активируем плавное появление
-                greetingElement.classList.add("visible");
+            let speed = isDeleting ? 40 : 70;
 
-                // Переходим к следующему языку (по кругу)
-                currentIndex = (currentIndex + 1) % greetings.length;
-            }, 800); 
+            // Если марийская фраза напечатана
+            if (!isDeleting && charIndex === currentText.length && phraseIndex === 0) {
+                speed = 2000; // Держим фразу 2 секунды
+                isDeleting = true;
+            } 
+            // Если марийская фраза стерта
+            else if (isDeleting && charIndex === 0 && phraseIndex === 0) {
+                isDeleting = false;
+                phraseIndex = 1; // Переключаемся на русский язык
+                speed = 500;
+            }
+            // Если русская фраза напечатана полностью (ФИНАЛ АНИМАЦИИ)
+            else if (!isDeleting && charIndex === currentText.length && phraseIndex === 1) {
+                // Останавливаем анимацию букв и плавно проявляем остальной текст
+                setTimeout(() => {
+                    introContent.classList.add("visible");
+                    navBlock.classList.add("visible");
+                }, 300);
+                return; // Выходим из рекурсии, текст остается на экране
+            }
+
+            setTimeout(typeWriter, speed);
         }
 
-        // Запуск первого приветствия сразу при загрузке
-        showNextGreeting();
+        // Функция плавного скролла к блоку воспоминаний
+        function scrollToMemories() {
+            document.getElementById("memories").scrollIntoView({ behavior: 'smooth' });
+        }
 
-        // Повторение смены каждые 3.5 секунды
-        setInterval(showNextGreeting, 3500);
+        // Запуск при загрузке страницы
+        document.addEventListener("DOMContentLoaded", () => {
+            setTimeout(typeWriter, 600);
+        });
     </script>
 
 </body>
