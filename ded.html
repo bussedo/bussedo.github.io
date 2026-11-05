@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Приветствие в стиле Apple</title>
+    <style>
+        /* Черный глубокий фон в стиле Apple */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Контейнер для текста */
+        .welcome-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Стили текста приветствия */
+        .welcome-text {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        /* Класс, который активирует анимацию появления */
+        .welcome-text.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Адаптивность для мобильных экранов */
+        @media (max-width: 600px) {
+            .welcome-text {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="welcome-container">
+        <h1 id="greeting" class="welcome-text"></h1>
+    </div>
+
+    <script>
+        // Массив с фразами на разных языках. 
+        // Вы можете заменить тексты в кавычках на любые другие.
+        const greetings = [
+            "Salut, eu sunt bunicul tău",    // Молдавский
+            "Hallo, ich bin dein Opa",       // Немецкий
+            "Сәлам, мин синең бабаң"         // Татарский
+        ];
+
+        // Если нужен Марийский (луговомарийский): "Салам, мый тыйын кочатулат"
+
+        let currentIndex = 0;
+        const greetingElement = document.getElementById("greeting");
+
+        function showNextGreeting() {
+            // 1. Убираем текст (плавное затухание и уход вниз)
+            greetingElement.classList.remove("visible");
+
+            // 2. Ждем, пока текст полностью скроется (800мс), затем меняем фразу
+            setTimeout(() => {
+                greetingElement.textContent = greetings[currentIndex];
+                
+                // Активируем плавное появление
+                greetingElement.classList.add("visible");
+
+                // Переходим к следующему языку (по кругу)
+                currentIndex = (currentIndex + 1) % greetings.length;
+            }, 800); 
+        }
+
+        // Запуск первого приветствия сразу при загрузке
+        showNextGreeting();
+
+        // Повторение смены каждые 3.5 секунды
+        setInterval(showNextGreeting, 3500);
+    </script>
+
+</body>
+</html>
