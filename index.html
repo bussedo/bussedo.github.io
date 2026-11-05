@@ -1,17 +1,176 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Телеграм театр / tyatr.ru </title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Нишевый театральный экспириенс / tyatr.ru</title>
+    <style>
+        /* Глубокий черный фон и шрифты в стиле Apple */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            height: 100vh;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        /* Шапка в стиле нишевого театра */
+        .header {
+            width: 100%;
+            text-align: center;
+            padding: 40px 20px 20px 20px;
+            font-size: 0.9rem;
+            font-weight: 300;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #86868b; /* Приглушенный серый Apple */
+            opacity: 0;
+            animation: fadeIn 1.5s ease forwards;
+        }
+
+        /* Центральный контейнер для текста приветствия */
+        .welcome-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Стили текста приветствия */
+        .welcome-text {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            text-align: center;
+        }
+
+        .welcome-text.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Контейнер для кнопок-ссылок */
+        .container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 20px 20px 60px 20px;
+            width: 100%;
+            max-width: 600px;
+            opacity: 0;
+            animation: fadeIn 1.5s ease 0.5s forwards; /* Появляется чуть позже шапки */
+        }
+
+        /* Стильные кнопки в стиле интерфейсов Apple */
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        /* Эффект при наведении на кнопки */
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.18);
+            transform: scale(1.02);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Анимация плавного проявления для шапки и кнопок */
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Адаптивность для мобилок */
+        @media (max-width: 600px) {
+            .welcome-text {
+                font-size: 2.2rem;
+            }
+            .header {
+                font-size: 0.75rem;
+                padding-top: 30px;
+            }
+            .container {
+                padding-bottom: 40px;
+                gap: 10px;
+            }
+            .btn {
+                padding: 10px 18px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-    <a href="laba.html" class="btn">Лаборатория</a>
- <a href="neiro_clown.html" class="btn">Обучение</a>
-<a href="menu/litera.html" class="btn">Литература</a>
 
+    <!-- Шапка страницы -->
+    <header class="header">
+        Нишевый театральный экспириенс
+    </header>
+
+    <!-- Всплывающее приветствие -->
+    <div class="welcome-container">
+        <h1 id="greeting" class="welcome-text"></h1>
     </div>
+
+    <!-- Меню с кнопками (включая новую кнопку Корни) -->
+    <div class="container">
+        <a href="laba.html" class="btn">Лаборатория</a>
+        <a href="neiro_clown.html" class="btn">Обучение</a>
+        <a href="menu/litera.html" class="btn">Литература</a>
+        <a href="korni.html" class="btn">Корни</a>
+    </div>
+
+    <script>
+        // Массив фраз (Молдавский, Немецкий, Татарский, Марийский)
+        const greetings = [
+            "Salut, eu sunt bunicul tău", 
+            "Hallo, ich bin dein Opa",    
+            "Сәлам, мин синең бабаң",
+            "Салам, мый тыйын кочатулат"
+        ];
+
+        let currentIndex = 0;
+        const greetingElement = document.getElementById("greeting");
+
+        function showNextGreeting() {
+            greetingElement.classList.remove("visible");
+
+            setTimeout(() => {
+                greetingElement.textContent = greetings[currentIndex];
+                greetingElement.classList.add("visible");
+                currentIndex = (currentIndex + 1) % greetings.length;
+            }, 800); 
+        }
+
+        // Старт цикла анимации
+        showNextGreeting();
+        setInterval(showNextGreeting, 3500);
+    </script>
+
 </body>
 </html>
