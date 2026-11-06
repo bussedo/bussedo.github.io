@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -30,12 +31,12 @@
             font-weight: 300;
             letter-spacing: 0.15em;
             text-transform: uppercase;
-            color: #86868b;
+            color: #86868b; /* Приглушенный серый Apple */
             opacity: 0;
             animation: fadeIn 1.5s ease forwards;
         }
 
-        /* Центральный контейнер для текста */
+        /* Центральный контейнер для текста приветствия */
         .welcome-container {
             flex-grow: 1;
             display: flex;
@@ -43,28 +44,24 @@
             align-items: center;
             padding: 20px;
             width: 100%;
-            max-width: 800px;
-            box-sizing: border-box;
         }
 
-        /* Стили печатного текста и курсора */
+        /* Стили текста приветствия (плавный наплыв снизу вверх) */
         .welcome-text {
             font-size: 3.5rem;
             font-weight: 700;
             letter-spacing: -0.02em;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
             text-align: center;
-            min-height: 160px; /* Чтобы верстка не прыгала при пустой строке */
-            display: inline-block;
-            position: relative;
+            max-width: 800px;
         }
 
-        /* Мигающий каретка-курсор в стиле терминала/смартфонов */
-        .welcome-text::after {
-            content: '|';
-            position: relative;
-            margin-left: 4px;
-            color: #0071e3; /* Фирменный синий Apple цвет для курсора */
-            animation: blink 0.7s infinite;
+        /* Класс, активирующий появление фразы */
+        .welcome-text.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         /* Контейнер для кнопок-ссылок */
@@ -81,7 +78,7 @@
             animation: fadeIn 1.5s ease 0.5s forwards;
         }
 
-        /* Стильные кнопки */
+        /* Стильные кнопки в стиле интерфейсов Apple Store / iOS */
         .btn {
             display: inline-block;
             text-decoration: none;
@@ -98,26 +95,22 @@
             transition: all 0.3s ease;
         }
 
+        /* Эффект при наведении на кнопки */
         .btn:hover {
             background: rgba(255, 255, 255, 0.18);
             transform: scale(1.02);
             border-color: rgba(255, 255, 255, 0.2);
         }
 
-        /* Анимации */
+        /* Анимация плавного проявления для шапки и блока кнопок */
         @keyframes fadeIn {
             to { opacity: 1; }
         }
 
-        @keyframes blink {
-            50% { opacity: 0; }
-        }
-
-        /* Адаптивность под мобильные экраны */
+        /* Адаптивность для мобильных телефонов */
         @media (max-width: 600px) {
             .welcome-text {
-                font-size: 2rem;
-                min-height: 100px;
+                font-size: 2.2rem;
             }
             .header {
                 font-size: 0.75rem;
@@ -136,14 +129,17 @@
 </head>
 <body>
 
+    <!-- Шапка страницы -->
     <header class="header">
         Нишевый театральный экспириенс
     </header>
 
+    <!-- Всплывающее приветствие по всей фразе -->
     <div class="welcome-container">
         <h1 id="greeting" class="welcome-text"></h1>
     </div>
 
+    <!-- Меню с кнопками -->
     <div class="container">
         <a href="laba.html" class="btn">Лаборатория</a>
         <a href="neiro_clown.html" class="btn">Обучение</a>
@@ -152,58 +148,41 @@
     </div>
 
     <script>
-        // Список фраз на 7 языках (Русский + 6 ваших вариантов)
+        // Массив фраз: «Привет, это Телеграм театр!» на 7 языках
         const greetings = [
             "Привет, это Телеграм театр!",         // Русский
-            "Салам, тиде Телеграм театр!",        // Марийский (луговомар.)
+            "Салам, тиде Телеграм театр!",        // Марийский
             "Сәлам, бу Телеграм театр!",          // Татарский
             "Ӟечбуресь, та Телеграм театр!",       // Удмуртский
             "Здравейте, това е Телеграм театър!", // Болгарский
-            "Salut, acesta este Teatrul Telegram!",// Молдавский / Румынский
+            "Salut, acesta este Teatrul Telegram!",// Молдавский
             "Hallo, das ist Telegram Theater!"    // Немецкий
         ];
 
+        let currentIndex = 0;
         const greetingElement = document.getElementById("greeting");
-        
-        let wordIndex = 0;
-        let charIndex = 0;
-        let isDeleting = false;
 
-        function typeEffect() {
-            const currentFullText = greetings[wordIndex];
-            
-            if (isDeleting) {
-                // Удаляем по одной букве
-                greetingElement.textContent = currentFullText.substring(0, charIndex - 1);
-                charIndex--;
-            } else {
-                // Печатаем по одной букве
-                greetingElement.textContent = currentFullText.substring(0, charIndex + 1);
-                charIndex++;
-            }
+        function showNextGreeting() {
+            // 1. Убираем текущую фразу (она плавно затухает и уходит вниз)
+            greetingElement.classList.remove("visible");
 
-            // Настройка скорости
-            let typeSpeed = isDeleting ? 30 : 70; // Скорость стирания выше скорости печати
-
-            // Если слово допечатано полностью
-            if (!isDeleting && charIndex === currentFullText.length) {
-                typeSpeed = 2200; // Пауза, чтобы пользователь успел прочитать текст
-                isDeleting = true;
-            } 
-            // Если слово полностью стерто
-            else if (isDeleting && charIndex === 0) {
-                isDeleting = false;
-                wordIndex = (wordIndex + 1) % greetings.length; // Переход к следующему языку
-                typeSpeed = 400; // Небольшая пауза перед началом новой строки
-            }
-
-            setTimeout(typeEffect, typeSpeed);
+            // 2. Ждем 800мс (пока закончится анимация исчезновения) и меняем текст
+            setTimeout(() => {
+                greetingElement.textContent = greetings[currentIndex];
+                
+                // Проявляем новую фразу
+                greetingElement.classList.add("visible");
+                
+                // Переключаем индекс на следующий язык
+                currentIndex = (currentIndex + 1) % greetings.length;
+            }, 800); 
         }
 
-        // Запуск эффекта после загрузки страницы
-        document.addEventListener("DOMContentLoaded", () => {
-            setTimeout(typeEffect, 500);
-        });
+        // Первый запуск анимации
+        showNextGreeting();
+        
+        // Интервал смены языков (каждые 3.5 секунды фраз меняется)
+        setInterval(showNextGreeting, 3500);
     </script>
 
 </body>
