@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -95,6 +94,15 @@
             margin-bottom: 20px;
         }
 
+        a.inline-link {
+            color: #0071e3;
+            text-decoration: none;
+            transition: opacity 0.2s ease;
+        }
+        a.inline-link:hover {
+            text-decoration: underline;
+        }
+
         .highlight-box {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -179,7 +187,7 @@
 
         /* Контакты */
         .contacts-list p {
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             color: #86868b;
         }
         .contacts-list strong {
@@ -192,7 +200,7 @@
             h1 { font-size: 2.2rem; }
             h2 { font-size: 1.6rem; }
             section { padding: 40px 20px; }
-            .parallax { background-attachment: scroll; height: 220px; } /* Отключаем фиксированный фон для мобилок */
+            .parallax { background-attachment: scroll; height: 220px; }
         }
     </style>
 </head>
@@ -211,12 +219,12 @@
     </header>
 
     <section id="section-1">
-        <h2>Что такое клоунада?</h2>
+        <h2>What такое клоунада?</h2>
         <p>Клоунада — это искусство создания комических ситуаций и эмоций через уникальный образ клоуна. (но если честно, мы и сами не знаем до конца что это такое)</p>
         
         <div class="highlight-box">
-            <p style="margin: 0; font-weight: 500; color: #ff9500;">
-                ⚠️ Важное объявление: Ближайший курс обучения состоится уже этой весной на базе пространства Дома Культуры «ГЭС-2».
+            <p style="margin: 0; font-weight: 500; color: #ff9500; line-height: 1.6;">
+                ⚠️ Важное объявление: Ближайший курс обучения состоится уже этой весной на базе пространства Дома Культуры «ГЭС-2». Подробности о программах институции можно изучить на <a href="https://v-a-c.org" class="inline-link" target="_blank">официальном сайте фонда V–A–C</a>.
             </p>
         </div>
     </section>
@@ -235,25 +243,27 @@
         
         <p>Мы предлагаем:</p>
         <ul>
-			<li>Профессиональные преподаватели с реальным опытом работы в клоунаде</li>
-			<li>Персонализированный подход к каждому уникальному ученику</li>
-			<li>Разнообразные занятия, включающие клоунскую хореографию, теорию и практику уличной и больничной клоунады</li>
-			<li>Возможность выступать на наших мероприятиях и получить ценный опыт, зарабатывая деньги</li>
+            <li>Профессиональные преподаватели с реальным опытом работы в клоунаде</li>
+            <li>Персонализированный подход к каждому уникальному ученику</li>
+            <li>Разнообразные занятия, включающие клоунскую хореографию, теорию и практику уличной и больничной клоунады</li>
+            <li>Возможность выступать на наших мероприятиях и получить ценный опыт, зарабатывая деньги</li>
         </ul>
     </section>
 
     <section id="section-3" style="border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center;">
         <h2>Как записаться на занятия?</h2>
         <p>Для того, чтобы забронировать место на весенний поток в «ГЭС-2», просто свяжитесь с нами напрямую в мессенджере.</p>
-        <p style="margin-top: 25px;"><a href="https://t.me/busseDo" class="button tg-btn" target="_blank">Написать в телеграм</a></p>
+        <p style="margin-top: 25px;"><a href="https://t.me" class="button tg-btn" target="_blank">Написать в телеграм</a></p>
     </section>
 
     <section id="section-4" style="background: rgba(255,255,255,0.02); max-width: 100%; border-top: 1px solid rgba(255,255,255,0.05);">
-        <div style="max-width: 680px; margin: 0 auto; padding: 0 20px;" class="contacts-list">
-            <h2>Контакты:</h2>
-            <p><strong>Адрес:</strong> Москва, Дом Культуры «ГЭС-2» (Весенний поток)</p>
-            <p><strong>Телефон:</strong> +7 909 9797909</p>
-            <p><strong>Email:</strong> telegramteatr@gmail.com</p>
+        <div style="max-width: 680px; margin: 0 auto; padding: 60px 20px;" class="contacts-list">
+            <h2>Контакты для стариков</h2>
+            <p><strong>Адрес:</strong> Москва, Дом Культуры «ГЭС-2» (Весенний поток) — <a href="https://v-a-c.org" class="inline-link" target="_blank">v-a-c.org</a></p>
+            <p><strong>Телефон кураторов:</strong> <a href="tel:+79099797909" class="inline-link">+7 909 979 7909</a></p>
+            <p><strong>Email проекта:</strong> <a href="mailto:telegramteatr@gmail.com" class="inline-link">telegramteatr@gmail.com</a></p>
+            <p><strong>Общая почта фонда:</strong> <a href="mailto:v-a-c@v-a-c.org" class="inline-link">v-a-c@v-a-c.org</a></p>
+            <p><strong>Почта публичных программ:</strong> <a href="mailto:learning@v-a-c.org" class="inline-link">learning@v-a-c.org</a></p>
         </div>
     </section>
 
