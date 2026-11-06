@@ -1,137 +1,261 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-	<title>Обучение клоунаде в Москве</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<style>
-		body {
-			margin: 0;
-			padding: 0;
-			font-family: Arial, sans-serif;
-			font-size: 16px;
-		}
-		header {
-			background-image: url(header.jpg);
-			background-size: cover;
-			background-position: center;
-			height: 300px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			color: white;
-			text-align: center;
-		}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обучение клоунаде в Москве / ГЭС-2</title>
+    <style>
+        /* Глубокий темный фон в стиле Apple / Тятр */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+        }
 
-		section {
-			padding: 20px;
-			text-align: justify;
-		}
+        /* Кнопка "Назад на главную" */
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: -0.01em;
+            transition: color 0.3s ease;
+        }
+        .back-link:hover {
+            color: #ffffff;
+        }
 
-		h1 {
-			font-size: 28px;
-			margin-bottom: 10px;
-		}
+        /* Первый экран с фоновой картинкой и затемнением */
+        header {
+            background-image: url(header.jpg);
+            background-size: cover;
+            background-position: center;
+            height: 450px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
 
-		h2 {
-			font-size: 24px;
-			margin-bottom: 10px;
-		}
+        .header-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.95) 100%);
+            z-index: 1;
+        }
 
-		p {
-			line-height: 1.5;
-			margin-bottom: 10px;
-		}
-		
-		.button {
-			display: inline-block;
-			padding: 10px 20px;
-			background-color: #ff8c00;
-			color: white;
-			border-radius: 5px;
-			text-decoration: none;
-			transition: all 0.3s ease;
-			font-size: 18px;
-		}
+        #header-text {
+            position: relative;
+            z-index: 2;
+            max-width: 600px;
+            padding: 20px;
+        }
 
-		.button:hover {
-			background-color: #ff6400;
-		}
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            letter-spacing: -0.02em;
+        }
 
-		.parallax {
-			background-image: url(parallax.jpg);
-			background-size: cover;
-			background-position: center;
-			height: 200px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			color: white;
-			text-align: center;
-			position: relative;
-		}
+        .sub-header-text {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 300;
+            margin-bottom: 25px;
+        }
 
-		.parallax-overlay {
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			background-color: rgba(0, 0, 0, 0.5);
-		}
+        /* Текстовые секции */
+        section {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
 
-		.parallax-text {
-			position: relative;
-			z-index: 1;
-		}
-	</style>
+        h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 20px;
+            letter-spacing: -0.01em;
+        }
 
+        p {
+            color: #e8e8ed;
+            margin-bottom: 20px;
+        }
+
+        .highlight-box {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+
+        ul {
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            color: #e8e8ed;
+            margin-bottom: 12px;
+        }
+
+        /* Фирменные кнопки в стиле Apple/iOS */
+        .button {
+            display: inline-block;
+            padding: 12px 28px;
+            background-color: #ffffff;
+            color: #000000;
+            border-radius: 22px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+        }
+
+        .button:hover {
+            background-color: rgba(255, 255, 255, 0.85);
+            transform: translateY(-1px);
+        }
+
+        .button.tg-btn {
+            background-color: #0071e3; /* Фирменный синий Apple-цвет */
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+        }
+
+        .button.tg-btn:hover {
+            background-color: #147ce5;
+        }
+
+        /* Блок с параллаксом */
+        .parallax {
+            background-image: url(parallax.jpg);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Эффект параллакса на десктопах */
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+
+        .parallax-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.65);
+            z-index: 1;
+        }
+
+        .parallax-text {
+            position: relative;
+            z-index: 2;
+            max-width: 500px;
+            padding: 20px;
+        }
+
+        .parallax-text p {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        /* Контакты */
+        .contacts-list p {
+            margin-bottom: 8px;
+            color: #86868b;
+        }
+        .contacts-list strong {
+            color: #ffffff;
+        }
+
+        /* Адаптивность под мобилки */
+        @media (max-width: 600px) {
+            header { height: 350px; }
+            h1 { font-size: 2.2rem; }
+            h2 { font-size: 1.6rem; }
+            section { padding: 40px 20px; }
+            .parallax { background-attachment: scroll; height: 220px; } /* Отключаем фиксированный фон для мобилок */
+        }
+    </style>
 </head>
 <body>
-	<header>
-		<div id="header-text">
-			<h1>Обучение клоунаде</h1>
-			<p>Эту страницу создала нейросеть</p>
-			<a href="#section-1" class="button">Узнать больше</a>
-		</div>
-	</header>
 
-	<section id="section-1">
-		<h2>Что такое клоунада?</h2>
-		<p>Клоунада — это искусство создания комических ситуаций и эмоций через уникальный образ клоуна. (но если честно, мы и сами не знаем до конца что это такое)</p>
-	</section>
+    <!-- Ссылка назад на главный лендинг -->
+    <a href="index.html" class="back-link">← Главная</a>
 
-	<div class="parallax">
-		<div class="parallax-overlay"></div>
-		<div class="parallax-text">
-			<p>Присоединяйтесь к нашим занятиям и откройте для себя мир дураков!</p>
-			<a href="#section-2" class="button">Начать обучение</a>
-		</div>
-	</div>
+    <header>
+        <div class="header-overlay"></div>
+        <div id="header-text">
+            <h1>Обучение клоунаде</h1>
+            <p class="sub-header-text">Эту страницу создала нейросеть</p>
+            <a href="#section-1" class="button">Узнать больше</a>
+        </div>
+    </header>
 
-	<section id="section-2">
-		<h2>Почему именно мы?</h2>
-		<p>Наша программа обучения клоунаде предназначена для всех, кто хочет научиться создавать необычные образы и умело работать с публикой.</p>
-		<p>Мы предлагаем:</p>
-		<ul>
-			<li>Профессиональные преподаватели с опытом работы в клоунаде</li>
-			<li>Персонализированный подход к каждому ученику</li>
+    <section id="section-1">
+        <h2>Что такое клоунада?</h2>
+        <p>Клоунада — это искусство создания комических ситуаций и эмоций через уникальный образ клоуна. (но если честно, мы и сами не знаем до конца что это такое)</p>
+        
+        <div class="highlight-box">
+            <p style="margin: 0; font-weight: 500; color: #ff9500;">
+                ⚠️ Важное объявление: Ближайший курс обучения состоится уже этой весной на базе пространства Дома Культуры «ГЭС-2».
+            </p>
+        </div>
+    </section>
+
+    <div class="parallax">
+        <div class="parallax-overlay"></div>
+        <div class="parallax-text">
+            <p>Присоединяйтесь к нашим занятиям и откройте для себя мир дураков!</p>
+            <a href="#section-2" class="button">Начать обучение</a>
+        </div>
+    </div>
+
+    <section id="section-2">
+        <h2>Почему именно мы?</h2>
+        <p>Наша программа обучения клоунаде предназначена для всех, кто хочет научиться создавать необычные образы и умело работать с публикой этой весной в стенах «ГЭС-2».</p>
+        
+        <p>Мы предлагаем:</p>
+        <ul>
+			<li>Профессиональные преподаватели с реальным опытом работы в клоунаде</li>
+			<li>Персонализированный подход к каждому уникальному ученику</li>
 			<li>Разнообразные занятия, включающие клоунскую хореографию, теорию и практику уличной и больничной клоунады</li>
-			<li>Возможность выступать на наших мероприятиях и получить ценный опыт зарабатывая деньги</li>
-		</ul>
-	</section>
+			<li>Возможность выступать на наших мероприятиях и получить ценный опыт, зарабатывая деньги</li>
+        </ul>
+    </section>
 
-	<section id="section-3">
-		<h2>Как записаться на занятия?</h2>
-		<p>Для того, чтобы записаться на наши занятия, просто свяжитесь с нами в телеграме.</p>
-		<p><a href="https://t.me/busseDo" class="button">Написать в телеграм</a></p>
-	</section>
+    <section id="section-3" style="border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center;">
+        <h2>Как записаться на занятия?</h2>
+        <p>Для того, чтобы забронировать место на весенний поток в «ГЭС-2», просто свяжитесь с нами напрямую в мессенджере.</p>
+        <p style="margin-top: 25px;"><a href="https://t.me/busseDo" class="button tg-btn" target="_blank">Написать в телеграм</a></p>
+    </section>
 
-	<section id="section-4">
-		<h2>Контакты для стариков</h2>
-		<p>Адрес: Дом Культуры Клоунов</p>
-		<p>Телефон: +7 995 159 4904</p>
-		<p>email: telegramteatr@gmail.com</p>
-	</section>
+    <section id="section-4" style="background: rgba(255,255,255,0.02); max-width: 100%; border-top: 1px solid rgba(255,255,255,0.05);">
+        <div style="max-width: 680px; margin: 0 auto; padding: 0 20px;" class="contacts-list">
+            <h2>Контакты для стариков</h2>
+            <p><strong>Адрес:</strong> Москва, Дом Культуры «ГЭС-2» (Весенний поток)</p>
+            <p><strong>Телефон:</strong> +7 995 159 4904</p>
+            <p><strong>Email:</strong> telegramteatr@gmail.com</p>
+        </div>
+    </section>
+
 </body>
 </html>
-
