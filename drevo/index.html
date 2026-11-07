@@ -6,7 +6,7 @@
     <title>Семейное Древо | Stammbaum</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f4f6f8; color: #2c3e50; margin: 0; padding: 0; overflow: hidden; height: 100vh; width: 100vw; }
-        header { position: fixed; top: 20px; left: 20px; z-index: 100; display: flex; gap: 10px; align-items: center; }
+        header { position: fixed; top: 20px; left: 20px; z-index: 100; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         .btn { background: #ffffff; border: 1px solid #dcdde1; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s ease; font-size: 13px; }
         .btn.active { background: #34495e; color: white; border-color: #34495e; }
         
@@ -63,7 +63,6 @@
             canvas.width = 4000; canvas.height = 3000; drawLines();
         }
 
-        // БЕЗОТКАЗНАЯ ФУНКЦИЯ ДЛЯ ВЫПАДАЮЩЕГО СПИСКА
         function populateDropdown() {
             const select = document.getElementById('main-person-select');
             select.innerHTML = '';
@@ -83,24 +82,50 @@
             });
         }
 
+        // === НОВЫЙ АЛГОРИТМ ВИДИМОСТИ ===
         let visibleNodes = {};
         function calculateVisibility() {
             visibleNodes = {};
-            let childCounts = {};
-            treeData.persons.forEach(p => childCounts[p.id] = 0);
+            
+            // Карта детей (чтобы идти по дереву вниз)
+            let childrenOf = {};
+            treeData.persons.forEach(p => childrenOf[p.id] = []);
             treeData.persons.forEach(p => {
-                if (p.p) p.p.forEach(parentId => childCounts[parentId] = (childCounts[parentId] || 0) + 1);
+                if (p.p) {
+                    p.p.forEach(parentId => {
+                        if (childrenOf[parentId]) childrenOf[parentId].push(p.id);
+                    });
+                }
             });
-            
-            let leaves = treeData.persons.filter(p => childCounts[p.id] === 0).map(p => p.id);
-            let queue = [...leaves];
-            
-            while (queue.length > 0) {
-                let currId = queue.shift();
-                if (!visibleNodes[currId]) {
-                    visibleNodes[currId] = true;
-                    let node = treeData.persons.find(p => p.id === currId);
-                    if (node && !node.h && node.p) queue.push(...node.p);
+
+            // Начинаем поиск ТОЛЬКО от главной персоны
+            let queue = [currentMain];
+            visibleNodes[currentMain] = true;
+
+            let head = 0;
+            while (head < queue.length) {
+                let currId = queue[head++];
+                let node = treeData.persons.find(p => p.id === currId);
+                if (!node) continue;
+
+                // 1. Идем ВВЕРХ (к родителям), только если ветка развернута (не скрыта плюсиком)
+                if (!node.h && node.p) {
+                    node.p.forEach(parentId => {
+                        if (!visibleNodes[parentId]) {
+                            visibleNodes[parentId] = true;
+                            queue.push(parentId);
+                        }
+                    });
+                }
+
+                // 2. Идем ВНИЗ (к детям) всегда. Если виден предок, видны и его потомки.
+                if (childrenOf[currId]) {
+                    childrenOf[currId].forEach(childId => {
+                        if (!visibleNodes[childId]) {
+                            visibleNodes[childId] = true;
+                            queue.push(childId);
+                        }
+                    });
                 }
             }
         }
@@ -242,7 +267,21 @@
 
         function changeMainPerson(newMainId) {
             currentMain = newMainId;
+            
+            // При смене персоны сворачиваем всех, чтобы начать с чистого листа
+            treeData.persons.forEach(p => p.h = true);
+            localStorage.removeItem('tree_collapsed');
+            
             renderTree();
+            
+            // Центрирование камеры
+            setTimeout(() => {
+                let mainPersonNode = treeData.persons.find(p => p.id === currentMain);
+                if (mainPersonNode) {
+                    container.scrollLeft = mainPersonNode.x - (window.innerWidth / 2) + 125;
+                    container.scrollTop = mainPersonNode.y - (window.innerHeight / 2) + 57;
+                }
+            }, 100);
         }
 
         function renderTree() {
@@ -347,17 +386,29 @@
                     throw new Error("Файл data.js не найден или имеет опечатку.");
                 }
                 
+                // Применяем сохраненные позиции карточек
                 const savedPositions = JSON.parse(localStorage.getItem('tree_positions') || 'null');
                 if (savedPositions) {
                     treeData.persons.forEach(p => {
                         if (savedPositions[p.id]) { p.x = savedPositions[p.id].x; p.y = savedPositions[p.id].y; }
                     });
                 }
+                
+                // Если мы только что загрузили страницу впервые, сворачиваем всех по умолчанию
+                const savedCollapsed = JSON.parse(localStorage.getItem('tree_collapsed') || 'null');
+                if (savedCollapsed) {
+                    treeData.persons.forEach(p => {
+                        if (savedCollapsed[p.id] !== undefined) p.h = savedCollapsed[p.id];
+                    });
+                } else {
+                    treeData.persons.forEach(p => p.h = true);
+                }
+
                 populateDropdown();
                 resizeCanvas(); 
                 renderTree(); 
                 
-                // Надежное центрирование камеры на главной персоне (работает на iPhone)
+                // Центрирование камеры
                 setTimeout(() => {
                     let mainPersonNode = treeData.persons.find(p => p.id === currentMain);
                     if (mainPersonNode) {
