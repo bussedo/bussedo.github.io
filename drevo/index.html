@@ -17,7 +17,6 @@
         
         .card { border-radius: 10px; padding: 14px; width: 250px; height: 115px; box-shadow: 0 5px 15px rgba(52, 73, 94, 0.15); position: absolute; cursor: move; z-index: 10; user-select: none; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; transition: box-shadow 0.2s; }
         
-        /* Цвета карточек */
         .card.me { background: linear-gradient(135deg, #ffe259, #ffa751); border: 1px solid #ffa751; z-index: 15; box-shadow: 0 8px 20px rgba(255, 167, 81, 0.4); }
         .card.paternal { background: linear-gradient(135deg, #e0eafc, #cfdef3); border: 1px solid #b0c4de; }
         .card.maternal { background: linear-gradient(135deg, #fed6e3, #fbc2eb); border: 1px solid #fbc2eb; }
@@ -49,16 +48,16 @@
         let lang = 'ru';
         let currentMain = 'me'; 
         
+        // Ограниченный список тех, кого можно выбрать главной персоной
+        const allowedMainIds = ['me', 'cousin_artem', 'martin', 'father_dmitry', 'mother_ekaterina', 'aunt_svetlana', 'uncle_konstantin', 'uncle_dmitry_e'];
+        
         const container = document.getElementById('canvas-container');
         const canvas = document.getElementById('tree-canvas');
         const ctx = canvas.getContext('2d');
 
         const savedPositions = JSON.parse(localStorage.getItem('tree_positions')) || {};
         treeData.persons.forEach(p => {
-            if (savedPositions[p.id]) {
-                p.x = savedPositions[p.id].x;
-                p.y = savedPositions[p.id].y;
-            }
+            if (savedPositions[p.id]) { p.x = savedPositions[p.id].x; p.y = savedPositions[p.id].y; }
         });
 
         const savedCollapsed = JSON.parse(localStorage.getItem('tree_collapsed')) || {};
@@ -74,13 +73,14 @@
             const select = document.getElementById('main-person-select');
             select.innerHTML = '';
             
-            // Сортируем имена по алфавиту для удобства
-            let sortedPersons = [...treeData.persons].sort((a, b) => a.n[lang].localeCompare(b.n[lang]));
+            let sortedPersons = treeData.persons
+                .filter(p => allowedMainIds.includes(p.id))
+                .sort((a, b) => a.n[lang].localeCompare(b.n[lang]));
             
             sortedPersons.forEach(p => {
                 let opt = document.createElement('option');
                 opt.value = p.id;
-                opt.text = (lang === 'ru' ? '👑 ' : '👑 ') + p.n[lang];
+                opt.text = '👑 ' + p.n[lang];
                 if (p.id === currentMain) opt.selected = true;
                 select.appendChild(opt);
             });
@@ -93,11 +93,7 @@
             let childCounts = {};
             treeData.persons.forEach(p => childCounts[p.id] = 0);
             treeData.persons.forEach(p => {
-                if (p.p) {
-                    p.p.forEach(parentId => {
-                        childCounts[parentId] = (childCounts[parentId] || 0) + 1;
-                    });
-                }
+                if (p.p) p.p.forEach(parentId => childCounts[parentId] = (childCounts[parentId] || 0) + 1);
             });
             
             let leaves = treeData.persons.filter(p => childCounts[p.id] === 0).map(p => p.id);
@@ -108,14 +104,12 @@
                 if (!visibleNodes[currId]) {
                     visibleNodes[currId] = true;
                     let node = treeData.persons.find(p => p.id === currId);
-                    if (node && !node.h && node.p) { 
-                        queue.push(...node.p);
-                    }
+                    if (node && !node.h && node.p) queue.push(...node.p);
                 }
             }
         }
 
-        // --- МАГИЯ ЦВЕТА ОТНОСИТЕЛЬНО ГЛАВНОГО ---
+        // --- ДИНАМИЧЕСКИЕ ЦВЕТА ---
         let nodeColors = {};
         function calculateColors() {
             treeData.persons.forEach(p => nodeColors[p.id] = 'neutral'); 
@@ -144,6 +138,82 @@
                     }
                 }
             }
+        }
+
+        // --- АЛГОРИТМ ВЫЧИСЛЕНИЯ РОДСТВА ---
+        function getKinship(mainId, targetId) {
+            if (mainId === targetId) return lang === 'ru' ? "Это Вы" : "Das bist du";
+            
+            let getAncestors = (startId) => {
+                let distances = { [startId]: 0 };
+                let queue = [startId];
+                while(queue.length > 0) {
+                    let curr = queue.shift();
+                    let node = treeData.persons.find(p => p.id === curr);
+                    if (node && node.p) {
+                        node.p.forEach(parentId => {
+                            if (distances[parentId] === undefined) {
+                                distances[parentId] = distances[curr] + 1;
+                                queue.push(parentId);
+                            }
+                        });
+                    }
+                }
+                return distances;
+            };
+
+            let mainAncestors = getAncestors(mainId);
+            let targetAncestors = getAncestors(targetId);
+            
+            let minDistance = Infinity;
+            let bestUp = -1;
+            let bestDown = -1;
+            
+            // Ищем наименьшего общего предка
+            for (let ancestor in mainAncestors) {
+                if (targetAncestors[ancestor] !== undefined) {
+                    let up = mainAncestors[ancestor];
+                    let down = targetAncestors[ancestor];
+                    if (up + down < minDistance) {
+                        minDistance = up + down;
+                        bestUp = up;
+                        bestDown = down;
+                    }
+                }
+            }
+            
+            if (bestUp === -1) return null;
+
+            let targetNode = treeData.persons.find(p => p.id === targetId);
+            let infoStr = targetNode.i.ru.toLowerCase();
+            let name = targetNode.n.ru.split(' ')[0];
+            
+            // Определение пола для подписи
+            let isFemale = false;
+            if (infoStr.includes('жена') || infoStr.includes('дочь') || infoStr.includes('бабушка') || infoStr.includes('мать') || infoStr.includes('тетя')) {
+                isFemale = true;
+            } else if (infoStr.includes('муж') || infoStr.includes('сын') || infoStr.includes('дед') || infoStr.includes('отец') || infoStr.includes('дядя') || infoStr.includes('брат')) {
+                isFemale = false;
+            } else if (/(а|я)$/i.test(name) && !/Никита|Илья|Лука|Фома|Савва/i.test(name)) {
+                isFemale = true;
+            }
+
+            let relRu = ""; let relDe = "";
+            if (bestUp === 1 && bestDown === 0) { relRu = isFemale ? "Мать" : "Отец"; relDe = isFemale ? "Mutter" : "Vater"; }
+            else if (bestUp === 2 && bestDown === 0) { relRu = isFemale ? "Бабушка" : "Дедушка"; relDe = isFemale ? "Großmutter" : "Großvater"; }
+            else if (bestUp === 3 && bestDown === 0) { relRu = isFemale ? "Прабабушка" : "Прадед"; relDe = isFemale ? "Urgroßmutter" : "Urgroßvater"; }
+            else if (bestUp === 4 && bestDown === 0) { relRu = isFemale ? "Прапрабабушка" : "Прапрадед"; relDe = isFemale ? "Ururgroßmutter" : "Ururgroßvater"; }
+            else if (bestUp > 4 && bestDown === 0) { relRu = isFemale ? `Пра(${bestUp-1})бабушка` : `Пра(${bestUp-1})дед`; relDe = isFemale ? "Ahnin" : "Ahn"; }
+            else if (bestUp === 0 && bestDown === 1) { relRu = isFemale ? "Дочь" : "Сын"; relDe = isFemale ? "Tochter" : "Sohn"; }
+            else if (bestUp === 0 && bestDown === 2) { relRu = isFemale ? "Внучка" : "Внук"; relDe = isFemale ? "Enkelin" : "Enkel"; }
+            else if (bestUp === 1 && bestDown === 1) { relRu = isFemale ? "Сестра" : "Брат"; relDe = isFemale ? "Schwester" : "Bruder"; }
+            else if (bestUp === 2 && bestDown === 1) { relRu = isFemale ? "Тетя" : "Дядя"; relDe = isFemale ? "Tante" : "Onkel"; }
+            else if (bestUp === 3 && bestDown === 1) { relRu = isFemale ? "Двоюродная бабушка" : "Двоюродный дедушка"; relDe = isFemale ? "Großtante" : "Großonkel"; }
+            else if (bestUp === 1 && bestDown === 2) { relRu = isFemale ? "Племянница" : "Племянник"; relDe = isFemale ? "Nichte" : "Neffe"; }
+            else if (bestUp === 2 && bestDown === 2) { relRu = isFemale ? "Двоюродная сестра" : "Двоюродный брат"; relDe = isFemale ? "Cousine" : "Cousin"; }
+            else { relRu = "Родственник"; relDe = "Verwandter"; }
+
+            return lang === 'ru' ? relRu : relDe;
         }
 
         function isPersonHidden(id) { return !visibleNodes[id]; }
@@ -203,13 +273,29 @@
                     toggleBtnHtml = `<button class="toggle-btn" onclick="toggleBranch('${person.id}', event)">${person.h ? '+' : '−'}</button>`;
                 }
                 
-                let displayRegion = person.r[lang];
-                let displayInfo = person.i[lang];
+                // --- ГЕНЕРАЦИЯ ПОДПИСЕЙ ---
+                let originalInfo = person.i[lang];
+                let bio = "";
                 
-                // Переопределение текста для главной персоны
+                // Отсекаем старые жесткие статусы
+                if (originalInfo.includes(' • ')) {
+                    bio = originalInfo.split(' • ').slice(1).join(' • ');
+                } else if (/^(Пра|Дед|Бабушка|Брат|Сестра|Дядя|Тетя|Отец|Мать|Сын|Дочь|Внук|Создатель|Ветвь|Линия)/i.test(originalInfo)) {
+                    bio = "";
+                } else {
+                    bio = originalInfo;
+                }
+                
+                let dynamicRel = getKinship(currentMain, person.id);
+                let displayInfo = originalInfo; 
+                
+                if (dynamicRel) {
+                    displayInfo = bio ? `${dynamicRel} • ${bio}` : dynamicRel;
+                }
+                
+                let displayRegion = person.r[lang];
                 if (person.id === currentMain) {
                     displayRegion = lang === 'ru' ? "Главный профиль" : "Hauptprofil";
-                    displayInfo = lang === 'ru' ? "Это Вы" : "Das bist du";
                 }
 
                 card.innerHTML = `
