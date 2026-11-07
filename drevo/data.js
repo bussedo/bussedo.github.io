@@ -1,12 +1,12 @@
 const treeData = {
  "persons": [
-  {"id":"martin","x":900,"y":40,"t":"paternal","n":{"ru":"Мартин Артемович Буссе","de":"Martin Busse"},"r":{"ru":"Россия","de":"Russland"},"i":{"ru":"Сын Артема","de":"Sohn von Artem"},"p":["cousin_artem"],"h":false},
+  {"id":"martin","x":900,"y":40,"t":"paternal","n":{"ru":"Мартин Артемович Буссе","de":"Martin Busse"},"r":{"ru":"Йошкар-Ола","de":"Joschkar-Ola"},"i":{"ru":"Сын Артема","de":"Sohn von Artem"},"p":["cousin_artem"],"h":false},
   
-  {"id":"me","x":300,"y":190,"t":"me","n":{"ru":"Роман Дмитриевич Буссе","de":"Roman Busse"},"r":{"ru":"Вайбкодер","de":"Hauptprofil"},"i":{"ru":"Создатель древа","de":"Gründer"},"p":["father_dmitry","mother_ekaterina"]},
+   {"id":"me","x":300,"y":190,"t":"me","n":{"ru":"Роман Дмитриевич Буссе","de":"Roman Busse"},"r":{"ru":"Йошкар-Ола","de":"Joschkar-Ola"},"i":{"ru":"Йошкар-Ола","de":"Joschkar-Ola"},"p":["father_dmitry","mother_ekaterina"]},
   {"id":"cousin_artem","x":900,"y":190,"t":"paternal","n":{"ru":"Артем Константинович Буссе","de":"Artem Busse"},"r":{"ru":"г. Йошкар-Ола","de":"Joschkar-Ola"},"i":{"ru":"Двоюродный брат • Род. 08.06.1992","de":"Cousin • Geb. 1992"},"p":["uncle_konstantin","aunt_svetlana"]},
   
   {"id":"father_dmitry","x":100,"y":340,"t":"paternal","n":{"ru":"Дмитрий Александрович Сырейщиков","de":"Dmitry Syreishchikov"},"r":{"ru":"г. Йошкар-Ола","de":"Joschkar-Ola"},"i":{"ru":"Отец • Род. 06.02.1969","de":"Vater • Geb. 06.02.1969"},"p":["sireishchikov_alexander","konurova_alexandra"],"h":false},
-  {"id":"mother_ekaterina","x":500,"y":340,"t":"maternal","n":{"ru":"Екатерина Евгеньевна Буссе","de":"Ekaterina Busse"},"r":{"ru":"Линия матери","de":"Mütterliche Linie"},"i":{"ru":"Мать • Род. 19.06.1969","de":"Mutter • Geb. 1969"},"p":["busse_evgeny","kuznetsova_zoya"],"h":false},
+  {"id":"mother_ekaterina","x":500,"y":340,"t":"maternal","n":{"ru":"Екатерина Евгеньевна Буссе","de":"Ekaterina Busse"},"r":{"ru":"Йошкар-Ола","de":"Joschkar-Ola"},"i":{"ru":"Мать • Род. 19.06.1969","de":"Mutter • Geb. 1969"},"p":["busse_evgeny","kuznetsova_zoya"],"h":false},
   {"id":"aunt_svetlana","x":900,"y":340,"t":"paternal","n":{"ru":"Светлана Александровна Буссе (Сырейщикова)","de":"Svetlana Busse"},"r":{"ru":"г. Йошкар-Ола","de":"Joschkar-Ola"},"i":{"ru":"Тетя • Род. 05.02.1972","de":"Tante • Geb. 1972"},"p":["sireishchikov_alexander","konurova_alexandra"],"h":false},
   {"id":"uncle_konstantin","x":1200,"y":340,"t":"maternal","n":{"ru":"Константин Евгеньевич Буссе","de":"Konstantin Busse"},"r":{"ru":"г. Йошкар-Ола","de":"Joschkar-Ola"},"i":{"ru":"Дядя • Род. 03.08.1973","de":"Onkel • Geb. 1973"},"p":["busse_evgeny","kuznetsova_zoya"],"h":false},
   {"id":"uncle_dmitry_e","x":1500,"y":340,"t":"maternal","n":{"ru":"Дмитрий Евгеньевич Буссе","de":"Dmitry Busse"},"r":{"ru":"г. Йошкар-Ола","de":"Joschkar-Ola"},"i":{"ru":"Дядя • Род. 20.08.1982","de":"Onkel • Geb. 1982"},"p":["busse_evgeny","kuznetsova_zoya"],"h":false},
