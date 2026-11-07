@@ -1,208 +1,50 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Семейное Древо | Stammbaum</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #f4f6f8;
-            color: #2c3e50;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            height: 100vh;
-            width: 100vw;
-        }
-        header {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 100;
-            display: flex;
-            gap: 10px;
-        }
-        .lang-btn {
-            background: #ffffff;
-            border: 1px solid #dcdde1;
-            padding: 8px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-        .lang-btn.active {
-            background: #34495e;
-            color: white;
-            border-color: #34495e;
-        }
-        #canvas-container {
-            width: 100vw;
-            height: 100vh;
-            position: relative;
-            background: radial-gradient(circle, #eef1f4 1px, transparent 1px);
-            background-size: 20px 20px;
-            overflow: auto;
-        }
-        #tree-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 3000px;
-            height: 2000px;
-            pointer-events: none;
-            z-index: 1;
-        }
-        .card {
-            background: linear-gradient(135deg, #e0eafc, #cfdef3); /* Красивый пастельный цветной фон */
-            border-radius: 10px;
-            padding: 14px;
-            width: 250px; /* Немного расширил карточку под крупные имена */
-            height: 115px;
-            box-shadow: 0 5px 15px rgba(52, 73, 94, 0.15);
-            border: 1px solid rgba(52, 73, 94, 0.1);
-            position: absolute;
-            cursor: move;
-            z-index: 10;
-            user-select: none;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            transition: box-shadow 0.2s;
-        }
-        .card:hover { 
-            box-shadow: 0 8px 20px rgba(52, 73, 94, 0.25); 
-        }
-        .card h3 { 
-            margin: 0 0 5px 0; 
-            font-size: 15px; /* Укрупненный шрифт для имен */
-            font-weight: 700; 
-            text-align: center; 
-            color: #2c3e50; 
-            line-height: 1.3;
-        }
-        .card .region { 
-            margin: 0 0 4px 0; 
-            font-size: 11px; 
-            color: #4a6572; 
-            text-align: center; 
-            font-style: italic; 
-        }
-        .card .info { 
-            margin: 0; 
-            font-size: 11px; 
-            color: #5c6b73; 
-            text-align: center; 
-            line-height: 1.2; 
-        }
-    </style>
-</head>
-<body>
+const treeData = {
+    "persons": [
+        // 0 ПОКОЛЕНИЕ: ВЫ
+        {"id": "me", "x": 1000, "y": 40, "type": "me", "name": {"ru": "Роман Дмитриевич Буссе", "de": "Roman Busse"}, "region": {"ru": "Главный профиль", "de": "Hauptprofil"}, "info": {"ru": "Создатель древа", "de": "Gründer des Stammbaums"}, "parents": ["father_dmitry", "mother_ekaterina"]},
+        
+        // 1 ПОКОЛЕНИЕ: РОДИТЕЛИ
+        {"id": "father_dmitry", "x": 450, "y": 190, "type": "paternal", "name": {"ru": "Дмитрий Александрович Сырейщиков", "de": "Dmitry Syreishchikov"}, "region": {"ru": "г. Йошкар-Ола", "de": "Joschkar-Ola"}, "info": {"ru": "Отец • Род. 06.02.1969 г.", "de": "Vater • Geb. 06.02.1969"}, "parents": ["sireishchikov_alexander", "konurova_alexandra"]},
+        {"id": "mother_ekaterina", "x": 1550, "y": 190, "type": "maternal", "name": {"ru": "Екатерина Буссе", "de": "Ekaterina Busse"}, "region": {"ru": "Линия матери", "de": "Mütterliche Linie"}, "info": {"ru": "Ветви Буссе / Кузнецовых", "de": "Zweige Busse / Kuznezov"}, "parents": ["busse_evgeny", "kuznetsova_zoya"]},
+        
+        // 2 ПОКОЛЕНИЕ: БАБУШКИ И ДЕДУШКИ
+        {"id": "sireishchikov_alexander", "x": 200, "y": 340, "type": "paternal", "name": {"ru": "Александр Сырейщиков", "de": "Alexander Syreishchikov"}, "region": {"ru": "г. Йошкар-Ола", "de": "Joschkar-Ola"}, "info": {"ru": "Дед • 1945 — 2000 гг.", "de": "Großvater • 1945 — 2000"}, "parents": ["sireishchikov_vasily", "fokina_ekaterina"]},
+        {"id": "konurova_alexandra", "x": 650, "y": 340, "type": "paternal", "name": {"ru": "Александра Конурова (1947)", "de": "Alexandra Konurova (1947)"}, "region": {"ru": "д. Рыбино, Вятская губ.", "de": "Dorf Rybino, Wjatka"}, "info": {"ru": "Дочь Алексея (1914)", "de": "Tochter von Alexei (1914)"}, "parents": ["konurov_alexei", "sokova_ustinya"]},
+        {"id": "busse_evgeny", "x": 1250, "y": 340, "type": "maternal", "name": {"ru": "Евгений Буссе", "de": "Ewgeni Busse"}, "region": {"ru": "Ижевск / Казань", "de": "Ischewsk / Kasan"}, "info": {"ru": "Сын Дмитрия Буссе", "de": "Sohn von Dmitry Busse"}, "parents": ["busse_dmitry", "larionova_margarita_p"]},
+        {"id": "kuznetsova_zoya", "x": 1750, "y": 340, "type": "maternal", "name": {"ru": "Зоя Кузнецова (1946)", "de": "Soja Kuznezova (1946)"}, "region": {"ru": "д. Гришунята / Шулка", "de": "Dorf Grischunjata / Schulka"}, "info": {"ru": "Дочь Ивана и Марии (1906)", "de": "Tochter von Iwan u. Maria (1906)"}, "parents": ["kuznetsov_ivan", "zhuravleva_nina"]},
 
-    <header>
-        <button class="lang-btn active" onclick="setLanguage('ru')">RU</button>
-        <button class="lang-btn" onclick="setLanguage('de')">DE</button>
-    </header>
+        // 3 ПОКОЛЕНИЕ: ПРАДЕДУШКИ И ПРАБАБУШКИ
+        {"id": "sireishchikov_vasily", "x": 80, "y": 490, "type": "paternal", "name": {"ru": "Василий Алексеевич Сырейщиков", "de": "Wassili Syreishchikov"}, "region": {"ru": "д. Башкири (Марий Эл)", "de": "Dorf Baschkiri (Mari El)"}, "info": {"ru": "30.12.1922 — 09.04.1991", "de": "Urgroßvater • 1922 — 1991"}, "parents": ["great2_grandfather_alexei"]},
+        {"id": "fokina_ekaterina", "x": 320, "y": 490, "type": "paternal", "name": {"ru": "Екатерина Фокина", "de": "Ekaterina Fokina"}, "region": {"ru": "д. Непейно, Дмитров", "de": "Dorf Nepeino, Dmitrow"}, "info": {"ru": "Дочь Василия (1900)", "de": "Tochter von Wassili (1900)"}, "parents": ["fokin_vasily"]},
+        {"id": "konurov_alexei", "x": 540, "y": 490, "type": "paternal", "name": {"ru": "Алексей Конуров (1914)", "de": "Alexei Konurov (1914)"}, "region": {"ru": "д. Рыбино", "de": "Dorf Rybino"}, "info": {"ru": "Сын Николая", "de": "Sohn von Nikolai"}, "parents": ["konurov_nikolai"]},
+        {"id": "sokova_ustinya", "x": 780, "y": 490, "type": "paternal", "name": {"ru": "Устинья Сокова (1914)", "de": "Ustinija Sokova (1914)"}, "region": {"ru": "д. Рыбино", "de": "Dorf Rybino"}, "info": {"ru": "Дочь Григория", "de": "Tochter von Grigori"}, "parents": ["sokov_grigori"]},
+        {"id": "busse_dmitry", "x": 1100, "y": 490, "type": "maternal", "name": {"ru": "Дмитрий Буссе", "de": "Dmitry Busse"}, "region": {"ru": "Казань", "de": "Kasan"}, "info": {"ru": "Муж Маргариты Ларионовой", "de": "Ehemann von Margarita"}, "parents": ["busse_alexander", "larionova_margarita_p"]},
+        {"id": "kuznetsov_ivan", "x": 1420, "y": 490, "type": "maternal", "name": {"ru": "Иван Кузнецов (1900)", "de": "Iwan Kuznezov (1900)"}, "region": {"ru": "д. Гришунята", "de": "Dorf Grischunjata"}, "info": {"ru": "Линия Кузнецовых", "de": "Kuznezov-Linie"}, "parents": []},
+        {"id": "zhuravleva_nina", "x": 1750, "y": 490, "type": "maternal", "name": {"ru": "Нина Журавлёва (1894)", "de": "Nina Shurawljowa (1894)"}, "region": {"ru": "Ижевск (Удмуртия)", "de": "Ischewsk"}, "info": {"ru": "Дочь Николая", "de": "Tochter von Nikolai"}, "parents": ["zhuravlev_nikolai"]},
 
-    <div id="canvas-container">
-        <canvas id="tree-canvas"></canvas>
-    </div>
+        // 4 ПОКОЛЕНИЕ И ДАЛЕЕ
+        {"id": "great2_grandfather_alexei", "x": 80, "y": 640, "type": "paternal", "name": {"ru": "Алексей Сырейщиков", "de": "Alexei Syreishchikov"}, "region": {"ru": "д. Башкири", "de": "Dorf Baschkiri"}, "info": {"ru": "Отец Василия Алексеевича", "de": "Ururgroßvater"}, "parents": ["great3_grandfather_ivan"]},
+        {"id": "fokin_vasily", "x": 320, "y": 640, "type": "paternal", "name": {"ru": "Василий Фокин (1900)", "de": "Wassili Fokina (1900)"}, "region": {"ru": "д. Непейно", "de": "Dorf Nepeino"}, "info": {"ru": "Сын Ивана (1860) -> Яков", "de": "Sohn von Iwan (1860)"}, "parents": []},
+        {"id": "konurov_nikolai", "x": 540, "y": 640, "type": "paternal", "name": {"ru": "Николай Конуров", "de": "Nikolai Konurov"}, "region": {"ru": "д. Рыбино", "de": "Dorf Rybino"}, "info": {"ru": "Вятские корни", "de": "Wjatka-Ahnen"}, "parents": []},
+        {"id": "sokov_grigori", "x": 780, "y": 640, "type": "paternal", "name": {"ru": "Григорий Соков", "de": "Grigori Sokov"}, "region": {"ru": "д. Рыбино", "de": "Dorf Rybino"}, "info": {"ru": "Линия Соковых", "de": "Sokov-Linie"}, "parents": []},
+        {"id": "busse_alexander", "x": 1100, "y": 640, "type": "maternal", "name": {"ru": "Александр Буссе", "de": "Alexander Busse"}, "region": {"ru": "Польша / Казань", "de": "Polen / Kasan"}, "info": {"ru": "Сын Ивана и Прасковьи", "de": "Sohn von Iwan u. Praskowja"}, "parents": ["busse_ivan", "vinogradova_praskovya"]},
+        {"id": "larionova_margarita_p", "x": 1320, "y": 640, "type": "maternal", "name": {"ru": "Маргарита Ларионова", "de": "Margarita Larionova"}, "region": {"ru": "Казань", "de": "Kasan"}, "info": {"ru": "Жена Дмитрия Буссе", "de": "Ehefrau von Dmitry Busse"}, "parents": []},
+        {"id": "zhuravlev_nikolai", "x": 1750, "y": 640, "type": "maternal", "name": {"ru": "Николай Журавлёв", "de": "Nikolai Shurawljow"}, "region": {"ru": "Ижевск", "de": "Ischewsk"}, "info": {"ru": "До Корнила (XVIII в.)", "de": "Bis Kornil (18. Jh.)"}, "parents": []},
 
-    <script src="data.js"></script>
-    <script>
-        let lang = 'ru';
-        const container = document.getElementById('canvas-container');
-        const canvas = document.getElementById('tree-canvas');
-        const ctx = canvas.getContext('2d');
+        // 5 ПОКОЛЕНИЕ
+        {"id": "great3_grandfather_ivan", "x": 80, "y": 790, "type": "paternal", "name": {"ru": "Иван Спиридонович Сырейщиков", "de": "Iwan Syreishchikov"}, "region": {"ru": "д. Башкири", "de": "Dorf Baschkiri"}, "info": {"ru": "Родоначальник ветки в д. Башкири", "de": "Stammvater in Baschkiri"}, "parents": ["great4_grandfather_spiridon"]},
+        {"id": "busse_ivan", "x": 1100, "y": 790, "type": "maternal", "name": {"ru": "Иван Буссе", "de": "Johann Busse"}, "region": {"ru": "Польша / Пруссия", "de": "Polen / Preußen"}, "info": {"ru": "Муж Прасковьи Виноградовой", "de": "Ehemann von Praskowja"}, "parents": ["busse_anton", "leman_anna"]},
+        {"id": "vinogradova_praskovya", "x": 1320, "y": 790, "type": "maternal", "name": {"ru": "Прасковья Виноградова", "de": "Praskowja Vinogradova"}, "region": {"ru": "Россия", "de": "Russland"}, "info": {"ru": "Солдатская дочь", "de": "Soldatentochter"}, "parents": []},
 
-        function resizeCanvas() {
-            canvas.width = 3000;
-            canvas.height = 2000;
-            drawLines();
-        }
+        // 6 ПОКОЛЕНИЕ
+        {"id": "great4_grandfather_spiridon", "x": 80, "y": 940, "type": "paternal", "name": {"ru": "Спиридон Сырейщиков", "de": "Spiridon Syreishchikov"}, "region": {"ru": "д. Башкири", "de": "Dorf Baschkiri"}, "info": {"ru": "Родоначальник ветки", "de": "Stammvater"}, "parents": []},
+        {"id": "busse_anton", "x": 1000, "y": 940, "type": "maternal", "name": {"ru": "Антон Буссе", "de": "Anton Busse"}, "region": {"ru": "Пруссия", "de": "Preußen"}, "info": {"ru": "Сын Самуэля и Барбары", "de": "Sohn von Samuel u. Barbara"}, "parents": ["busse_samuel", "zinke_barbara"]},
+        {"id": "leman_anna", "x": 1220, "y": 940, "type": "maternal", "name": {"ru": "Анна Леман", "de": "Anna Lehmann"}, "region": {"ru": "Пруссия", "de": "Preußen"}, "info": {"ru": "Дочь Готтлиба и Анны", "de": "Tochter von Gottlieb u. Anna"}, "parents": ["leman_gottlib", "schonknecht_anna"]},
 
-        function drawLines() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = "#34495e"; /* Более темный контрастный цвет линий */
-            ctx.lineWidth = 2.5;
-
-            treeData.persons.forEach(person => {
-                if (person.parents && person.parents.length > 0) {
-                    person.parents.forEach(parentId => {
-                        const parent = treeData.persons.find(p => p.id === parentId);
-                        if (parent) {
-                            ctx.beginPath();
-                            // Точка старта: середина НИЗА карточки ребенка (ширина 250px, высота 115px)
-                            ctx.moveTo(person.x + 125, person.y + 115);
-                            // Точка финиша: середина ВЕРХА карточки родителя
-                            ctx.lineTo(parent.x + 125, parent.y);
-                            ctx.stroke();
-                        }
-                    });
-                }
-            });
-        }
-
-        function renderTree() {
-            document.querySelectorAll('.card').forEach(c => c.remove());
-
-            treeData.persons.forEach(person => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.style.left = person.x + 'px';
-                card.style.top = person.y + 'px';
-                
-                card.innerHTML = `
-                    <h3>${person.name[lang]}</h3>
-                    <div class="region">${person.region[lang]}</div>
-                    <div class="info">${person.info[lang]}</div>
-                `;
-
-                card.addEventListener('mousedown', function(e) {
-                    let shiftX = e.clientX - card.getBoundingClientRect().left;
-                    let shiftY = e.clientY - card.getBoundingClientRect().top;
-
-                    function moveAt(clientX, clientY) {
-                        let newX = clientX - container.getBoundingClientRect().left - shiftX + container.scrollLeft;
-                        let newY = clientY - container.getBoundingClientRect().top - shiftY + container.scrollTop;
-                        
-                        card.style.left = newX + 'px';
-                        card.style.top = newY + 'px';
-                        
-                        person.x = newX;
-                        person.y = newY;
-                        drawLines();
-                    }
-
-                    function onMouseMove(e) { moveAt(e.clientX, e.clientY); }
-                    document.addEventListener('mousemove', onMouseMove);
-
-                    document.onmouseup = function() {
-                        document.removeEventListener('mousemove', onMouseMove);
-                        document.onmouseup = null;
-                    };
-                });
-
-                card.ondragstart = function() { return false; };
-                container.appendChild(card);
-            });
-            drawLines();
-        }
-
-        function setLanguage(newLang) {
-            lang = newLang;
-            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-            if(event && event.target && event.target.classList) event.target.classList.add('active');
-            renderTree();
-        }
-
-        window.addEventListener('resize', resizeCanvas);
-        window.onload = function() {
-            resizeCanvas();
-            renderTree();
-        };
-    </script>
-</body>
-</html>
+        // 7 ПОКОЛЕНИЕ (КОРНИ)
+        {"id": "busse_samuel", "x": 880, "y": 1090, "type": "maternal", "name": {"ru": "Самуэль Буссе", "de": "Samuel Busse"}, "region": {"ru": "Царство Польское", "de": "Kongresspolen"}, "info": {"ru": "Муж Барбары Цинке", "de": "Ehemann von Barbara Zinke"}, "parents": []},
+        {"id": "zinke_barbara", "x": 1010, "y": 1090, "type": "maternal", "name": {"ru": "Барбара Цинке", "de": "Barbara Zinke"}, "region": {"ru": "Пруссия", "de": "Preußen"}, "info": {"ru": "Жена Самуэля", "de": "Ehefrau von Samuel"}, "parents": []},
+        {"id": "leman_gottlib", "x": 1140, "y": 1090, "type": "maternal", "name": {"ru": "Gottlieb Lehmann", "de": "Gottlieb Lehmann"}, "region": {"ru": "Пруссия", "de": "Preußen"}, "info": {"ru": "Муж Анны Розины", "de": "Ehemann von Anna Rosina"}, "parents": []},
+        {"id": "schonknecht_anna", "x": 1270, "y": 1090, "type": "maternal", "name": {"ru": "Анна Розина Шёнкнехт", "de": "Anna Rosina Schönknecht"}, "region": {"ru": "Пруссия", "de": "Preußen"}, "info": {"ru": "Жена Готтлиба Лемана", "de": "Ehefrau von Gottlieb"}}
+    ]
+};
