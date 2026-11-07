@@ -11,7 +11,7 @@
             --text-main: #2c3e50;
             --text-muted: #7f8c8d;
             --accent: #34495e;
-            --line-color: #bdc3c7;
+            --line-color: #7f8c8d;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -49,7 +49,7 @@
             width: 100vw;
             height: 100vh;
             position: relative;
-            overflow: hidden;
+            overflow: auto;
             background: radial-gradient(circle, #eef1f4 1px, transparent 1px);
             background-size: 20px 20px;
         }
@@ -57,27 +57,28 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 2000px;
+            height: 2000px;
             pointer-events: none;
             z-index: 1;
         }
         .card {
             background: var(--card-bg);
             border-radius: 8px;
-            padding: 14px;
-            width: 190px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 12px;
+            width: 180px;
+            height: 70px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             border: 1px solid rgba(0,0,0,0.05);
             position: absolute;
             cursor: move;
             z-index: 10;
             user-select: none;
-            transition: box-shadow 0.2s;
+            box-sizing: border-box;
         }
-        .card:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
+        .card:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.15); }
         .card h3 { margin: 0 0 4px 0; font-size: 14px; font-weight: 600; text-align: center; }
-        .card p { margin: 0; font-size: 12px; color: var(--text-muted); text-align: center; }
+        .card p { margin: 0; font-size: 11px; color: var(--text-muted); text-align: center; }
     </style>
 </head>
 <body>
@@ -95,21 +96,21 @@
         // Данные на основе вашего PDF из Famiry
         const data = {
             "persons": [
-                // Уровень 0: Вы
-                {"id": "vasily", "x": 500, "y": 60, "name": {"ru": "Василий (Вы)", "de": "Wassili (Ich)"}, "dates": {"ru": "Главный профиль", "de": "Hauptprofil"}, "parents": ["zhuravlev", "sireishchikova"]},
+                // Уровень 0: Вы (сверху)
+                {"id": "vasily", "x": 500, "y": 50, "name": {"ru": "Василий (Вы)", "de": "Wassili (Ich)"}, "dates": {"ru": "Главный профиль", "de": "Hauptprofil"}, "parents": ["zhuravlev", "sireishchikova"]},
                 
                 // Уровень 1: Родители (Ветви Журавлевых и Сирейщиковых)
-                {"id": "zhuravlev", "x": 250, "y": 220, "name": {"ru": "Журавлев", "de": "Shurawljow"}, "dates": {"ru": "Линия отца", "de": "Väterliche Linie"}, "parents": ["ivanov", "kuzminykh"]},
-                {"id": "sireishchikova", "x": 750, "y": 220, "name": {"ru": "Сирейщикова", "de": "Sireischtschikowa"}, "dates": {"ru": "Линия матери", "de": "Mütterliche Linie"}, "parents": ["sireishchikov", "konurova"]},
+                {"id": "zhuravlev", "x": 250, "y": 200, "name": {"ru": "Журавлев (Отец)", "de": "Shurawljow (Vater)"}, "dates": {"ru": "Линия отца", "de": "Väterliche Linie"}, "parents": ["ivanov", "kuzminykh"]},
+                {"id": "sireishchikova", "x": 750, "y": 200, "name": {"ru": "Сирейщикова (Мать)", "de": "Sireischtschikowa (Mutter)"}, "dates": {"ru": "Линия матери", "de": "Mütterliche Linie"}, "parents": ["sireishchikov", "konurova"]},
                 
-                // Уровень 2: Бабушки и дедушки (Ивановы, Кузьминых, Сырейщиковы, Конуровы)
-                {"id": "ivanov", "x": 120, "y": 380, "name": {"ru": "Иванов", "de": "Iwanow"}, "dates": {"ru": "Предки", "de": "Ahnen"}, "parents": []},
-                {"id": "kuzminykh", "x": 380, "y": 380, "name": {"ru": "Кузьминых", "de": "Kusminych"}, "dates": {"ru": "Предки", "de": "Ahnen"}, "parents": []},
-                {"id": "sireishchikov", "x": 620, "y": 380, "name": {"ru": "Сирейщиков / Сырей", "de": "Sireischtschikow"}, "dates": {"ru": "Корни семьи", "de": "Familiemwurzeln"}, "parents": ["ushnurtsiya"]},
-                {"id": "konurova", "x": 880, "y": 380, "name": {"ru": "Конурова", "de": "Konurowa"}, "dates": {"ru": "Предки", "de": "Ahnen"}, "parents": []},
+                // Уровень 2: Бабушки и дедушки
+                {"id": "ivanov", "x": 120, "y": 350, "name": {"ru": "Иванов (Дедушка)", "de": "Iwanow (Großvater)"}, "dates": {"ru": "Предки", "de": "Ahnen"}, "parents": []},
+                {"id": "kuzminykh", "x": 380, "y": 350, "name": {"ru": "Кузьминых (Бабушка)", "de": "Kusminych (Großmutter)"}, "dates": {"ru": "Предки", "de": "Ahnen"}, "parents": []},
+                {"id": "sireishchikov", "x": 620, "y": 350, "name": {"ru": "Сирейщиков / Сырей", "de": "Sireischtschikow"}, "dates": {"ru": "Корни семьи", "de": "Familiemwurzeln"}, "parents": ["ushnurtsiya"]},
+                {"id": "konurova", "x": 880, "y": 350, "name": {"ru": "Конурова (Бабушка)", "de": "Konurowa (Großmutter)"}, "dates": {"ru": "Предки", "de": "Ahnen"}, "parents": []},
                 
-                // Уровень 3: Глубокие корни (Ушнурция)
-                {"id": "ushnurtsiya", "x": 620, "y": 540, "name": {"ru": "Ушнурция", "de": "Uschnurzija"}, "dates": {"ru": "Ранние даты (от 1822)", "de": "Frühe Daten (ab 1822)"}, "parents": []}
+                // Уровень 3: Глубокие корни
+                {"id": "ushnurtsiya", "x": 620, "y": 500, "name": {"ru": "Ушнурция", "de": "Uschnurzija"}, "dates": {"ru": "Ранние даты (от 1822)", "de": "Frühe Daten (ab 1822)"}, "parents": []}
             ]
         };
 
@@ -126,13 +127,13 @@
                         if (parent) {
                             const line = document.createElementNS("http://w3.org", "path");
                             
-                            // Вычисляем точки (от середины НИЗА карточки ребенка к середине ВЕРХА карточки родителя)
-                            const startX = person.x + 95; // 190px / 2
-                            const startY = person.y + 60; // Высота карточки примерно 60px
-                            const endX = parent.x + 95;
-                            const endY = parent.y;
+                            // Жестко привязываемся к X и Y координатам из структуры данных
+                            const startX = person.x + 90; // Середина ребенка (180 / 2)
+                            const startY = person.y + 70; // Низ ребенка (высота карточки)
+                            const endX = parent.x + 90;   // Середина родителя
+                            const endY = parent.y;        // Верх родителя
                             
-                            // Красивое сглаженное ветвление (кривая Безье)
+                            // Кривая Безье
                             const d = `M ${startX} ${startY} C ${startX} ${(startY + endY) / 2}, ${endX} ${(startY + endY) / 2}, ${endX} ${endY}`;
                             
                             line.setAttribute("d", d);
@@ -160,16 +161,17 @@
                     <p>${person.dates[lang]}</p>
                 `;
 
-                // Улучшенный Drag & Drop для перемещения карточек мышкой в любое место
                 card.addEventListener('mousedown', function(e) {
                     let shiftX = e.clientX - card.getBoundingClientRect().left;
                     let shiftY = e.clientY - card.getBoundingClientRect().top;
 
                     function moveAt(clientX, clientY) {
-                        let newX = clientX - container.getBoundingClientRect().left - shiftX;
-                        let newY = clientY - container.getBoundingClientRect().top - shiftY;
+                        let newX = clientX - container.getBoundingClientRect().left - shiftX + container.scrollLeft;
+                        let newY = clientY - container.getBoundingClientRect().top - shiftY + container.scrollTop;
+                        
                         card.style.left = newX + 'px';
                         card.style.top = newY + 'px';
+                        
                         person.x = newX;
                         person.y = newY;
                         drawLines();
@@ -187,25 +189,29 @@
                 card.ondragstart = function() { return false; };
                 container.appendChild(card);
             });
+            
+            // Запуск отрисовки линий сразу после рендеринга карточек
             drawLines();
         }
 
         function setLanguage(newLang) {
             lang = newLang;
             document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            // Подсветка активной кнопки языка
+            if(event) {
+                event.target.classList.add('active');
+            } else {
+                document.querySelectorAll('.lang-btn').forEach(b => {
+                    if(b.textContent.toLowerCase() === newLang) b.classList.add('active');
+                });
+            }
             renderTree();
         }
 
-        window.addEventListener('resize', () => {
-            svg.setAttribute('width', window.innerWidth);
-            svg.setAttribute('height', window.innerHeight);
-            drawLines();
-        });
-        
-        svg.setAttribute('width', window.innerWidth);
-        svg.setAttribute('height', window.innerHeight);
-        renderTree();
+        // Гарантируем запуск после полной загрузки страницы
+        window.onload = function() {
+            renderTree();
+        };
     </script>
 </body>
 </html>
