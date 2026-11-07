@@ -5,18 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Семейное Древо | Stammbaum</title>
     <style>
-        :root {
-            --bg-color: #f4f6f8;
-            --card-bg: #ffffff;
-            --text-main: #2c3e50;
-            --text-muted: #7f8c8d;
-            --accent: #34495e;
-            --line-color: #7f8c8d;
-        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            background-color: #f4f6f8;
+            color: #2c3e50;
             margin: 0;
             padding: 0;
             overflow: hidden;
@@ -32,7 +24,7 @@
             gap: 10px;
         }
         .lang-btn {
-            background: var(--card-bg);
+            background: #ffffff;
             border: 1px solid #dcdde1;
             padding: 8px 14px;
             border-radius: 6px;
@@ -41,44 +33,48 @@
             transition: all 0.2s ease;
         }
         .lang-btn.active {
-            background: var(--accent);
+            background: #34495e;
             color: white;
-            border-color: var(--accent);
+            border-color: #34495e;
         }
         #canvas-container {
             width: 100vw;
             height: 100vh;
             position: relative;
-            overflow: auto;
             background: radial-gradient(circle, #eef1f4 1px, transparent 1px);
             background-size: 20px 20px;
+            overflow: auto;
         }
         #tree-canvas {
             position: absolute;
             top: 0;
             left: 0;
-            width: 2000px;
+            width: 3000px;
             height: 2000px;
             pointer-events: none;
             z-index: 1;
         }
         .card {
-            background: var(--card-bg);
+            background: #ffffff;
             border-radius: 8px;
-            padding: 12px;
-            width: 180px;
-            height: 70px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 10px;
+            width: 220px;
+            height: 105px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             border: 1px solid rgba(0,0,0,0.05);
             position: absolute;
             cursor: move;
             z-index: 10;
             user-select: none;
             box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
-        .card:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.15); }
-        .card h3 { margin: 0 0 4px 0; font-size: 14px; font-weight: 600; text-align: center; }
-        .card p { margin: 0; font-size: 11px; color: var(--text-muted); text-align: center; }
+        .card:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+        .card h3 { margin: 0 0 3px 0; font-size: 13px; font-weight: 600; text-align: center; color: #2c3e50; }
+        .card .region { margin: 0 0 3px 0; font-size: 10px; color: #7f8c8d; text-align: center; font-style: italic; }
+        .card .info { margin: 0; font-size: 10px; color: #95a5a6; text-align: center; line-height: 1.2; }
     </style>
 </head>
 <body>
@@ -89,58 +85,37 @@
     </header>
 
     <div id="canvas-container">
-        <svg id="tree-canvas"></svg>
+        <canvas id="tree-canvas"></canvas>
     </div>
 
+    <!-- Сначала подключаем данные, затем логику интерфейса -->
+    <script src="data.js"></script>
     <script>
-        // Данные на основе вашего PDF из Famiry
-        const data = {
-            "persons": [
-                // Уровень 0: Вы (сверху)
-                {"id": "vasily", "x": 500, "y": 50, "name": {"ru": "Василий (Вы)", "de": "Wassili (Ich)"}, "dates": {"ru": "Главный профиль", "de": "Hauptprofil"}, "parents": ["zhuravlev", "sireishchikova"]},
-                
-                // Уровень 1: Родители (Ветви Журавлевых и Сирейщиковых)
-                {"id": "zhuravlev", "x": 250, "y": 200, "name": {"ru": "Журавлев (Отец)", "de": "Shurawljow (Vater)"}, "dates": {"ru": "Линия отца", "de": "Väterliche Linie"}, "parents": ["ivanov", "kuzminykh"]},
-                {"id": "sireishchikova", "x": 750, "y": 200, "name": {"ru": "Сирейщикова (Мать)", "de": "Sireischtschikowa (Mutter)"}, "dates": {"ru": "Линия матери", "de": "Mütterliche Linie"}, "parents": ["sireishchikov", "konurova"]},
-                
-                // Уровень 2: Бабушки и дедушки
-                {"id": "ivanov", "x": 120, "y": 350, "name": {"ru": "Иванов (Дедушка)", "de": "Iwanow (Großvater)"}, "dates": {"ru": "Предки", "de": "Ahnen"}, "parents": []},
-                {"id": "kuzminykh", "x": 380, "y": 350, "name": {"ru": "Кузьминых (Бабушка)", "de": "Kusminych (Großmutter)"}, "dates": {"ru": "Предки", "de": "Ahnen"}, "parents": []},
-                {"id": "sireishchikov", "x": 620, "y": 350, "name": {"ru": "Сирейщиков / Сырей", "de": "Sireischtschikow"}, "dates": {"ru": "Корни семьи", "de": "Familiemwurzeln"}, "parents": ["ushnurtsiya"]},
-                {"id": "konurova", "x": 880, "y": 350, "name": {"ru": "Конурова (Бабушка)", "de": "Konurowa (Großmutter)"}, "dates": {"ru": "Предки", "de": "Ahnen"}, "parents": []},
-                
-                // Уровень 3: Глубокие корни
-                {"id": "ushnurtsiya", "x": 620, "y": 500, "name": {"ru": "Ушнурция", "de": "Uschnurzija"}, "dates": {"ru": "Ранние даты (от 1822)", "de": "Frühe Daten (ab 1822)"}, "parents": []}
-            ]
-        };
-
         let lang = 'ru';
         const container = document.getElementById('canvas-container');
-        const svg = document.getElementById('tree-canvas');
+        const canvas = document.getElementById('tree-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = 3000;
+            canvas.height = 2000;
+            drawLines();
+        }
 
         function drawLines() {
-            svg.innerHTML = '';
-            data.persons.forEach(person => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = "#7f8c8d";
+            ctx.lineWidth = 2;
+
+            treeData.persons.forEach(person => {
                 if (person.parents && person.parents.length > 0) {
                     person.parents.forEach(parentId => {
-                        const parent = data.persons.find(p => p.id === parentId);
+                        const parent = treeData.persons.find(p => p.id === parentId);
                         if (parent) {
-                            const line = document.createElementNS("http://w3.org", "path");
-                            
-                            // Жестко привязываемся к X и Y координатам из структуры данных
-                            const startX = person.x + 90; // Середина ребенка (180 / 2)
-                            const startY = person.y + 70; // Низ ребенка (высота карточки)
-                            const endX = parent.x + 90;   // Середина родителя
-                            const endY = parent.y;        // Верх родителя
-                            
-                            // Кривая Безье
-                            const d = `M ${startX} ${startY} C ${startX} ${(startY + endY) / 2}, ${endX} ${(startY + endY) / 2}, ${endX} ${endY}`;
-                            
-                            line.setAttribute("d", d);
-                            line.setAttribute("stroke", "var(--line-color)");
-                            line.setAttribute("stroke-width", "2");
-                            line.setAttribute("fill", "none");
-                            svg.appendChild(line);
+                            ctx.beginPath();
+                            ctx.moveTo(person.x + 110, person.y + 105);
+                            ctx.lineTo(parent.x + 110, parent.y);
+                            ctx.stroke();
                         }
                     });
                 }
@@ -150,7 +125,7 @@
         function renderTree() {
             document.querySelectorAll('.card').forEach(c => c.remove());
 
-            data.persons.forEach(person => {
+            treeData.persons.forEach(person => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.style.left = person.x + 'px';
@@ -158,7 +133,8 @@
                 
                 card.innerHTML = `
                     <h3>${person.name[lang]}</h3>
-                    <p>${person.dates[lang]}</p>
+                    <div class="region">${person.region[lang]}</div>
+                    <div class="info">${person.info[lang]}</div>
                 `;
 
                 card.addEventListener('mousedown', function(e) {
@@ -189,27 +165,19 @@
                 card.ondragstart = function() { return false; };
                 container.appendChild(card);
             });
-            
-            // Запуск отрисовки линий сразу после рендеринга карточек
             drawLines();
         }
 
         function setLanguage(newLang) {
             lang = newLang;
             document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-            // Подсветка активной кнопки языка
-            if(event) {
-                event.target.classList.add('active');
-            } else {
-                document.querySelectorAll('.lang-btn').forEach(b => {
-                    if(b.textContent.toLowerCase() === newLang) b.classList.add('active');
-                });
-            }
+            if(event && event.target && event.target.classList) event.target.classList.add('active');
             renderTree();
         }
 
-        // Гарантируем запуск после полной загрузки страницы
+        window.addEventListener('resize', resizeCanvas);
         window.onload = function() {
+            resizeCanvas();
             renderTree();
         };
     </script>
