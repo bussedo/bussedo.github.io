@@ -28,6 +28,8 @@
         
         .toggle-btn { position: absolute; top: 8px; right: 8px; width: 20px; height: 20px; background: rgba(0,0,0,0.05); border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; color: #34495e; transition: background 0.2s; }
         .toggle-btn:hover { background: rgba(0,0,0,0.15); }
+        
+        #error-banner { display: none; position: fixed; top: 70px; left: 20px; background: #e74c3c; color: white; padding: 15px; border-radius: 6px; z-index: 999; font-weight: bold; max-width: 80%; }
     </style>
 </head>
 <body>
@@ -39,10 +41,13 @@
         <button class="btn" onclick="resetPositions()" style="margin-left: 10px; background: #e74c3c; color: white; border: none;">Сбросить позиции (❗ Обязательно нажать после обновления)</button>
     </header>
 
+    <div id="error-banner"></div>
+    
     <div id="canvas-container">
         <canvas id="tree-canvas"></canvas>
     </div>
 
+    <script src="data.js"></script>
     <script>
         let lang = 'ru';
         let currentMain = 'me'; 
@@ -52,6 +57,7 @@
         const container = document.getElementById('canvas-container');
         const canvas = document.getElementById('tree-canvas');
         const ctx = canvas.getContext('2d');
+        const errorBanner = document.getElementById('error-banner');
 
         function resizeCanvas() {
             canvas.width = 4000; canvas.height = 3000; drawLines();
@@ -60,6 +66,8 @@
         function populateDropdown() {
             const select = document.getElementById('main-person-select');
             select.innerHTML = '';
+            
+            if (!window.treeData || !window.treeData.persons) return;
             
             let sortedPersons = treeData.persons
                 .filter(p => allowedMainIds.includes(p.id))
@@ -170,13 +178,12 @@
             let name = targetNode.n.ru.split(' ')[0];
             let isFemale = /(а|я|ия)$/i.test(name) && !/Никита|Илья|Лука|Фома|Савва/i.test(name);
 
-            // Если кровного родства нет, проверяем на супружество (общие дети)
             if (bestUp === -1) {
                 let isSpouse = treeData.persons.some(p => p.p && p.p.includes(mainId) && p.p.includes(targetId));
                 if (isSpouse) {
                     return lang === 'ru' ? (isFemale ? 'Жена' : 'Муж') : (isFemale ? 'Ehefrau' : 'Ehemann');
                 }
-                return null; // Возвращаем null, чтобы убрать все титулы с карточки
+                return null;
             }
 
             let relRu = ""; let relDe = "";
@@ -184,7 +191,7 @@
             else if (bestUp === 2 && bestDown === 0) { relRu = isFemale ? "Бабушка" : "Дедушка"; relDe = isFemale ? "Großmutter" : "Großvater"; }
             else if (bestUp === 3 && bestDown === 0) { relRu = isFemale ? "Прабабушка" : "Прадед"; relDe = isFemale ? "Urgroßmutter" : "Urgroßvater"; }
             else if (bestUp === 4 && bestDown === 0) { relRu = isFemale ? "Прапрабабушка" : "Прапрадед"; relDe = isFemale ? "Ururgroßmutter" : "Ururgroßvater"; }
-            else if (bestUp > 4 && bestDown === 0) { relRu = isFemale ? `Пра(${bestUp-1})бабушка` : `Пра(${bestUp-1})дед`; relDe = isFemale ? "Ahnin" : "Ahn"; }
+            else if (bestUp > 4 && bestDown === 0) { relRu = isFemale ? `Пра(${bestUp-1})бабушка`:`Пра(${bestUp-1})дед`; relDe = isFemale ? "Ahnin" : "Ahn"; }
             else if (bestUp === 0 && bestDown === 1) { relRu = isFemale ? "Дочь" : "Сын"; relDe = isFemale ? "Tochter" : "Sohn"; }
             else if (bestUp === 0 && bestDown === 2) { relRu = isFemale ? "Внучка" : "Внук"; relDe = isFemale ? "Enkelin" : "Enkel"; }
             else if (bestUp === 1 && bestDown === 1) { relRu = isFemale ? "Сестра" : "Брат"; relDe = isFemale ? "Schwester" : "Bruder"; }
@@ -225,7 +232,7 @@
             let person = treeData.persons.find(p => p.id === id);
             if (person) {
                 person.h = !person.h;
-                const collapsed = JSON.parse(localStorage.getItem('tree_collapsed')) || {};
+                const collapsed = JSON.parse(localStorage.getItem('tree_collapsed') || '{}');
                 collapsed[id] = person.h;
                 localStorage.setItem('tree_collapsed', JSON.stringify(collapsed));
                 renderTree();
@@ -251,10 +258,9 @@
                 
                 let toggleBtnHtml = '';
                 if (person.p && person.p.length > 0) {
-                    toggleBtnHtml = `<button class="toggle-btn" onclick="toggleBranch('${person.id}', event)">${person.h ? '+' : '−'}</button>`;
+                    toggleBtnHtml = `<button class="toggle-btn" onclick="toggleBranch('${person.id}',event)">${person.h ? '+' : '−'}</button>`;
                 }
                 
-                // Убираем старые подписи о родстве из базы
                 let originalInfo = person.i[lang];
                 let bio = "";
                 
@@ -267,7 +273,6 @@
                 let dynamicRel = getKinship(currentMain, person.id);
                 let displayInfo = originalInfo; 
                 
-                // Если родство найдено - пишем его. Если нет - просто сухие факты биографии.
                 if (dynamicRel) {
                     displayInfo = bio ? `${dynamicRel} • ${bio}` : dynamicRel;
                 } else {
@@ -306,7 +311,7 @@
                         document.removeEventListener('mousemove', onMouseMove);
                         document.onmouseup = null;
                         
-                        const positions = JSON.parse(localStorage.getItem('tree_positions')) || {};
+                        const positions = JSON.parse(localStorage.getItem('tree_positions') || '{}');
                         positions[person.id] = { x: person.x, y: person.y };
                         localStorage.setItem('tree_positions', JSON.stringify(positions));
                     };
@@ -336,16 +341,26 @@
 
         window.addEventListener('resize', resizeCanvas);
         window.onload = function() { 
-            const savedPositions = JSON.parse(localStorage.getItem('tree_positions'));
-            if (savedPositions) {
-                treeData.persons.forEach(p => {
-                    if (savedPositions[p.id]) { p.x = savedPositions[p.id].x; p.y = savedPositions[p.id].y; }
-                });
+            try {
+                if (typeof treeData === 'undefined') {
+                    throw new Error("Файл data.js не найден, имеет опечатку или слово 'Const' написано с большой буквы вместо 'const'.");
+                }
+                
+                const savedPositions = JSON.parse(localStorage.getItem('tree_positions') || 'null');
+                if (savedPositions) {
+                    treeData.persons.forEach(p => {
+                        if (savedPositions[p.id]) { p.x = savedPositions[p.id].x; p.y = savedPositions[p.id].y; }
+                    });
+                }
+                populateDropdown();
+                resizeCanvas(); 
+                renderTree(); 
+            } catch (err) {
+                errorBanner.style.display = 'block';
+                errorBanner.innerText = `КРИТИЧЕСКАЯ ОШИБКА: ${err.message}`;
             }
-            populateDropdown();
-            resizeCanvas(); 
-            renderTree(); 
         };
     </script>
 </body>
 </html>
+
