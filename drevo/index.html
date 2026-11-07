@@ -13,7 +13,7 @@
         #main-person-select { padding: 8px 14px; border-radius: 6px; border: 1px solid #dcdde1; font-weight: 600; font-family: inherit; color: #2c3e50; font-size: 13px; cursor: pointer; background-color: #ffffff; outline: none; }
         
         #canvas-container { width: 100vw; height: 100vh; position: relative; background: radial-gradient(circle, #eef1f4 1px, transparent 1px); background-size: 20px 20px; overflow: auto; }
-        #tree-canvas { position: absolute; top: 0; left: 0; width: 4000px; height: 2500px; pointer-events: none; z-index: 1; }
+        #tree-canvas { position: absolute; top: 0; left: 0; width: 4000px; height: 3000px; pointer-events: none; z-index: 1; }
         
         .card { border-radius: 10px; padding: 14px; width: 250px; height: 115px; box-shadow: 0 5px 15px rgba(52, 73, 94, 0.15); position: absolute; cursor: move; z-index: 10; user-select: none; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; transition: box-shadow 0.2s; }
         
@@ -36,37 +36,25 @@
         <button class="btn active" id="btn-ru" onclick="setLanguage('ru')">RU</button>
         <button class="btn" id="btn-de" onclick="setLanguage('de')">DE</button>
         <select id="main-person-select" onchange="changeMainPerson(this.value)" style="margin-left: 20px;"></select>
-        <button class="btn" onclick="resetPositions()" style="margin-left: 10px; background: #e74c3c; color: white; border: none;">Сбросить позиции</button>
+        <button class="btn" onclick="resetPositions()" style="margin-left: 10px; background: #e74c3c; color: white; border: none;">Сбросить позиции (❗ Обязательно нажать после обновления)</button>
     </header>
 
     <div id="canvas-container">
         <canvas id="tree-canvas"></canvas>
     </div>
 
-    <script src="data.js"></script>
     <script>
         let lang = 'ru';
         let currentMain = 'me'; 
         
-        // Ограниченный список тех, кого можно выбрать главной персоной
         const allowedMainIds = ['me', 'cousin_artem', 'martin', 'father_dmitry', 'mother_ekaterina', 'aunt_svetlana', 'uncle_konstantin', 'uncle_dmitry_e'];
         
         const container = document.getElementById('canvas-container');
         const canvas = document.getElementById('tree-canvas');
         const ctx = canvas.getContext('2d');
 
-        const savedPositions = JSON.parse(localStorage.getItem('tree_positions')) || {};
-        treeData.persons.forEach(p => {
-            if (savedPositions[p.id]) { p.x = savedPositions[p.id].x; p.y = savedPositions[p.id].y; }
-        });
-
-        const savedCollapsed = JSON.parse(localStorage.getItem('tree_collapsed')) || {};
-        treeData.persons.forEach(p => {
-            if (savedCollapsed[p.id] !== undefined) p.h = savedCollapsed[p.id];
-        });
-
         function resizeCanvas() {
-            canvas.width = 4000; canvas.height = 2500; drawLines();
+            canvas.width = 4000; canvas.height = 3000; drawLines();
         }
 
         function populateDropdown() {
@@ -86,7 +74,6 @@
             });
         }
 
-        // --- УМНОЕ СКРЫТИЕ ВЕТОК ---
         let visibleNodes = {};
         function calculateVisibility() {
             visibleNodes = {};
@@ -109,7 +96,6 @@
             }
         }
 
-        // --- ДИНАМИЧЕСКИЕ ЦВЕТА ---
         let nodeColors = {};
         function calculateColors() {
             treeData.persons.forEach(p => nodeColors[p.id] = 'neutral'); 
@@ -140,7 +126,6 @@
             }
         }
 
-        // --- АЛГОРИТМ ВЫЧИСЛЕНИЯ РОДСТВА ---
         function getKinship(mainId, targetId) {
             if (mainId === targetId) return lang === 'ru' ? "Это Вы" : "Das bist du";
             
@@ -169,7 +154,6 @@
             let bestUp = -1;
             let bestDown = -1;
             
-            // Ищем наименьшего общего предка
             for (let ancestor in mainAncestors) {
                 if (targetAncestors[ancestor] !== undefined) {
                     let up = mainAncestors[ancestor];
@@ -182,20 +166,17 @@
                 }
             }
             
-            if (bestUp === -1) return null;
-
             let targetNode = treeData.persons.find(p => p.id === targetId);
-            let infoStr = targetNode.i.ru.toLowerCase();
             let name = targetNode.n.ru.split(' ')[0];
-            
-            // Определение пола для подписи
-            let isFemale = false;
-            if (infoStr.includes('жена') || infoStr.includes('дочь') || infoStr.includes('бабушка') || infoStr.includes('мать') || infoStr.includes('тетя')) {
-                isFemale = true;
-            } else if (infoStr.includes('муж') || infoStr.includes('сын') || infoStr.includes('дед') || infoStr.includes('отец') || infoStr.includes('дядя') || infoStr.includes('брат')) {
-                isFemale = false;
-            } else if (/(а|я)$/i.test(name) && !/Никита|Илья|Лука|Фома|Савва/i.test(name)) {
-                isFemale = true;
+            let isFemale = /(а|я|ия)$/i.test(name) && !/Никита|Илья|Лука|Фома|Савва/i.test(name);
+
+            // Если кровного родства нет, проверяем на супружество (общие дети)
+            if (bestUp === -1) {
+                let isSpouse = treeData.persons.some(p => p.p && p.p.includes(mainId) && p.p.includes(targetId));
+                if (isSpouse) {
+                    return lang === 'ru' ? (isFemale ? 'Жена' : 'Муж') : (isFemale ? 'Ehefrau' : 'Ehemann');
+                }
+                return null; // Возвращаем null, чтобы убрать все титулы с карточки
             }
 
             let relRu = ""; let relDe = "";
@@ -211,7 +192,7 @@
             else if (bestUp === 3 && bestDown === 1) { relRu = isFemale ? "Двоюродная бабушка" : "Двоюродный дедушка"; relDe = isFemale ? "Großtante" : "Großonkel"; }
             else if (bestUp === 1 && bestDown === 2) { relRu = isFemale ? "Племянница" : "Племянник"; relDe = isFemale ? "Nichte" : "Neffe"; }
             else if (bestUp === 2 && bestDown === 2) { relRu = isFemale ? "Двоюродная сестра" : "Двоюродный брат"; relDe = isFemale ? "Cousine" : "Cousin"; }
-            else { relRu = "Родственник"; relDe = "Verwandter"; }
+            else { relRu = "Кровный родственник"; relDe = "Blutsverwandter"; }
 
             return lang === 'ru' ? relRu : relDe;
         }
@@ -273,24 +254,24 @@
                     toggleBtnHtml = `<button class="toggle-btn" onclick="toggleBranch('${person.id}', event)">${person.h ? '+' : '−'}</button>`;
                 }
                 
-                // --- ГЕНЕРАЦИЯ ПОДПИСЕЙ ---
+                // Убираем старые подписи о родстве из базы
                 let originalInfo = person.i[lang];
                 let bio = "";
                 
-                // Отсекаем старые жесткие статусы
                 if (originalInfo.includes(' • ')) {
                     bio = originalInfo.split(' • ').slice(1).join(' • ');
-                } else if (/^(Пра|Дед|Бабушка|Брат|Сестра|Дядя|Тетя|Отец|Мать|Сын|Дочь|Внук|Создатель|Ветвь|Линия)/i.test(originalInfo)) {
-                    bio = "";
                 } else {
-                    bio = originalInfo;
+                    bio = originalInfo.replace(/^(Пра\(\d+\)дед|Пра\(\d+\)бабушка|Прапрадед|Прапрабабушка|Прадед|Прабабушка|Дед|Бабушка|Брат|Сестра|Дядя|Тетя|Отец|Мать|Сын|Дочь|Внук|Внучка|Создатель древа|Создатель|Муж|Жена)\s*•?\s*/i, '').trim();
                 }
                 
                 let dynamicRel = getKinship(currentMain, person.id);
                 let displayInfo = originalInfo; 
                 
+                // Если родство найдено - пишем его. Если нет - просто сухие факты биографии.
                 if (dynamicRel) {
                     displayInfo = bio ? `${dynamicRel} • ${bio}` : dynamicRel;
+                } else {
+                    displayInfo = bio;
                 }
                 
                 let displayRegion = person.r[lang];
@@ -355,6 +336,12 @@
 
         window.addEventListener('resize', resizeCanvas);
         window.onload = function() { 
+            const savedPositions = JSON.parse(localStorage.getItem('tree_positions'));
+            if (savedPositions) {
+                treeData.persons.forEach(p => {
+                    if (savedPositions[p.id]) { p.x = savedPositions[p.id].x; p.y = savedPositions[p.id].y; }
+                });
+            }
             populateDropdown();
             resizeCanvas(); 
             renderTree(); 
