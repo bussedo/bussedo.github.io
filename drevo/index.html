@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title> Семейное Древо Буссе | Stammbaum Busse</title>
+    <title>Семейное Древо | Stammbaum</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f4f6f8; color: #2c3e50; margin: 0; padding: 0; overflow: hidden; height: 100vh; width: 100vw; touch-action: none; }
         header { position: fixed; top: 15px; left: 15px; z-index: 100; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; max-width: 95vw; }
@@ -51,12 +51,11 @@
         <button class="btn" id="btn-de" onclick="setLanguage('de')">DE</button>
         <select id="main-person-select" onchange="changeMainPerson(this.value)"></select>
         <button class="btn btn-bday" id="btn-bday" onclick="openBdays()">📅 Дни рождения</button>
-        <button class="btn" onclick="resetPositions()" style="background: #e74c3c; color: white; border: none;"> Сброс </button>
+        <button class="btn" onclick="resetPositions()" style="background: #e74c3c; color: white; border: none;">Сбросить позиции</button>
     </header>
 
     <div id="error-banner"></div>
     
-    <!-- Модальное окно дней рождений -->
     <div id="bday-overlay" onclick="closeBdays()"></div>
     <div id="bday-modal">
         <h2 id="bday-title">Дни рождения</h2>
@@ -103,7 +102,6 @@
             });
         }
 
-        // --- ЛОГИКА КАЛЕНДАРЯ ДНЕЙ РОЖДЕНИЙ ---
         function openBdays() {
             const list = document.getElementById('bday-list');
             list.innerHTML = '';
@@ -111,7 +109,6 @@
             let birthdays = [];
             treeData.persons.forEach(p => {
                 let info = p.i.ru;
-                // Ищем первую дату в формате ДД.ММ.ГГГГ
                 let match = info.match(/\b(\d{2})\.(\d{2})\.(\d{4})\b/);
                 if (match) {
                     birthdays.push({
@@ -123,7 +120,6 @@
                 }
             });
             
-            // Сортировка по месяцу, затем по дню
             birthdays.sort((a, b) => {
                 if (a.month !== b.month) return a.month - b.month;
                 return a.day - b.day;
@@ -222,6 +218,7 @@
             }
         }
 
+        // === ОБНОВЛЕННЫЙ АЛГОРИТМ РОДСТВА (С ПРАЩУРАМИ И ГРАМОТНЫМИ ПРИСТАВКАМИ) ===
         function getKinship(mainId, targetId) {
             if (mainId === targetId) return lang === 'ru' ? "Это Вы" : "Das bist du";
             
@@ -279,7 +276,19 @@
             else if (bestUp === 2 && bestDown === 0) { relRu = isFemale ? "Бабушка" : "Дедушка"; relDe = isFemale ? "Großmutter" : "Großvater"; }
             else if (bestUp === 3 && bestDown === 0) { relRu = isFemale ? "Прабабушка" : "Прадед"; relDe = isFemale ? "Urgroßmutter" : "Urgroßvater"; }
             else if (bestUp === 4 && bestDown === 0) { relRu = isFemale ? "Прапрабабушка" : "Прапрадед"; relDe = isFemale ? "Ururgroßmutter" : "Ururgroßvater"; }
-            else if (bestUp > 4 && bestDown === 0) { relRu = isFemale ? `Пра(${bestUp-1})бабушка`:`Пра(${bestUp-1})дед`; relDe = isFemale ? "Ahnin" : "Ahn"; }
+            else if (bestUp === 5 && bestDown === 0) { 
+                // 5 поколение - Пращуры
+                relRu = isFemale ? "Прапрапрабабушка (Пращурка)" : "Прапрапрадед (Пращур)"; 
+                relDe = isFemale ? "Urururgroßmutter (Altgroßmutter)" : "Urururgroßvater (Altgroßvater)"; 
+            }
+            else if (bestUp > 5 && bestDown === 0) { 
+                // Динамическая генерация для самых глубоких поколений (6 и глубже)
+                let praCount = bestUp - 2;
+                let prefixRu = "Пра" + "пра".repeat(praCount - 1);
+                let prefixDe = "Ur" + "ur".repeat(praCount - 1);
+                relRu = isFemale ? prefixRu + "бабушка" : prefixRu + "дед";
+                relDe = isFemale ? prefixDe + "großmutter" : prefixDe + "großvater";
+            }
             else if (bestUp === 0 && bestDown === 1) { relRu = isFemale ? "Дочь" : "Сын"; relDe = isFemale ? "Tochter" : "Sohn"; }
             else if (bestUp === 0 && bestDown === 2) { relRu = isFemale ? "Внучка" : "Внук"; relDe = isFemale ? "Enkelin" : "Enkel"; }
             else if (bestUp === 1 && bestDown === 1) { relRu = isFemale ? "Сестра" : "Брат"; relDe = isFemale ? "Schwester" : "Bruder"; }
@@ -362,10 +371,11 @@
                 let originalInfo = person.i[lang];
                 let bio = "";
                 
+                // Умный парсинг: отсекаем старые хардкодные записи вроде "Пра(5)дед"
                 if (originalInfo.includes(' • ')) {
                     bio = originalInfo.split(' • ').slice(1).join(' • ');
                 } else {
-                    bio = originalInfo.replace(/^(Пра\(\d+\)дед|Пра\(\d+\)бабушка|Прапрадед|Прапрабабушка|Прадед|Прабабушка|Дед|Бабушка|Брат|Сестра|Дядя|Тетя|Отец|Мать|Сын|Дочь|Внук|Внучка|Создатель древа|Создатель|Муж|Жена)\s*•?\s*/i, '').trim();
+                    bio = originalInfo.replace(/^((Пра)+дед|(Пра)+бабушка|Пра\(\d+\)дед|Пра\(\d+\)бабушка|Дед|Бабушка|Брат|Сестра|Дядя|Тетя|Отец|Мать|Сын|Дочь|Внук|Внучка|Создатель древа|Создатель|Муж|Жена)\s*•?\s*/i, '').trim();
                 }
                 
                 let dynamicRel = getKinship(currentMain, person.id);
