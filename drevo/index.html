@@ -7,25 +7,29 @@
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f4f6f8; color: #2c3e50; margin: 0; padding: 0; overflow: hidden; height: 100vh; width: 100vw; }
         header { position: fixed; top: 20px; left: 20px; z-index: 100; display: flex; gap: 10px; }
-        .lang-btn { background: #ffffff; border: 1px solid #dcdde1; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s ease; }
-        .lang-btn.active { background: #34495e; color: white; border-color: #34495e; }
+        .btn { background: #ffffff; border: 1px solid #dcdde1; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s ease; font-size: 13px; }
+        .btn.active { background: #34495e; color: white; border-color: #34495e; }
         #canvas-container { width: 100vw; height: 100vh; position: relative; background: radial-gradient(circle, #eef1f4 1px, transparent 1px); background-size: 20px 20px; overflow: auto; }
         #tree-canvas { position: absolute; top: 0; left: 0; width: 4000px; height: 2500px; pointer-events: none; z-index: 1; }
         .card { border-radius: 10px; padding: 14px; width: 250px; height: 115px; box-shadow: 0 5px 15px rgba(52, 73, 94, 0.15); position: absolute; cursor: move; z-index: 10; user-select: none; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; }
         .card.me { background: linear-gradient(135deg, #ffe259, #ffa751); border: 1px solid #ffa751; }
         .card.paternal { background: linear-gradient(135deg, #e0eafc, #cfdef3); border: 1px solid #b0c4de; }
         .card.maternal { background: linear-gradient(135deg, #fed6e3, #fbc2eb); border: 1px solid #fbc2eb; }
-        .card:hover { box-shadow: 0 8px 20px rgba(52, 73, 94, 0.25); }
-        .card h3 { margin: 0 0 5px 0; font-size: 14px; font-weight: 700; text-align: center; color: #2c3e50; line-height: 1.3; }
+        .card h3 { margin: 0 0 5px 0; font-size: 14px; font-weight: 700; text-align: center; color: #2c3e50; line-height: 1.3; padding-right: 20px; padding-left: 20px; }
         .card .region { margin: 0 0 4px 0; font-size: 11px; color: #4a6572; text-align: center; font-style: italic; }
         .card .info { margin: 0; font-size: 11px; color: #5c6b73; text-align: center; line-height: 1.2; }
+        
+        /* Кнопка сворачивания внутри карточки */
+        .toggle-btn { position: absolute; top: 8px; right: 8px; width: 20px; height: 20px; background: rgba(0,0,0,0.05); border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; color: #34495e; transition: background 0.2s; }
+        .toggle-btn:hover { background: rgba(0,0,0,0.15); }
     </style>
 </head>
 <body>
 
     <header>
-        <button class="lang-btn active" onclick="setLanguage('ru')">RU</button>
-        <button class="lang-btn" onclick="setLanguage('de')">DE</button>
+        <button class="btn active" id="btn-ru" onclick="setLanguage('ru')">RU</button>
+        <button class="btn" id="btn-de" onclick="setLanguage('de')">DE</button>
+        <button class="btn" onclick="resetPositions()" style="margin-left: 20px; background: #e74c3c; color: white; border: none;">Сбросить позиции</button>
     </header>
 
     <div id="canvas-container">
@@ -39,8 +43,46 @@
         const canvas = document.getElementById('tree-canvas');
         const ctx = canvas.getContext('2d');
 
+        // Загрузка сохраненных координат из памяти браузера
+        const savedPositions = JSON.parse(localStorage.getItem('tree_positions')) || {};
+        treeData.persons.forEach(p => {
+            if (savedPositions[p.id]) {
+                p.x = savedPositions[p.id].x;
+                p.y = savedPositions[p.id].y;
+            }
+        });
+
+        // Загрузка статуса свернутых веток
+        const savedCollapsed = JSON.parse(localStorage.getItem('tree_collapsed')) || {};
+        treeData.persons.forEach(p => {
+            if (savedCollapsed[p.id] !== undefined) p.h = savedCollapsed[p.id];
+        });
+
         function resizeCanvas() {
             canvas.width = 4000; canvas.height = 2500; drawLines();
+        }
+
+        // Функция проверки, скрыт ли предок из-за свернутой ветки ниже
+        function isPersonHidden(id) {
+            let current = treeData.persons.find(p => p.id === id);
+            if (!current) return true;
+            
+            // Ищем, на этой ли ветке кто-то свернут снизу
+            let hidden = false;
+            treeData.persons.forEach(anyPerson => {
+                if (anyPerson.h && anyPerson.p && anyPerson.p.length > 0) {
+                    if (isAncestorOf(anyPerson.id, id)) hidden = true;
+                }
+            });
+            return hidden;
+        }
+
+        // Рекурсивная проверка: является ли parentId предком для childId
+        function isAncestorOf(parentId, childId) {
+            let parent = treeData.persons.find(p => p.id === parentId);
+            if (!parent || !parent.p) return false;
+            if (parent.p.includes(childId)) return true;
+            return parent.p.some(pId => isAncestorOf(pId, childId));
         }
 
         function drawLines() {
@@ -48,8 +90,11 @@
             ctx.strokeStyle = "#34495e"; ctx.lineWidth = 2.5;
 
             treeData.persons.forEach(person => {
-                if (person.p && person.p.length > 0) {
+                if (isPersonHidden(person.id)) return; // Не рисуем линии для скрытых
+
+                if (person.p && person.p.length > 0 && !person.h) {
                     person.p.forEach(parentId => {
+                        if (isPersonHidden(parentId)) return;
                         const parent = treeData.persons.find(p => p.id === parentId);
                         if (parent) {
                             ctx.beginPath();
@@ -62,21 +107,45 @@
             });
         }
 
+        function toggleBranch(id, event) {
+            event.stopPropagation(); // Отключаем drag при клике на кнопку
+            let person = treeData.persons.find(p => p.id === id);
+            if (person) {
+                person.h = !person.h;
+                
+                // Сохраняем состояние веток
+                const collapsed = JSON.parse(localStorage.getItem('tree_collapsed')) || {};
+                collapsed[id] = person.h;
+                localStorage.setItem('tree_collapsed', JSON.stringify(collapsed));
+                
+                renderTree();
+            }
+        }
+
         function renderTree() {
             document.querySelectorAll('.card').forEach(c => c.remove());
 
             treeData.persons.forEach(person => {
+                if (isPersonHidden(person.id)) return; // Не рендерим скрытые карточки
+
                 const card = document.createElement('div');
                 card.className = `card ${person.t || 'paternal'}`;
                 card.style.left = person.x + 'px'; card.style.top = person.y + 'px';
                 
+                let toggleBtnHtml = '';
+                if (person.p && person.p.length > 0) {
+                    toggleBtnHtml = `<button class="toggle-btn" onclick="toggleBranch('${person.id}', event)">${person.h ? '+' : '−'}</button>`;
+                }
+
                 card.innerHTML = `
+                    ${toggleBtnHtml}
                     <h3>${person.n[lang]}</h3>
                     <div class="region">${person.r[lang]}</div>
                     <div class="info">${person.i[lang]}</div>
                 `;
 
                 card.addEventListener('mousedown', function(e) {
+                    if (e.target.className === 'toggle-btn') return;
                     let shiftX = e.clientX - card.getBoundingClientRect().left;
                     let shiftY = e.clientY - card.getBoundingClientRect().top;
 
@@ -94,6 +163,11 @@
                     document.onmouseup = function() {
                         document.removeEventListener('mousemove', onMouseMove);
                         document.onmouseup = null;
+                        
+                        // Сохраняем новые координаты карточки в память браузера
+                        const positions = JSON.parse(localStorage.getItem('tree_positions')) || {};
+                        positions[person.id] = { x: person.x, y: person.y };
+                        localStorage.setItem('tree_positions', JSON.stringify(positions));
                     };
                 });
 
@@ -105,9 +179,17 @@
 
         function setLanguage(newLang) {
             lang = newLang;
-            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-            if(event && event.target && event.target.classList) event.target.classList.add('active');
+            document.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${newLang}`).classList.add('active');
             renderTree();
+        }
+
+        function resetPositions() {
+            if(confirm("Сбросить все карточки в исходное положение?")) {
+                localStorage.removeItem('tree_positions');
+                localStorage.removeItem('tree_collapsed');
+                location.reload();
+            }
         }
 
         window.addEventListener('resize', resizeCanvas);
