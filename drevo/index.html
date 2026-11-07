@@ -55,13 +55,13 @@
             z-index: 1;
         }
         .card {
-            background: #ffffff;
-            border-radius: 8px;
-            padding: 10px;
-            width: 220px;
-            height: 105px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            border: 1px solid rgba(0,0,0,0.05);
+            background: linear-gradient(135deg, #e0eafc, #cfdef3); /* Красивый пастельный цветной фон */
+            border-radius: 10px;
+            padding: 14px;
+            width: 250px; /* Немного расширил карточку под крупные имена */
+            height: 115px;
+            box-shadow: 0 5px 15px rgba(52, 73, 94, 0.15);
+            border: 1px solid rgba(52, 73, 94, 0.1);
             position: absolute;
             cursor: move;
             z-index: 10;
@@ -70,11 +70,33 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            transition: box-shadow 0.2s;
         }
-        .card:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
-        .card h3 { margin: 0 0 3px 0; font-size: 13px; font-weight: 600; text-align: center; color: #2c3e50; }
-        .card .region { margin: 0 0 3px 0; font-size: 10px; color: #7f8c8d; text-align: center; font-style: italic; }
-        .card .info { margin: 0; font-size: 10px; color: #95a5a6; text-align: center; line-height: 1.2; }
+        .card:hover { 
+            box-shadow: 0 8px 20px rgba(52, 73, 94, 0.25); 
+        }
+        .card h3 { 
+            margin: 0 0 5px 0; 
+            font-size: 15px; /* Укрупненный шрифт для имен */
+            font-weight: 700; 
+            text-align: center; 
+            color: #2c3e50; 
+            line-height: 1.3;
+        }
+        .card .region { 
+            margin: 0 0 4px 0; 
+            font-size: 11px; 
+            color: #4a6572; 
+            text-align: center; 
+            font-style: italic; 
+        }
+        .card .info { 
+            margin: 0; 
+            font-size: 11px; 
+            color: #5c6b73; 
+            text-align: center; 
+            line-height: 1.2; 
+        }
     </style>
 </head>
 <body>
@@ -88,7 +110,6 @@
         <canvas id="tree-canvas"></canvas>
     </div>
 
-    <!-- Сначала подключаем данные, затем логику интерфейса -->
     <script src="data.js"></script>
     <script>
         let lang = 'ru';
@@ -104,8 +125,8 @@
 
         function drawLines() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = "#7f8c8d";
-            ctx.lineWidth = 2;
+            ctx.strokeStyle = "#34495e"; /* Более темный контрастный цвет линий */
+            ctx.lineWidth = 2.5;
 
             treeData.persons.forEach(person => {
                 if (person.parents && person.parents.length > 0) {
@@ -113,8 +134,10 @@
                         const parent = treeData.persons.find(p => p.id === parentId);
                         if (parent) {
                             ctx.beginPath();
-                            ctx.moveTo(person.x + 110, person.y + 105);
-                            ctx.lineTo(parent.x + 110, parent.y);
+                            // Точка старта: середина НИЗА карточки ребенка (ширина 250px, высота 115px)
+                            ctx.moveTo(person.x + 125, person.y + 115);
+                            // Точка финиша: середина ВЕРХА карточки родителя
+                            ctx.lineTo(parent.x + 125, parent.y);
                             ctx.stroke();
                         }
                     });
