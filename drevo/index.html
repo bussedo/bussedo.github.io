@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Семейное Древо | Stammbaum</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-main: #2c3e50;
+            --text-muted: #7f8c8d;
+            --accent: #34495e;
+            --line-color: #bdc3c7;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+        header {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+        }
+        .lang-btn {
+            background: var(--card-bg);
+            border: 1px solid #dcdde1;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        .lang-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(circle, #eef1f4 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        #tree-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 14px;
+            width: 180px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.05);
+            position: absolute;
+            cursor: move;
+            z-index: 10;
+            user-select: none;
+            transition: box-shadow 0.2s;
+        }
+        .card:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
+        .card h3 { margin: 0 0 4px 0; font-size: 15px; font-weight: 600; }
+        .card p { margin: 0; font-size: 12px; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <button class="lang-btn active" onclick="setLanguage('ru')">RU</button>
+        <button class="lang-btn" onclick="setLanguage('de')">DE</button>
+    </header>
+
+    <div id="canvas-container">
+        <svg id="tree-canvas"></svg>
+        <!-- Карточки будут добавлены сюда с помощью JS -->
+    </div>
+
+    <script>
+        // Исходные данные (Вы сверху, родители ниже)
+        const data = {
+            "persons": [
+                {"id": "me", "x": 400, "y": 80, "name": {"ru": "Василий", "de": "Wassili"}, "dates": {"ru": "род. 1995", "de": "geb. 1995"}, "parents": ["father", "mother"]},
+                {"id": "father", "x": 200, "y": 260, "name": {"ru": "Отец (Имя)", "de": "Vater"}, "dates": {"ru": "род. 1970", "de": "geb. 1970"}, "parents": ["gf_p", "gm_p"]},
+                {"id": "mother", "x": 600, "y": 260, "name": {"ru": "Мать (Имя)", "de": "Mutter"}, "dates": {"ru": "род. 1973", "de": "geb. 1973"}, "parents": ["gf_m", "gm_m"]},
+                {"id": "gf_p", "x": 100, "y": 440, "name": {"ru": "Дедушка (О)", "de": "Großvater (V)"}, "dates": {"ru": "1940-2010", "de": "1940-2010"}, "parents": []},
+                {"id": "gm_p", "x": 300, "y": 440, "name": {"ru": "Бабушка (О)", "de": "Großmutter (V)"}, "dates": {"ru": "1945-2015", "de": "1945-2015"}, "parents": []},
+                {"id": "gf_m", "x": 500, "y": 440, "name": {"ru": "Дедушка (М)", "de": "Großvater (M)"}, "dates": {"ru": "1942-2008", "de": "1942-2008"}, "parents": []},
+                {"id": "gm_m", "x": 700, "y": 440, "name": {"ru": "Бабушка (М)", "de": "Großmutter (M)"}, "dates": {"ru": "1947-н.в.", "de": "1947-l."}, "parents": []}
+            ]
+        };
+
+        let lang = 'ru';
+        const container = document.getElementById('canvas-container');
+        const svg = document.getElementById('tree-canvas');
+
+        function drawLines() {
+            svg.innerHTML = '';
+            data.persons.forEach(person => {
+                if (person.parents && person.parents.length > 0) {
+                    person.parents.forEach(parentId => {
+                        const parent = data.persons.find(p => p.id === parentId);
+                        if (parent) {
+                            const line = document.createElementNS("http://w3.org", "path");
+                            // Вычисляем координаты (середина низа ребенка к середине верха родителя)
+                            const startX = person.x + 90;
+                            const startY = person.y + 65;
+                            const endX = parent.x + 90;
+                            const endY = parent.y;
+                            
+                            // Красивая изогнутая линия
+                            const d = `M ${startX} ${startY} C ${startX} ${(startY + endY) / 2}, ${endX} ${(startY + endY) / 2}, ${endX} ${endY}`;
+                            
+                            line.setAttribute("d", d);
+                            line.setAttribute("stroke", "var(--line-color)");
+                            line.setAttribute("stroke-width", "2");
+                            line.setAttribute("fill", "none");
+                            svg.appendChild(line);
+                        }
+                    });
+                }
+            });
+        }
+
+        function renderTree() {
+            // Удаляем старые карточки, оставляя только SVG
+            document.querySelectorAll('.card').forEach(c => c.remove());
+
+            data.persons.forEach(person => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.left = person.x + 'px';
+                card.style.top = person.y + 'px';
+                
+                card.innerHTML = `
+                    <h3>${person.name[lang]}</h3>
+                    <p>${person.dates[lang]}</p>
+                `;
+
+                // Логика перетаскивания (Drag) мышкой
+                card.addEventListener('mousedown', function(e) {
+                    let shiftX = e.clientX - card.getBoundingClientRect().left;
+                    let shiftY = e.clientY - card.getBoundingClientRect().top;
+
+                    function moveAt(clientX, clientY) {
+                        let newX = clientX - container.getBoundingClientRect().left - shiftX;
+                        let newY = clientY - container.getBoundingClientRect().top - shiftY;
+                        card.style.left = newX + 'px';
+                        card.style.top = newY + 'px';
+                        person.x = newX;
+                        person.y = newY;
+                        drawLines();
+                    }
+
+                    function onMouseMove(e) { moveAt(e.clientX, e.clientY); }
+                    document.addEventListener('mousemove', onMouseMove);
+
+                    document.onmouseup = function() {
+                        document.removeEventListener('mousemove', onMouseMove);
+                        document.onmouseup = null;
+                    };
+                });
+
+                card.ondragstart = function() { return false; };
+                container.appendChild(card);
+            });
+            drawLines();
+        }
+
+        function setLanguage(newLang) {
+            lang = newLang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderTree();
+        }
+
+        // Адаптация размера SVG под экран
+        window.addEventListener('resize', () => {
+            svg.setAttribute('width', window.innerWidth);
+            svg.setAttribute('height', window.innerHeight);
+        });
+        
+        svg.setAttribute('width', window.innerWidth);
+        svg.setAttribute('height', window.innerHeight);
+        renderTree();
+    </script>
+</body>
+</html>
