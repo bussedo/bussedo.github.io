@@ -28,8 +28,6 @@
         
         .toggle-btn { position: absolute; top: 8px; right: 8px; width: 20px; height: 20px; background: rgba(0,0,0,0.05); border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; color: #34495e; transition: background 0.2s; }
         .toggle-btn:hover { background: rgba(0,0,0,0.15); }
-        
-        #error-banner { display: none; position: fixed; top: 70px; left: 20px; background: #e74c3c; color: white; padding: 15px; border-radius: 6px; z-index: 999; font-weight: bold; max-width: 80%; }
     </style>
 </head>
 <body>
@@ -38,11 +36,9 @@
         <button class="btn active" id="btn-ru" onclick="setLanguage('ru')">RU</button>
         <button class="btn" id="btn-de" onclick="setLanguage('de')">DE</button>
         <select id="main-person-select" onchange="changeMainPerson(this.value)" style="margin-left: 20px;"></select>
-        <button class="btn" onclick="resetPositions()" style="margin-left: 10px; background: #e74c3c; color: white; border: none;">Сбросить позиции (❗ Обязательно нажать после обновления)</button>
+        <button class="btn" onclick="resetPositions()" style="margin-left: 10px; background: #e74c3c; color: white; border: none;">Сбросить позиции (❗ Нажать после обновления)</button>
     </header>
 
-    <div id="error-banner"></div>
-    
     <div id="canvas-container">
         <canvas id="tree-canvas"></canvas>
     </div>
@@ -57,7 +53,6 @@
         const container = document.getElementById('canvas-container');
         const canvas = document.getElementById('tree-canvas');
         const ctx = canvas.getContext('2d');
-        const errorBanner = document.getElementById('error-banner');
 
         function resizeCanvas() {
             canvas.width = 4000; canvas.height = 3000; drawLines();
@@ -66,7 +61,6 @@
         function populateDropdown() {
             const select = document.getElementById('main-person-select');
             select.innerHTML = '';
-            
             if (!window.treeData || !window.treeData.persons) return;
             
             let sortedPersons = treeData.persons
@@ -183,7 +177,7 @@
                 if (isSpouse) {
                     return lang === 'ru' ? (isFemale ? 'Жена' : 'Муж') : (isFemale ? 'Ehefrau' : 'Ehemann');
                 }
-                return null;
+                return null; 
             }
 
             let relRu = ""; let relDe = "";
@@ -191,7 +185,7 @@
             else if (bestUp === 2 && bestDown === 0) { relRu = isFemale ? "Бабушка" : "Дедушка"; relDe = isFemale ? "Großmutter" : "Großvater"; }
             else if (bestUp === 3 && bestDown === 0) { relRu = isFemale ? "Прабабушка" : "Прадед"; relDe = isFemale ? "Urgroßmutter" : "Urgroßvater"; }
             else if (bestUp === 4 && bestDown === 0) { relRu = isFemale ? "Прапрабабушка" : "Прапрадед"; relDe = isFemale ? "Ururgroßmutter" : "Ururgroßvater"; }
-            else if (bestUp > 4 && bestDown === 0) { relRu = isFemale ? `Пра(${bestUp-1})бабушка`:`Пра(${bestUp-1})дед`; relDe = isFemale ? "Ahnin" : "Ahn"; }
+            else if (bestUp > 4 && bestDown === 0) { relRu = isFemale ? `Пра(${bestUp-1})бабушка` : `Пра(${bestUp-1})дед`; relDe = isFemale ? "Ahnin" : "Ahn"; }
             else if (bestUp === 0 && bestDown === 1) { relRu = isFemale ? "Дочь" : "Сын"; relDe = isFemale ? "Tochter" : "Sohn"; }
             else if (bestUp === 0 && bestDown === 2) { relRu = isFemale ? "Внучка" : "Внук"; relDe = isFemale ? "Enkelin" : "Enkel"; }
             else if (bestUp === 1 && bestDown === 1) { relRu = isFemale ? "Сестра" : "Брат"; relDe = isFemale ? "Schwester" : "Bruder"; }
@@ -258,7 +252,7 @@
                 
                 let toggleBtnHtml = '';
                 if (person.p && person.p.length > 0) {
-                    toggleBtnHtml = `<button class="toggle-btn" onclick="toggleBranch('${person.id}',event)">${person.h ? '+' : '−'}</button>`;
+                    toggleBtnHtml = `<button class="toggle-btn" onclick="toggleBranch('${person.id}', event)">${person.h ? '+' : '−'}</button>`;
                 }
                 
                 let originalInfo = person.i[lang];
@@ -341,24 +335,24 @@
 
         window.addEventListener('resize', resizeCanvas);
         window.onload = function() { 
-            try {
-                if (typeof treeData === 'undefined') {
-                    throw new Error("Файл data.js не найден, имеет опечатку или слово 'Const' написано с большой буквы вместо 'const'.");
-                }
-                
-                const savedPositions = JSON.parse(localStorage.getItem('tree_positions') || 'null');
-                if (savedPositions) {
-                    treeData.persons.forEach(p => {
-                        if (savedPositions[p.id]) { p.x = savedPositions[p.id].x; p.y = savedPositions[p.id].y; }
-                    });
-                }
-                populateDropdown();
-                resizeCanvas(); 
-                renderTree(); 
-            } catch (err) {
-                errorBanner.style.display = 'block';
-                errorBanner.innerText = `КРИТИЧЕСКАЯ ОШИБКА: ${err.message}`;
+            const savedPositions = JSON.parse(localStorage.getItem('tree_positions') || 'null');
+            if (savedPositions) {
+                treeData.persons.forEach(p => {
+                    if (savedPositions[p.id]) { p.x = savedPositions[p.id].x; p.y = savedPositions[p.id].y; }
+                });
             }
+            populateDropdown();
+            resizeCanvas(); 
+            renderTree(); 
+            
+            // Центрирование камеры для iPhone и десктопов
+            setTimeout(() => {
+                let mainPersonNode = treeData.persons.find(p => p.id === currentMain);
+                if (mainPersonNode) {
+                    container.scrollLeft = mainPersonNode.x - (window.innerWidth / 2) + 125;
+                    container.scrollTop = mainPersonNode.y - (window.innerHeight / 2) + 57;
+                }
+            }, 100);
         };
     </script>
 </body>
