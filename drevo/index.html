@@ -218,7 +218,6 @@
             }
         }
 
-        // === ОБНОВЛЕННЫЙ АЛГОРИТМ РОДСТВА (С ПРАЩУРАМИ И ГРАМОТНЫМИ ПРИСТАВКАМИ) ===
         function getKinship(mainId, targetId) {
             if (mainId === targetId) return lang === 'ru' ? "Это Вы" : "Das bist du";
             
@@ -276,13 +275,8 @@
             else if (bestUp === 2 && bestDown === 0) { relRu = isFemale ? "Бабушка" : "Дедушка"; relDe = isFemale ? "Großmutter" : "Großvater"; }
             else if (bestUp === 3 && bestDown === 0) { relRu = isFemale ? "Прабабушка" : "Прадед"; relDe = isFemale ? "Urgroßmutter" : "Urgroßvater"; }
             else if (bestUp === 4 && bestDown === 0) { relRu = isFemale ? "Прапрабабушка" : "Прапрадед"; relDe = isFemale ? "Ururgroßmutter" : "Ururgroßvater"; }
-            else if (bestUp === 5 && bestDown === 0) { 
-                // 5 поколение - Пращуры
-                relRu = isFemale ? "Прапрапрабабушка (Пращурка)" : "Прапрапрадед (Пращур)"; 
-                relDe = isFemale ? "Urururgroßmutter (Altgroßmutter)" : "Urururgroßvater (Altgroßvater)"; 
-            }
+            else if (bestUp === 5 && bestDown === 0) { relRu = isFemale ? "Прапрапрабабушка (Пращурка)" : "Прапрапрадед (Пращур)"; relDe = isFemale ? "Urururgroßmutter (Altgroßmutter)" : "Urururgroßvater (Altgroßvater)"; }
             else if (bestUp > 5 && bestDown === 0) { 
-                // Динамическая генерация для самых глубоких поколений (6 и глубже)
                 let praCount = bestUp - 2;
                 let prefixRu = "Пра" + "пра".repeat(praCount - 1);
                 let prefixDe = "Ur" + "ur".repeat(praCount - 1);
@@ -296,6 +290,8 @@
             else if (bestUp === 3 && bestDown === 1) { relRu = isFemale ? "Двоюродная бабушка" : "Двоюродный дедушка"; relDe = isFemale ? "Großtante" : "Großonkel"; }
             else if (bestUp === 1 && bestDown === 2) { relRu = isFemale ? "Племянница" : "Племянник"; relDe = isFemale ? "Nichte" : "Neffe"; }
             else if (bestUp === 2 && bestDown === 2) { relRu = isFemale ? "Двоюродная сестра" : "Двоюродный брат"; relDe = isFemale ? "Cousine" : "Cousin"; }
+            else if (bestUp === 2 && bestDown === 3) { relRu = isFemale ? "Двоюродная племянница" : "Двоюродный племянник"; relDe = isFemale ? "Nichte 2. Grades" : "Neffe 2. Grades"; }
+            else if (bestUp === 3 && bestDown === 2) { relRu = isFemale ? "Двоюродная тетя" : "Двоюродный дядя"; relDe = isFemale ? "Tante 2. Grades" : "Onkel 2. Grades"; }
             else { relRu = "Родственник"; relDe = "Verwandter"; }
 
             return lang === 'ru' ? relRu : relDe;
@@ -371,11 +367,10 @@
                 let originalInfo = person.i[lang];
                 let bio = "";
                 
-                // Умный парсинг: отсекаем старые хардкодные записи вроде "Пра(5)дед"
                 if (originalInfo.includes(' • ')) {
                     bio = originalInfo.split(' • ').slice(1).join(' • ');
                 } else {
-                    bio = originalInfo.replace(/^((Пра)+дед|(Пра)+бабушка|Пра\(\d+\)дед|Пра\(\d+\)бабушка|Дед|Бабушка|Брат|Сестра|Дядя|Тетя|Отец|Мать|Сын|Дочь|Внук|Внучка|Создатель древа|Создатель|Муж|Жена)\s*•?\s*/i, '').trim();
+                    bio = originalInfo.replace(/^((Пра)+дед|(Пра)+бабушка|Пра\(\d+\)дед|Пра\(\d+\)бабушка|Дед|Бабушка|Брат|Сестра|Дядя|Тетя|Отец|Мать|Сын|Дочь|Внук|Внучка|Создатель древа|Создатель|Муж|Жена|Двоюродный племянник|Двоюродная племянница|Двоюродный дядя|Двоюродная тетя)\s*•?\s*/i, '').trim();
                 }
                 
                 let dynamicRel = getKinship(currentMain, person.id);
