@@ -2,20 +2,20 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Семейное Древо | Stammbaum</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f4f6f8; color: #2c3e50; margin: 0; padding: 0; overflow: hidden; height: 100vh; width: 100vw; }
-        header { position: fixed; top: 20px; left: 20px; z-index: 100; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        .btn { background: #ffffff; border: 1px solid #dcdde1; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s ease; font-size: 13px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f4f6f8; color: #2c3e50; margin: 0; padding: 0; overflow: hidden; height: 100vh; width: 100vw; touch-action: none; }
+        header { position: fixed; top: 15px; left: 15px; z-index: 100; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; max-width: 90vw; }
+        .btn { background: #ffffff; border: 1px solid #dcdde1; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s ease; font-size: 13px; }
         .btn.active { background: #34495e; color: white; border-color: #34495e; }
         
-        #main-person-select { padding: 8px 14px; border-radius: 6px; border: 1px solid #dcdde1; font-weight: 600; font-family: inherit; color: #2c3e50; font-size: 13px; cursor: pointer; background-color: #ffffff; outline: none; }
+        #main-person-select { padding: 8px 12px; border-radius: 6px; border: 1px solid #dcdde1; font-weight: 600; font-family: inherit; color: #2c3e50; font-size: 13px; cursor: pointer; background-color: #ffffff; outline: none; max-width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
         
-        #canvas-container { width: 100vw; height: 100vh; position: relative; background: radial-gradient(circle, #eef1f4 1px, transparent 1px); background-size: 20px 20px; overflow: auto; }
+        #canvas-container { width: 100vw; height: 100vh; position: relative; background: radial-gradient(circle, #eef1f4 1px, transparent 1px); background-size: 20px 20px; overflow: auto; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; }
         #tree-canvas { position: absolute; top: 0; left: 0; width: 4000px; height: 3000px; pointer-events: none; z-index: 1; }
         
-        .card { border-radius: 10px; padding: 14px; width: 250px; height: 115px; box-shadow: 0 5px 15px rgba(52, 73, 94, 0.15); position: absolute; cursor: move; z-index: 10; user-select: none; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; transition: box-shadow 0.2s; }
+        .card { border-radius: 10px; padding: 14px; width: 250px; height: 115px; box-shadow: 0 5px 15px rgba(52, 73, 94, 0.15); position: absolute; cursor: move; z-index: 10; user-select: none; -webkit-user-select: none; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; transition: box-shadow 0.2s; touch-action: none; }
         
         .card.me { background: linear-gradient(135deg, #ffe259, #ffa751); border: 1px solid #ffa751; z-index: 15; box-shadow: 0 8px 20px rgba(255, 167, 81, 0.4); }
         .card.paternal { background: linear-gradient(135deg, #e0eafc, #cfdef3); border: 1px solid #b0c4de; }
@@ -23,10 +23,10 @@
         .card.neutral { background: linear-gradient(135deg, #fdfbfb, #ebedee); border: 1px solid #dcdde1; }
         
         .card h3 { margin: 0 0 5px 0; font-size: 14px; font-weight: 700; text-align: center; color: #2c3e50; line-height: 1.3; padding-right: 20px; padding-left: 20px; }
-        .card .region { margin: 0 0 4px 0; font-size: 11px; color: #4a6572; text-align: center; font-style: italic; }
+        .card .region { margin: 0 0 4px 0; font-size: 11px; color: #4a6572; text-align: center; font-weight: 600; }
         .card .info { margin: 0; font-size: 11px; color: #5c6b73; text-align: center; line-height: 1.2; }
         
-        .toggle-btn { position: absolute; top: 8px; right: 8px; width: 20px; height: 20px; background: rgba(0,0,0,0.05); border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; color: #34495e; transition: background 0.2s; }
+        .toggle-btn { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; background: rgba(0,0,0,0.05); border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center; color: #34495e; transition: background 0.2s; }
         .toggle-btn:hover { background: rgba(0,0,0,0.15); }
         
         #error-banner { display: none; position: fixed; top: 70px; left: 20px; background: #e74c3c; color: white; padding: 15px; border-radius: 6px; z-index: 999; font-weight: bold; max-width: 80%; }
@@ -37,8 +37,8 @@
     <header>
         <button class="btn active" id="btn-ru" onclick="setLanguage('ru')">RU</button>
         <button class="btn" id="btn-de" onclick="setLanguage('de')">DE</button>
-        <select id="main-person-select" onchange="changeMainPerson(this.value)" style="margin-left: 20px;"></select>
-        <button class="btn" onclick="resetPositions()" style="margin-left: 10px; background: #e74c3c; color: white; border: none;">Сбросить позиции</button>
+        <select id="main-person-select" onchange="changeMainPerson(this.value)"></select>
+        <button class="btn" onclick="resetPositions()" style="background: #e74c3c; color: white; border: none;">Сбросить позиции</button>
     </header>
 
     <div id="error-banner"></div>
@@ -82,12 +82,9 @@
             });
         }
 
-        // === НОВЫЙ АЛГОРИТМ ВИДИМОСТИ ===
         let visibleNodes = {};
         function calculateVisibility() {
             visibleNodes = {};
-            
-            // Карта детей (чтобы идти по дереву вниз)
             let childrenOf = {};
             treeData.persons.forEach(p => childrenOf[p.id] = []);
             treeData.persons.forEach(p => {
@@ -98,7 +95,6 @@
                 }
             });
 
-            // Начинаем поиск ТОЛЬКО от главной персоны
             let queue = [currentMain];
             visibleNodes[currentMain] = true;
 
@@ -108,7 +104,6 @@
                 let node = treeData.persons.find(p => p.id === currId);
                 if (!node) continue;
 
-                // 1. Идем ВВЕРХ (к родителям), только если ветка развернута (не скрыта плюсиком)
                 if (!node.h && node.p) {
                     node.p.forEach(parentId => {
                         if (!visibleNodes[parentId]) {
@@ -118,7 +113,6 @@
                     });
                 }
 
-                // 2. Идем ВНИЗ (к детям) всегда. Если виден предок, видны и его потомки.
                 if (childrenOf[currId]) {
                     childrenOf[currId].forEach(childId => {
                         if (!visibleNodes[childId]) {
@@ -225,7 +219,7 @@
             else if (bestUp === 3 && bestDown === 1) { relRu = isFemale ? "Двоюродная бабушка" : "Двоюродный дедушка"; relDe = isFemale ? "Großtante" : "Großonkel"; }
             else if (bestUp === 1 && bestDown === 2) { relRu = isFemale ? "Племянница" : "Племянник"; relDe = isFemale ? "Nichte" : "Neffe"; }
             else if (bestUp === 2 && bestDown === 2) { relRu = isFemale ? "Двоюродная сестра" : "Двоюродный брат"; relDe = isFemale ? "Cousine" : "Cousin"; }
-            else { relRu = "Кровный родственник"; relDe = "Blutsverwandter"; }
+            else { relRu = "Родственник"; relDe = "Verwandter"; }
 
             return lang === 'ru' ? relRu : relDe;
         }
@@ -267,14 +261,10 @@
 
         function changeMainPerson(newMainId) {
             currentMain = newMainId;
-            
-            // При смене персоны сворачиваем всех, чтобы начать с чистого листа
             treeData.persons.forEach(p => p.h = true);
             localStorage.removeItem('tree_collapsed');
-            
             renderTree();
             
-            // Центрирование камеры
             setTimeout(() => {
                 let mainPersonNode = treeData.persons.find(p => p.id === currentMain);
                 if (mainPersonNode) {
@@ -319,45 +309,60 @@
                     displayInfo = bio;
                 }
                 
-                let displayRegion = person.r[lang];
-                if (person.id === currentMain) {
-                    displayRegion = lang === 'ru' ? "Главный профиль" : "Hauptprofil";
-                }
-
                 card.innerHTML = `
                     ${toggleBtnHtml}
                     <h3>${person.n[lang]}</h3>
-                    <div class="region">${displayRegion}</div>
+                    <div class="region">${person.r[lang]}</div>
                     <div class="info">${displayInfo}</div>
                 `;
 
-                card.addEventListener('mousedown', function(e) {
+                // --- ИНТЕГРАЦИЯ ТАЧ-СОБЫТИЙ ДЛЯ МОБИЛЬНЫХ ---
+                function startDrag(e) {
                     if (e.target.className === 'toggle-btn') return;
-                    let shiftX = e.clientX - card.getBoundingClientRect().left;
-                    let shiftY = e.clientY - card.getBoundingClientRect().top;
+                    
+                    let clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                    let clientY = e.clientY || (e.touches && e.touches[0].clientY);
+                    if (clientX === undefined) return;
+                    
+                    let shiftX = clientX - card.getBoundingClientRect().left;
+                    let shiftY = clientY - card.getBoundingClientRect().top;
 
-                    function moveAt(clientX, clientY) {
-                        let newX = clientX - container.getBoundingClientRect().left - shiftX + container.scrollLeft;
-                        let newY = clientY - container.getBoundingClientRect().top - shiftY + container.scrollTop;
+                    function moveAt(pageX, pageY) {
+                        let newX = pageX - container.getBoundingClientRect().left - shiftX + container.scrollLeft;
+                        let newY = pageY - container.getBoundingClientRect().top - shiftY + container.scrollTop;
                         card.style.left = newX + 'px'; card.style.top = newY + 'px';
                         person.x = newX; person.y = newY;
                         drawLines();
                     }
 
-                    function onMouseMove(e) { moveAt(e.clientX, e.clientY); }
-                    document.addEventListener('mousemove', onMouseMove);
-
-                    document.onmouseup = function() {
-                        document.removeEventListener('mousemove', onMouseMove);
-                        document.onmouseup = null;
+                    function onMove(evt) { 
+                        evt.preventDefault(); // Останавливаем скролл экрана при перетаскивании
+                        let px = evt.clientX || (evt.touches && evt.touches[0].clientX);
+                        let py = evt.clientY || (evt.touches && evt.touches[0].clientY);
+                        if (px !== undefined) moveAt(px, py); 
+                    }
+                    
+                    function onEnd() {
+                        document.removeEventListener('mousemove', onMove);
+                        document.removeEventListener('mouseup', onEnd);
+                        document.removeEventListener('touchmove', onMove);
+                        document.removeEventListener('touchend', onEnd);
                         
                         const positions = JSON.parse(localStorage.getItem('tree_positions') || '{}');
                         positions[person.id] = { x: person.x, y: person.y };
                         localStorage.setItem('tree_positions', JSON.stringify(positions));
-                    };
-                });
+                    }
 
+                    document.addEventListener('mousemove', onMove);
+                    document.addEventListener('mouseup', onEnd);
+                    document.addEventListener('touchmove', onMove, {passive: false});
+                    document.addEventListener('touchend', onEnd);
+                }
+
+                card.addEventListener('mousedown', startDrag);
+                card.addEventListener('touchstart', startDrag, {passive: false});
                 card.ondragstart = function() { return false; };
+
                 container.appendChild(card);
             });
             drawLines();
@@ -383,10 +388,9 @@
         window.onload = function() { 
             try {
                 if (typeof treeData === 'undefined') {
-                    throw new Error("Файл data.js не найден или имеет опечатку.");
+                    throw new Error("Файл data.js не найден.");
                 }
                 
-                // Применяем сохраненные позиции карточек
                 const savedPositions = JSON.parse(localStorage.getItem('tree_positions') || 'null');
                 if (savedPositions) {
                     treeData.persons.forEach(p => {
@@ -394,7 +398,6 @@
                     });
                 }
                 
-                // Если мы только что загрузили страницу впервые, сворачиваем всех по умолчанию
                 const savedCollapsed = JSON.parse(localStorage.getItem('tree_collapsed') || 'null');
                 if (savedCollapsed) {
                     treeData.persons.forEach(p => {
@@ -408,7 +411,6 @@
                 resizeCanvas(); 
                 renderTree(); 
                 
-                // Центрирование камеры
                 setTimeout(() => {
                     let mainPersonNode = treeData.persons.find(p => p.id === currentMain);
                     if (mainPersonNode) {
