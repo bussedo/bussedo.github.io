@@ -6,7 +6,7 @@
     <title>Семейное Древо | Stammbaum</title>
     <style>
         :root {
-            --bg-color: #f8f9fa;
+            --bg-color: #f4f6f8;
             --card-bg: #ffffff;
             --text-main: #2c3e50;
             --text-muted: #7f8c8d;
@@ -66,7 +66,7 @@
             background: var(--card-bg);
             border-radius: 8px;
             padding: 14px;
-            width: 180px;
+            width: 190px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             border: 1px solid rgba(0,0,0,0.05);
             position: absolute;
@@ -76,8 +76,8 @@
             transition: box-shadow 0.2s;
         }
         .card:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
-        .card h3 { margin: 0 0 4px 0; font-size: 15px; font-weight: 600; }
-        .card p { margin: 0; font-size: 12px; color: var(--text-muted); }
+        .card h3 { margin: 0 0 4px 0; font-size: 14px; font-weight: 600; text-align: center; }
+        .card p { margin: 0; font-size: 12px; color: var(--text-muted); text-align: center; }
     </style>
 </head>
 <body>
@@ -89,20 +89,27 @@
 
     <div id="canvas-container">
         <svg id="tree-canvas"></svg>
-        <!-- Карточки будут добавлены сюда с помощью JS -->
     </div>
 
     <script>
-        // Исходные данные (Вы сверху, родители ниже)
+        // Данные на основе вашего PDF из Famiry
         const data = {
             "persons": [
-                {"id": "me", "x": 400, "y": 80, "name": {"ru": "Василий", "de": "Wassili"}, "dates": {"ru": "род. 1995", "de": "geb. 1995"}, "parents": ["father", "mother"]},
-                {"id": "father", "x": 200, "y": 260, "name": {"ru": "Отец (Имя)", "de": "Vater"}, "dates": {"ru": "род. 1970", "de": "geb. 1970"}, "parents": ["gf_p", "gm_p"]},
-                {"id": "mother", "x": 600, "y": 260, "name": {"ru": "Мать (Имя)", "de": "Mutter"}, "dates": {"ru": "род. 1973", "de": "geb. 1973"}, "parents": ["gf_m", "gm_m"]},
-                {"id": "gf_p", "x": 100, "y": 440, "name": {"ru": "Дедушка (О)", "de": "Großvater (V)"}, "dates": {"ru": "1940-2010", "de": "1940-2010"}, "parents": []},
-                {"id": "gm_p", "x": 300, "y": 440, "name": {"ru": "Бабушка (О)", "de": "Großmutter (V)"}, "dates": {"ru": "1945-2015", "de": "1945-2015"}, "parents": []},
-                {"id": "gf_m", "x": 500, "y": 440, "name": {"ru": "Дедушка (М)", "de": "Großvater (M)"}, "dates": {"ru": "1942-2008", "de": "1942-2008"}, "parents": []},
-                {"id": "gm_m", "x": 700, "y": 440, "name": {"ru": "Бабушка (М)", "de": "Großmutter (M)"}, "dates": {"ru": "1947-н.в.", "de": "1947-l."}, "parents": []}
+                // Уровень 0: Вы
+                {"id": "vasily", "x": 500, "y": 60, "name": {"ru": "Василий (Вы)", "de": "Wassili (Ich)"}, "dates": {"ru": "Главный профиль", "de": "Hauptprofil"}, "parents": ["zhuravlev", "sireishchikova"]},
+                
+                // Уровень 1: Родители (Ветви Журавлевых и Сирейщиковых)
+                {"id": "zhuravlev", "x": 250, "y": 220, "name": {"ru": "Журавлев", "de": "Shurawljow"}, "dates": {"ru": "Линия отца", "de": "Väterliche Linie"}, "parents": ["ivanov", "kuzminykh"]},
+                {"id": "sireishchikova", "x": 750, "y": 220, "name": {"ru": "Сирейщикова", "de": "Sireischtschikowa"}, "dates": {"ru": "Линия матери", "de": "Mütterliche Linie"}, "parents": ["sireishchikov", "konurova"]},
+                
+                // Уровень 2: Бабушки и дедушки (Ивановы, Кузьминых, Сырейщиковы, Конуровы)
+                {"id": "ivanov", "x": 120, "y": 380, "name": {"ru": "Иванов", "de": "Iwanow"}, "dates": {"ru": "Предки", "de": "Ahnen"}, "parents": []},
+                {"id": "kuzminykh", "x": 380, "y": 380, "name": {"ru": "Кузьминых", "de": "Kusminych"}, "dates": {"ru": "Предки", "de": "Ahnen"}, "parents": []},
+                {"id": "sireishchikov", "x": 620, "y": 380, "name": {"ru": "Сирейщиков / Сырей", "de": "Sireischtschikow"}, "dates": {"ru": "Корни семьи", "de": "Familiemwurzeln"}, "parents": ["ushnurtsiya"]},
+                {"id": "konurova", "x": 880, "y": 380, "name": {"ru": "Конурова", "de": "Konurowa"}, "dates": {"ru": "Предки", "de": "Ahnen"}, "parents": []},
+                
+                // Уровень 3: Глубокие корни (Ушнурция)
+                {"id": "ushnurtsiya", "x": 620, "y": 540, "name": {"ru": "Ушнурция", "de": "Uschnurzija"}, "dates": {"ru": "Ранние даты (от 1822)", "de": "Frühe Daten (ab 1822)"}, "parents": []}
             ]
         };
 
@@ -118,13 +125,14 @@
                         const parent = data.persons.find(p => p.id === parentId);
                         if (parent) {
                             const line = document.createElementNS("http://w3.org", "path");
-                            // Вычисляем координаты (середина низа ребенка к середине верха родителя)
-                            const startX = person.x + 90;
-                            const startY = person.y + 65;
-                            const endX = parent.x + 90;
+                            
+                            // Вычисляем точки (от середины НИЗА карточки ребенка к середине ВЕРХА карточки родителя)
+                            const startX = person.x + 95; // 190px / 2
+                            const startY = person.y + 60; // Высота карточки примерно 60px
+                            const endX = parent.x + 95;
                             const endY = parent.y;
                             
-                            // Красивая изогнутая линия
+                            // Красивое сглаженное ветвление (кривая Безье)
                             const d = `M ${startX} ${startY} C ${startX} ${(startY + endY) / 2}, ${endX} ${(startY + endY) / 2}, ${endX} ${endY}`;
                             
                             line.setAttribute("d", d);
@@ -139,7 +147,6 @@
         }
 
         function renderTree() {
-            // Удаляем старые карточки, оставляя только SVG
             document.querySelectorAll('.card').forEach(c => c.remove());
 
             data.persons.forEach(person => {
@@ -153,7 +160,7 @@
                     <p>${person.dates[lang]}</p>
                 `;
 
-                // Логика перетаскивания (Drag) мышкой
+                // Улучшенный Drag & Drop для перемещения карточек мышкой в любое место
                 card.addEventListener('mousedown', function(e) {
                     let shiftX = e.clientX - card.getBoundingClientRect().left;
                     let shiftY = e.clientY - card.getBoundingClientRect().top;
@@ -190,10 +197,10 @@
             renderTree();
         }
 
-        // Адаптация размера SVG под экран
         window.addEventListener('resize', () => {
             svg.setAttribute('width', window.innerWidth);
             svg.setAttribute('height', window.innerHeight);
+            drawLines();
         });
         
         svg.setAttribute('width', window.innerWidth);
