@@ -2,7 +2,7 @@ const treeData = {
  "persons": [
   {"id":"martin","x":1500,"y":40,"t":"paternal","n":{"ru":"Мартин Артемович Буссе","de":"Martin Busse"},"r":{"ru":"г. Йошкар-Ола","de":"Joschkar-Ola"},"i":{"ru":"03.10.2021","de":"Sohn von Artem"},"p":["cousin_artem"],"h":false},
   
-  {"id":"me","x":900,"y":190,"t":"me","n":{"ru":"Роман Дмитриевич Буссе","de":"Roman Busse"},"r":{"ru":"г. Йошкар-Ола","de":"Joschkar-Ola"},"i":{"ru":"г. Йошкар-Ола","de":"Joschkar-Ola"},"p":["father_dmitry","mother_ekaterina"]},
+  {"id":"me","x":900,"y":190,"t":"me","n":{"ru":"Роман Дмитриевич Буссе","de":"Roman Busse"},"r":{"ru":"г. Йошкар-Ола","de":"Joschkar-Ola"},"i":{"ru":"• Род. 04.04.1991","de":"Geb. 04.04.1991"},"p":["father_dmitry","mother_ekaterina"]},
   {"id":"cousin_artem","x":1500,"y":190,"t":"paternal","n":{"ru":"Артем Константинович Буссе","de":"Artem Busse"},"r":{"ru":"г. Йошкар-Ола","de":"Joschkar-Ola"},"i":{"ru":"Двоюродный брат • Род. 08.06.1992","de":"Cousin • Geb. 1992"},"p":["uncle_konstantin","aunt_svetlana"]},
   
   {"id":"father_dmitry","x":700,"y":340,"t":"paternal","n":{"ru":"Дмитрий Александрович Сырейщиков","de":"Dmitry Syreishchikov"},"r":{"ru":"г. Йошкар-Ола","de":"Joschkar-Ola"},"i":{"ru":"Отец • Род. 06.02.1969","de":"Vater • Geb. 06.02.1969"},"p":["sireishchikov_alexander","konurova_alexandra"],"h":false},
