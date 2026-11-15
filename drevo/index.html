@@ -5,36 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Семейное Древо | Stammbaum</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f4f6f8; color: #2c3e50; margin: 0; padding: 0; overflow: hidden; height: 100vh; width: 100vw; touch-action: none; }
-        header { position: fixed; top: 15px; left: 15px; z-index: 100; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; max-width: 95vw; }
-        .btn { background: #ffffff; border: 1px solid #dcdde1; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s ease; font-size: 13px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f0f2f5; color: #1c1e21; margin: 0; padding: 0; overflow: hidden; height: 100vh; width: 100vw; touch-action: none; }
+        header { position: fixed; top: 15px; left: 15px; z-index: 100; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; max-width: 95vw; background: rgba(255,255,255,0.85); padding: 10px; border-radius: 10px; backdrop-filter: blur(5px); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .btn { background: #ffffff; border: 1px solid #dcdde1; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s ease; font-size: 13px; color: #2c3e50; }
+        .btn:hover { background: #f8f9fa; }
         .btn.active { background: #34495e; color: white; border-color: #34495e; }
         .btn-bday { background: #9b59b6; color: white; border-color: #8e44ad; }
         .btn-bday:hover { background: #8e44ad; }
         
         #main-person-select { padding: 8px 12px; border-radius: 6px; border: 1px solid #dcdde1; font-weight: 600; font-family: inherit; color: #2c3e50; font-size: 13px; cursor: pointer; background-color: #ffffff; outline: none; max-width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
         
-        #canvas-container { width: 100vw; height: 100vh; position: relative; background: radial-gradient(circle, #eef1f4 1px, transparent 1px); background-size: 20px 20px; overflow: auto; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; }
-        #tree-canvas { position: absolute; top: 0; left: 0; width: 4000px; height: 3000px; pointer-events: none; z-index: 1; }
+        /* Зум-контейнеры */
+        #viewport { width: 100vw; height: 100vh; position: relative; overflow: hidden; touch-action: none; background: #f0f2f5; }
+        #tree-wrapper { position: absolute; top: 0; left: 0; transform-origin: 0 0; background: radial-gradient(circle, #dcdde1 1px, transparent 1px); background-size: 40px 40px; width: 6000px; height: 4000px; }
+        #tree-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
         
-        .card { border-radius: 10px; padding: 14px; width: 250px; height: 115px; box-shadow: 0 5px 15px rgba(52, 73, 94, 0.15); position: absolute; cursor: move; z-index: 10; user-select: none; -webkit-user-select: none; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; transition: box-shadow 0.2s; touch-action: none; }
+        /* НОВЫЙ ДИЗАЙН КАРТОЧЕК */
+        .card { border-radius: 8px; background: white; width: 220px; min-height: 80px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); position: absolute; cursor: grab; z-index: 10; user-select: none; -webkit-user-select: none; box-sizing: border-box; display: flex; align-items: center; padding: 10px; transition: box-shadow 0.2s; border: 1px solid #ebedee; border-left: 6px solid #dcdde1; }
+        .card:active { cursor: grabbing; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); }
         
-        .card.me { background: linear-gradient(135deg, #ffe259, #ffa751); border: 1px solid #ffa751; z-index: 15; box-shadow: 0 8px 20px rgba(255, 167, 81, 0.4); }
-        .card.paternal { background: linear-gradient(135deg, #e0eafc, #cfdef3); border: 1px solid #b0c4de; }
-        .card.maternal { background: linear-gradient(135deg, #fed6e3, #fbc2eb); border: 1px solid #fbc2eb; }
-        .card.neutral { background: linear-gradient(135deg, #fdfbfb, #ebedee); border: 1px solid #dcdde1; }
+        .card.me { border-left-color: #f1c40f; background: #fffdf5; }
+        .card.paternal { border-left-color: #3498db; }
+        .card.maternal { border-left-color: #e74c3c; }
+        .card.neutral { border-left-color: #95a5a6; }
         
-        .card h3 { margin: 0 0 5px 0; font-size: 14px; font-weight: 700; text-align: center; color: #2c3e50; line-height: 1.3; padding-right: 20px; padding-left: 20px; }
-        .card .region { margin: 0 0 4px 0; font-size: 11px; color: #4a6572; text-align: center; font-weight: 600; }
-        .card .info { margin: 0; font-size: 11px; color: #5c6b73; text-align: center; line-height: 1.2; }
+        .avatar-container { width: 46px; height: 46px; border-radius: 50%; background: #ebedee; margin-right: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #f4f6f8; }
+        .avatar-container img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-placeholder { font-size: 20px; font-weight: bold; color: #7f8c8d; }
         
-        .toggle-btn { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; background: rgba(0,0,0,0.05); border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center; color: #34495e; transition: background 0.2s; }
-        .toggle-btn:hover { background: rgba(0,0,0,0.15); }
+        .text-container { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; padding-right: 15px; }
+        .card h3 { margin: 0 0 3px 0; font-size: 13px; font-weight: 700; color: #2c3e50; line-height: 1.2; }
+        .card .region { margin: 0 0 2px 0; font-size: 10px; color: #7f8c8d; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card .info { margin: 0; font-size: 11px; color: #5c6b73; line-height: 1.2; }
         
-        #error-banner { display: none; position: fixed; top: 70px; left: 20px; background: #e74c3c; color: white; padding: 15px; border-radius: 6px; z-index: 999; font-weight: bold; max-width: 80%; }
+        .toggle-btn { position: absolute; top: 50%; right: -12px; transform: translateY(-50%); width: 24px; height: 24px; background: #ffffff; border: 1px solid #dcdde1; border-radius: 50%; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center; color: #34495e; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: all 0.2s; z-index: 20; }
+        .toggle-btn:hover { background: #f8f9fa; transform: translateY(-50%) scale(1.1); }
         
-        /* Стили для Календаря Дней Рождений */
-        #bday-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999; }
+        /* Модальные окна */
+        #bday-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999; backdrop-filter: blur(3px); }
         #bday-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 1000; max-height: 80vh; overflow-y: auto; width: 320px; }
         #bday-modal h2 { margin-top: 0; font-size: 18px; text-align: center; color: #2c3e50; border-bottom: 2px solid #f4f6f8; padding-bottom: 10px; }
         .bday-item { padding: 10px 0; border-bottom: 1px solid #f4f6f8; font-size: 13px; color: #34495e; display: flex; align-items: center; }
@@ -54,8 +62,6 @@
         <button class="btn" onclick="resetPositions()" style="background: #e74c3c; color: white; border: none;">Сбросить позиции</button>
     </header>
 
-    <div id="error-banner"></div>
-    
     <div id="bday-overlay" onclick="closeBdays()"></div>
     <div id="bday-modal">
         <h2 id="bday-title">Дни рождения</h2>
@@ -63,8 +69,12 @@
         <button id="bday-close" onclick="closeBdays()">Закрыть</button>
     </div>
 
-    <div id="canvas-container">
-        <canvas id="tree-canvas"></canvas>
+    <!-- Обновленный контейнер для зума -->
+    <div id="viewport">
+        <div id="tree-wrapper">
+            <canvas id="tree-canvas" width="6000" height="4000"></canvas>
+            <!-- Карточки будут здесь -->
+        </div>
     </div>
 
     <script src="data.js"></script>
@@ -72,201 +82,187 @@
         let lang = 'ru';
         let currentMain = 'me'; 
         
-        const allowedMainIds = ['me', 'cousin_artem', 'martin', 'father_dmitry', 'mother_ekaterina', 'aunt_svetlana', 'uncle_konstantin', 'uncle_dmitry_e'];
-        
-        const container = document.getElementById('canvas-container');
+        // --- ЛОГИКА ЗУМА И ПАНОРАМИРОВАНИЯ ---
+        const viewport = document.getElementById('viewport');
+        const wrapper = document.getElementById('tree-wrapper');
         const canvas = document.getElementById('tree-canvas');
         const ctx = canvas.getContext('2d');
-        const errorBanner = document.getElementById('error-banner');
+        
+        let scale = 1;
+        let panX = -100; // Начальный сдвиг, чтобы отцентрировать
+        let panY = -50;
+        let isPanningView = false;
+        let startPanX, startPanY;
 
-        function resizeCanvas() {
-            canvas.width = 4000; canvas.height = 3000; drawLines();
+        function updateTransform() {
+            wrapper.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
         }
 
+        // Панорамирование фона (мышь)
+        viewport.addEventListener('mousedown', (e) => {
+            if(e.target.closest('.card') || e.target.closest('header') || e.target.closest('#bday-modal')) return;
+            isPanningView = true;
+            startPanX = e.clientX - panX;
+            startPanY = e.clientY - panY;
+            viewport.style.cursor = 'grabbing';
+        });
+        window.addEventListener('mousemove', (e) => {
+            if(!isPanningView) return;
+            panX = e.clientX - startPanX;
+            panY = e.clientY - startPanY;
+            updateTransform();
+        });
+        window.addEventListener('mouseup', () => { 
+            isPanningView = false; 
+            viewport.style.cursor = 'default';
+        });
+
+        // Панорамирование фона (тачпад/телефон)
+        let initialPinchDistance = null;
+        let initialScale = 1;
+
+        viewport.addEventListener('touchstart', (e) => {
+            if(e.target.closest('.card') || e.target.closest('header')) return;
+            if (e.touches.length === 1) {
+                isPanningView = true;
+                startPanX = e.touches[0].clientX - panX;
+                startPanY = e.touches[0].clientY - panY;
+            } else if (e.touches.length === 2) {
+                isPanningView = false;
+                initialPinchDistance = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                initialScale = scale;
+            }
+        }, {passive: false});
+
+        viewport.addEventListener('touchmove', (e) => {
+            if (e.target.closest('header') || e.target.closest('#bday-modal')) return;
+            e.preventDefault(); 
+            if (isPanningView && e.touches.length === 1) {
+                panX = e.touches[0].clientX - startPanX;
+                panY = e.touches[0].clientY - startPanY;
+                updateTransform();
+            } else if (e.touches.length === 2) {
+                let currentDistance = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                let newScale = initialScale * (currentDistance / initialPinchDistance);
+                scale = Math.min(Math.max(0.3, newScale), 2.5);
+                updateTransform();
+            }
+        }, {passive: false});
+
+        viewport.addEventListener('touchend', () => { isPanningView = false; });
+
+        // Зум колесиком мыши
+        viewport.addEventListener('wheel', (e) => {
+            if(e.target.closest('header') || e.target.closest('#bday-modal')) return;
+            e.preventDefault();
+            
+            let zoomSensitivity = 0.0015;
+            let delta = -e.deltaY * zoomSensitivity;
+            let newScale = Math.min(Math.max(0.3, scale + delta), 2.5);
+            
+            // Зум к курсору
+            let rect = viewport.getBoundingClientRect();
+            let mouseX = e.clientX - rect.left;
+            let mouseY = e.clientY - rect.top;
+            
+            let xs = (mouseX - panX) / scale;
+            let ys = (mouseY - panY) / scale;
+            
+            scale = newScale;
+            panX = mouseX - xs * scale;
+            panY = mouseY - ys * scale;
+            
+            updateTransform();
+        }, {passive: false});
+
+
+        // --- ОСТАЛЬНАЯ ЛОГИКА ДРЕВА ---
+        const allowedMainIds = ['me', 'cousin_artem', 'martin', 'father_dmitry', 'mother_ekaterina', 'aunt_svetlana', 'uncle_konstantin', 'uncle_dmitry_e'];
+        
         function populateDropdown() {
             const select = document.getElementById('main-person-select');
             select.innerHTML = '';
-            
             if (typeof treeData === 'undefined' || !treeData.persons) return;
-            
-            let sortedPersons = treeData.persons
-                .filter(p => allowedMainIds.includes(p.id))
-                .sort((a, b) => a.n[lang].localeCompare(b.n[lang]));
-            
+            let sortedPersons = treeData.persons.filter(p => allowedMainIds.includes(p.id)).sort((a, b) => a.n[lang].localeCompare(b.n[lang]));
             sortedPersons.forEach(p => {
                 let opt = document.createElement('option');
-                opt.value = p.id;
-                opt.text = '👑 ' + p.n[lang];
+                opt.value = p.id; opt.text = '👑 ' + p.n[lang];
                 if (p.id === currentMain) opt.selected = true;
                 select.appendChild(opt);
             });
         }
 
+        // Календарь ДР
         function openBdays() {
-            const list = document.getElementById('bday-list');
-            list.innerHTML = '';
-            
+            const list = document.getElementById('bday-list'); list.innerHTML = '';
             let birthdays = [];
             treeData.persons.forEach(p => {
-                let info = p.i.ru;
-                let match = info.match(/\b(\d{2})\.(\d{2})\.(\d{4})\b/);
-                if (match) {
-                    birthdays.push({
-                        name: p.n[lang],
-                        day: parseInt(match[1], 10),
-                        month: parseInt(match[2], 10),
-                        year: match[3]
-                    });
-                }
+                let match = p.i.ru.match(/\b(\d{2})\.(\d{2})\.(\d{4})\b/);
+                if (match) birthdays.push({ name: p.n[lang], day: parseInt(match[1], 10), month: parseInt(match[2], 10), year: match[3] });
             });
-            
-            birthdays.sort((a, b) => {
-                if (a.month !== b.month) return a.month - b.month;
-                return a.day - b.day;
-            });
-            
+            birthdays.sort((a, b) => { if (a.month !== b.month) return a.month - b.month; return a.day - b.day; });
             birthdays.forEach(b => {
-                let dayStr = String(b.day).padStart(2, '0');
-                let monthStr = String(b.month).padStart(2, '0');
-                list.innerHTML += `<div class="bday-item">
-                    <div class="bday-date">${dayStr}.${monthStr}</div>
-                    <div class="bday-name">${b.name} <span class="bday-year">(${b.year})</span></div>
-                </div>`;
+                list.innerHTML += `<div class="bday-item"><div class="bday-date">${String(b.day).padStart(2, '0')}.${String(b.month).padStart(2, '0')}</div><div class="bday-name">${b.name} <span class="bday-year">(${b.year})</span></div></div>`;
             });
-            
             document.getElementById('bday-title').innerText = lang === 'ru' ? 'Дни рождения' : 'Geburtstage';
             document.getElementById('bday-close').innerText = lang === 'ru' ? 'Закрыть' : 'Schließen';
-            
             document.getElementById('bday-overlay').style.display = 'block';
             document.getElementById('bday-modal').style.display = 'block';
         }
-
-        function closeBdays() {
-            document.getElementById('bday-overlay').style.display = 'none';
-            document.getElementById('bday-modal').style.display = 'none';
-        }
+        function closeBdays() { document.getElementById('bday-overlay').style.display = 'none'; document.getElementById('bday-modal').style.display = 'none'; }
 
         let visibleNodes = {};
         function calculateVisibility() {
-            visibleNodes = {};
-            let childrenOf = {};
+            visibleNodes = {}; let childrenOf = {};
             treeData.persons.forEach(p => childrenOf[p.id] = []);
-            treeData.persons.forEach(p => {
-                if (p.p) {
-                    p.p.forEach(parentId => {
-                        if (childrenOf[parentId]) childrenOf[parentId].push(p.id);
-                    });
-                }
-            });
-
-            let queue = [currentMain];
-            visibleNodes[currentMain] = true;
-
-            let head = 0;
+            treeData.persons.forEach(p => { if (p.p) p.p.forEach(parentId => { if (childrenOf[parentId]) childrenOf[parentId].push(p.id); }); });
+            let queue = [currentMain]; visibleNodes[currentMain] = true; let head = 0;
             while (head < queue.length) {
-                let currId = queue[head++];
-                let node = treeData.persons.find(p => p.id === currId);
-                if (!node) continue;
-
-                if (!node.h && node.p) {
-                    node.p.forEach(parentId => {
-                        if (!visibleNodes[parentId]) {
-                            visibleNodes[parentId] = true;
-                            queue.push(parentId);
-                        }
-                    });
-                }
-
-                if (childrenOf[currId]) {
-                    childrenOf[currId].forEach(childId => {
-                        if (!visibleNodes[childId]) {
-                            visibleNodes[childId] = true;
-                            queue.push(childId);
-                        }
-                    });
-                }
+                let currId = queue[head++]; let node = treeData.persons.find(p => p.id === currId); if (!node) continue;
+                if (!node.h && node.p) node.p.forEach(parentId => { if (!visibleNodes[parentId]) { visibleNodes[parentId] = true; queue.push(parentId); } });
+                if (childrenOf[currId]) childrenOf[currId].forEach(childId => { if (!visibleNodes[childId]) { visibleNodes[childId] = true; queue.push(childId); } });
             }
         }
 
         let nodeColors = {};
         function calculateColors() {
-            treeData.persons.forEach(p => nodeColors[p.id] = 'neutral'); 
-            nodeColors[currentMain] = 'me';
-            
+            treeData.persons.forEach(p => nodeColors[p.id] = 'neutral'); nodeColors[currentMain] = 'me';
             let mainNode = treeData.persons.find(p => p.id === currentMain);
             if (mainNode && mainNode.p) {
-                if (mainNode.p.length >= 1) {
-                    let fatherId = mainNode.p[0];
-                    let qFather = [fatherId];
-                    while(qFather.length > 0) {
-                        let id = qFather.shift();
-                        nodeColors[id] = 'paternal';
-                        let n = treeData.persons.find(p => p.id === id);
-                        if (n && n.p) qFather.push(...n.p);
-                    }
-                }
-                if (mainNode.p.length >= 2) {
-                    let motherId = mainNode.p[1];
-                    let qMother = [motherId];
-                    while(qMother.length > 0) {
-                        let id = qMother.shift();
-                        nodeColors[id] = 'maternal';
-                        let n = treeData.persons.find(p => p.id === id);
-                        if (n && n.p) qMother.push(...n.p);
-                    }
-                }
+                if (mainNode.p.length >= 1) { let qFather = [mainNode.p[0]]; while(qFather.length > 0) { let id = qFather.shift(); nodeColors[id] = 'paternal'; let n = treeData.persons.find(p => p.id === id); if (n && n.p) qFather.push(...n.p); } }
+                if (mainNode.p.length >= 2) { let qMother = [mainNode.p[1]]; while(qMother.length > 0) { let id = qMother.shift(); nodeColors[id] = 'maternal'; let n = treeData.persons.find(p => p.id === id); if (n && n.p) qMother.push(...n.p); } }
             }
         }
 
         function getKinship(mainId, targetId) {
             if (mainId === targetId) return lang === 'ru' ? "Это Вы" : "Das bist du";
-            
             let getAncestors = (startId) => {
-                let distances = { [startId]: 0 };
-                let queue = [startId];
+                let distances = { [startId]: 0 }; let queue = [startId];
                 while(queue.length > 0) {
-                    let curr = queue.shift();
-                    let node = treeData.persons.find(p => p.id === curr);
-                    if (node && node.p) {
-                        node.p.forEach(parentId => {
-                            if (distances[parentId] === undefined) {
-                                distances[parentId] = distances[curr] + 1;
-                                queue.push(parentId);
-                            }
-                        });
-                    }
-                }
-                return distances;
+                    let curr = queue.shift(); let node = treeData.persons.find(p => p.id === curr);
+                    if (node && node.p) node.p.forEach(parentId => { if (distances[parentId] === undefined) { distances[parentId] = distances[curr] + 1; queue.push(parentId); } });
+                } return distances;
             };
-
-            let mainAncestors = getAncestors(mainId);
-            let targetAncestors = getAncestors(targetId);
-            
-            let minDistance = Infinity;
-            let bestUp = -1;
-            let bestDown = -1;
-            
+            let mainAncestors = getAncestors(mainId); let targetAncestors = getAncestors(targetId);
+            let minDistance = Infinity; let bestUp = -1; let bestDown = -1;
             for (let ancestor in mainAncestors) {
                 if (targetAncestors[ancestor] !== undefined) {
-                    let up = mainAncestors[ancestor];
-                    let down = targetAncestors[ancestor];
-                    if (up + down < minDistance) {
-                        minDistance = up + down;
-                        bestUp = up;
-                        bestDown = down;
-                    }
+                    let up = mainAncestors[ancestor]; let down = targetAncestors[ancestor];
+                    if (up + down < minDistance) { minDistance = up + down; bestUp = up; bestDown = down; }
                 }
             }
-            
             let targetNode = treeData.persons.find(p => p.id === targetId);
-            let name = targetNode.n.ru.split(' ')[0];
-            let isFemale = /(а|я|ия)$/i.test(name) && !/Никита|Илья|Лука|Фома|Савва/i.test(name);
+            let isFemale = /(а|я|ия)$/i.test(targetNode.n.ru.split(' ')[0]) && !/Никита|Илья|Лука|Фома|Савва/i.test(targetNode.n.ru.split(' ')[0]);
 
             if (bestUp === -1) {
                 let isSpouse = treeData.persons.some(p => p.p && p.p.includes(mainId) && p.p.includes(targetId));
-                if (isSpouse) {
-                    return lang === 'ru' ? (isFemale ? 'Жена' : 'Муж') : (isFemale ? 'Ehefrau' : 'Ehemann');
-                }
+                if (isSpouse) return lang === 'ru' ? (isFemale ? 'Жена' : 'Муж') : (isFemale ? 'Ehefrau' : 'Ehemann');
                 return null;
             }
 
@@ -276,13 +272,7 @@
             else if (bestUp === 3 && bestDown === 0) { relRu = isFemale ? "Прабабушка" : "Прадед"; relDe = isFemale ? "Urgroßmutter" : "Urgroßvater"; }
             else if (bestUp === 4 && bestDown === 0) { relRu = isFemale ? "Прапрабабушка" : "Прапрадед"; relDe = isFemale ? "Ururgroßmutter" : "Ururgroßvater"; }
             else if (bestUp === 5 && bestDown === 0) { relRu = isFemale ? "Прапрапрабабушка (Пращурка)" : "Прапрапрадед (Пращур)"; relDe = isFemale ? "Urururgroßmutter (Altgroßmutter)" : "Urururgroßvater (Altgroßvater)"; }
-            else if (bestUp > 5 && bestDown === 0) { 
-                let praCount = bestUp - 2;
-                let prefixRu = "Пра" + "пра".repeat(praCount - 1);
-                let prefixDe = "Ur" + "ur".repeat(praCount - 1);
-                relRu = isFemale ? prefixRu + "бабушка" : prefixRu + "дед";
-                relDe = isFemale ? prefixDe + "großmutter" : prefixDe + "großvater";
-            }
+            else if (bestUp > 5 && bestDown === 0) { let praCount = bestUp - 2; let prefixRu = "Пра" + "пра".repeat(praCount - 1); relRu = isFemale ? prefixRu + "бабушка" : prefixRu + "дед"; relDe = isFemale ? "Ahnin" : "Ahn"; }
             else if (bestUp === 0 && bestDown === 1) { relRu = isFemale ? "Дочь" : "Сын"; relDe = isFemale ? "Tochter" : "Sohn"; }
             else if (bestUp === 0 && bestDown === 2) { relRu = isFemale ? "Внучка" : "Внук"; relDe = isFemale ? "Enkelin" : "Enkel"; }
             else if (bestUp === 1 && bestDown === 1) { relRu = isFemale ? "Сестра" : "Брат"; relDe = isFemale ? "Schwester" : "Bruder"; }
@@ -293,7 +283,6 @@
             else if (bestUp === 2 && bestDown === 3) { relRu = isFemale ? "Двоюродная племянница" : "Двоюродный племянник"; relDe = isFemale ? "Nichte 2. Grades" : "Neffe 2. Grades"; }
             else if (bestUp === 3 && bestDown === 2) { relRu = isFemale ? "Двоюродная тетя" : "Двоюродный дядя"; relDe = isFemale ? "Tante 2. Grades" : "Onkel 2. Grades"; }
             else { relRu = "Родственник"; relDe = "Verwandter"; }
-
             return lang === 'ru' ? relRu : relDe;
         }
 
@@ -301,7 +290,7 @@
 
         function drawLines() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = "#34495e"; ctx.lineWidth = 2.5;
+            ctx.strokeStyle = "#b0c4de"; ctx.lineWidth = 2; // Более тонкие и светлые линии
 
             treeData.persons.forEach(person => {
                 if (isPersonHidden(person.id)) return; 
@@ -311,8 +300,8 @@
                         const parent = treeData.persons.find(p => p.id === parentId);
                         if (parent) {
                             ctx.beginPath();
-                            ctx.moveTo(person.x + 125, person.y + 115);
-                            ctx.lineTo(parent.x + 125, parent.y);
+                            ctx.moveTo(person.x + 110, person.y + 80); // Центр новой карточки 220x80
+                            ctx.lineTo(parent.x + 110, parent.y);
                             ctx.stroke();
                         }
                     });
@@ -326,9 +315,20 @@
             if (person) {
                 person.h = !person.h;
                 const collapsed = JSON.parse(localStorage.getItem('tree_collapsed') || '{}');
-                collapsed[id] = person.h;
-                localStorage.setItem('tree_collapsed', JSON.stringify(collapsed));
+                collapsed[id] = person.h; localStorage.setItem('tree_collapsed', JSON.stringify(collapsed));
                 renderTree();
+            }
+        }
+
+        function centerOnPerson(id) {
+            let mainPersonNode = treeData.persons.find(p => p.id === id);
+            if (mainPersonNode) {
+                scale = 1.2; // Приближаем при выборе
+                let targetX = mainPersonNode.x + 110; // Центр карточки
+                let targetY = mainPersonNode.y + 40;
+                panX = (window.innerWidth / 2) - (targetX * scale);
+                panY = (window.innerHeight / 2) - (targetY * scale);
+                updateTransform();
             }
         }
 
@@ -337,19 +337,11 @@
             treeData.persons.forEach(p => p.h = true);
             localStorage.removeItem('tree_collapsed');
             renderTree();
-            
-            setTimeout(() => {
-                let mainPersonNode = treeData.persons.find(p => p.id === currentMain);
-                if (mainPersonNode) {
-                    container.scrollLeft = mainPersonNode.x - (window.innerWidth / 2) + 125;
-                    container.scrollTop = mainPersonNode.y - (window.innerHeight / 2) + 57;
-                }
-            }, 100);
+            centerOnPerson(currentMain);
         }
 
         function renderTree() {
-            calculateVisibility();
-            calculateColors();
+            calculateVisibility(); calculateColors();
             document.querySelectorAll('.card').forEach(c => c.remove());
 
             treeData.persons.forEach(person => {
@@ -365,45 +357,47 @@
                 }
                 
                 let originalInfo = person.i[lang];
-                let bio = "";
-                
-                if (originalInfo.includes(' • ')) {
-                    bio = originalInfo.split(' • ').slice(1).join(' • ');
-                } else {
-                    bio = originalInfo.replace(/^((Пра)+дед|(Пра)+бабушка|Пра\(\d+\)дед|Пра\(\d+\)бабушка|Дед|Бабушка|Брат|Сестра|Дядя|Тетя|Отец|Мать|Сын|Дочь|Внук|Внучка|Создатель древа|Создатель|Муж|Жена|Двоюродный племянник|Двоюродная племянница|Двоюродный дядя|Двоюродная тетя)\s*•?\s*/i, '').trim();
-                }
+                let bio = originalInfo.includes(' • ') ? originalInfo.split(' • ').slice(1).join(' • ') : originalInfo.replace(/^((Пра)+дед|(Пра)+бабушка|Пра\(\d+\)дед|Пра\(\d+\)бабушка|Дед|Бабушка|Брат|Сестра|Дядя|Тетя|Отец|Мать|Сын|Дочь|Внук|Внучка|Создатель древа|Создатель|Муж|Жена|Двоюродный племянник|Двоюродная племянница|Двоюродный дядя|Двоюродная тетя)\s*•?\s*/i, '').trim();
                 
                 let dynamicRel = getKinship(currentMain, person.id);
-                let displayInfo = originalInfo; 
+                let displayInfo = dynamicRel ? (bio ? `${dynamicRel} • ${bio}` : dynamicRel) : bio;
                 
-                if (dynamicRel) {
-                    displayInfo = bio ? `${dynamicRel} • ${bio}` : dynamicRel;
+                // ЛОГИКА ФОТОГРАФИИ
+                let avatarHtml = '';
+                if (person.img) {
+                    avatarHtml = `<img src="${person.img}" alt="фото">`;
                 } else {
-                    displayInfo = bio;
+                    avatarHtml = `<div class="avatar-placeholder">${person.n[lang].charAt(0)}</div>`;
                 }
-                
+
                 card.innerHTML = `
                     ${toggleBtnHtml}
-                    <h3>${person.n[lang]}</h3>
-                    <div class="region">${person.r[lang]}</div>
-                    <div class="info">${displayInfo}</div>
+                    <div class="avatar-container">${avatarHtml}</div>
+                    <div class="text-container">
+                        <h3>${person.n[lang]}</h3>
+                        <div class="region">${person.r[lang]}</div>
+                        <div class="info">${displayInfo}</div>
+                    </div>
                 `;
 
                 function startDrag(e) {
-                    if (e.target.className === 'toggle-btn') return;
+                    if (e.target.closest('.toggle-btn')) return;
+                    e.stopPropagation(); // Важно: не даем фону двигаться вместе с карточкой!
                     
-                    let clientX = e.clientX || (e.touches && e.touches[0].clientX);
-                    let clientY = e.clientY || (e.touches && e.touches[0].clientY);
-                    if (clientX === undefined) return;
+                    let startCx = e.clientX || (e.touches && e.touches[0].clientX);
+                    let startCy = e.clientY || (e.touches && e.touches[0].clientY);
+                    if (startCx === undefined) return;
                     
-                    let shiftX = clientX - card.getBoundingClientRect().left;
-                    let shiftY = clientY - card.getBoundingClientRect().top;
+                    let initialNodeX = person.x;
+                    let initialNodeY = person.y;
 
                     function moveAt(pageX, pageY) {
-                        let newX = pageX - container.getBoundingClientRect().left - shiftX + container.scrollLeft;
-                        let newY = pageY - container.getBoundingClientRect().top - shiftY + container.scrollTop;
-                        card.style.left = newX + 'px'; card.style.top = newY + 'px';
-                        person.x = newX; person.y = newY;
+                        let dx = (pageX - startCx) / scale; // Учитываем масштаб при перетаскивании!
+                        let dy = (pageY - startCy) / scale;
+                        person.x = initialNodeX + dx;
+                        person.y = initialNodeY + dy;
+                        card.style.left = person.x + 'px';
+                        card.style.top = person.y + 'px';
                         drawLines();
                     }
 
@@ -415,27 +409,22 @@
                     }
                     
                     function onEnd() {
-                        document.removeEventListener('mousemove', onMove);
-                        document.removeEventListener('mouseup', onEnd);
-                        document.removeEventListener('touchmove', onMove);
-                        document.removeEventListener('touchend', onEnd);
-                        
+                        document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onEnd);
+                        document.removeEventListener('touchmove', onMove); document.removeEventListener('touchend', onEnd);
                         const positions = JSON.parse(localStorage.getItem('tree_positions') || '{}');
                         positions[person.id] = { x: person.x, y: person.y };
                         localStorage.setItem('tree_positions', JSON.stringify(positions));
                     }
 
-                    document.addEventListener('mousemove', onMove);
-                    document.addEventListener('mouseup', onEnd);
-                    document.addEventListener('touchmove', onMove, {passive: false});
-                    document.addEventListener('touchend', onEnd);
+                    document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onEnd);
+                    document.addEventListener('touchmove', onMove, {passive: false}); document.addEventListener('touchend', onEnd);
                 }
 
                 card.addEventListener('mousedown', startDrag);
                 card.addEventListener('touchstart', startDrag, {passive: false});
                 card.ondragstart = function() { return false; };
 
-                container.appendChild(card);
+                wrapper.appendChild(card);
             });
             drawLines();
         }
@@ -451,50 +440,25 @@
 
         function resetPositions() {
             if(confirm("Сбросить все карточки в исходное положение?")) {
-                localStorage.removeItem('tree_positions');
-                localStorage.removeItem('tree_collapsed');
-                location.reload();
+                localStorage.removeItem('tree_positions'); localStorage.removeItem('tree_collapsed'); location.reload();
             }
         }
 
-        window.addEventListener('resize', resizeCanvas);
         window.onload = function() { 
             try {
-                if (typeof treeData === 'undefined') {
-                    throw new Error("Файл data.js не найден.");
-                }
+                if (typeof treeData === 'undefined') throw new Error("Файл data.js не найден.");
                 
                 const savedPositions = JSON.parse(localStorage.getItem('tree_positions') || 'null');
-                if (savedPositions) {
-                    treeData.persons.forEach(p => {
-                        if (savedPositions[p.id]) { p.x = savedPositions[p.id].x; p.y = savedPositions[p.id].y; }
-                    });
-                }
+                if (savedPositions) treeData.persons.forEach(p => { if (savedPositions[p.id]) { p.x = savedPositions[p.id].x; p.y = savedPositions[p.id].y; }});
                 
                 const savedCollapsed = JSON.parse(localStorage.getItem('tree_collapsed') || 'null');
-                if (savedCollapsed) {
-                    treeData.persons.forEach(p => {
-                        if (savedCollapsed[p.id] !== undefined) p.h = savedCollapsed[p.id];
-                    });
-                } else {
-                    treeData.persons.forEach(p => p.h = true);
-                }
+                if (savedCollapsed) treeData.persons.forEach(p => { if (savedCollapsed[p.id] !== undefined) p.h = savedCollapsed[p.id]; });
+                else treeData.persons.forEach(p => p.h = true);
 
-                populateDropdown();
-                resizeCanvas(); 
-                renderTree(); 
-                
-                setTimeout(() => {
-                    let mainPersonNode = treeData.persons.find(p => p.id === currentMain);
-                    if (mainPersonNode) {
-                        container.scrollLeft = mainPersonNode.x - (window.innerWidth / 2) + 125;
-                        container.scrollTop = mainPersonNode.y - (window.innerHeight / 2) + 57;
-                    }
-                }, 150);
-                
+                populateDropdown(); renderTree(); updateTransform();
+                setTimeout(() => centerOnPerson(currentMain), 100);
             } catch (err) {
-                errorBanner.style.display = 'block';
-                errorBanner.innerText = `КРИТИЧЕСКАЯ ОШИБКА: ${err.message}`;
+                errorBanner.style.display = 'block'; errorBanner.innerText = `КРИТИЧЕСКАЯ ОШИБКА: ${err.message}`;
             }
         };
     </script>
