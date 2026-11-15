@@ -15,13 +15,25 @@
         
         #main-person-select { padding: 8px 12px; border-radius: 6px; border: 1px solid #dcdde1; font-weight: 600; font-family: inherit; color: #2c3e50; font-size: 13px; cursor: pointer; background-color: #ffffff; outline: none; max-width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
         
-        /* Зум-контейнеры */
+        /* Зум-контейнеры с АППАРАТНЫМ УСКОРЕНИЕМ */
         #viewport { width: 100vw; height: 100vh; position: relative; overflow: hidden; touch-action: none; background: #f0f2f5; }
-        #tree-wrapper { position: absolute; top: 0; left: 0; transform-origin: 0 0; background: radial-gradient(circle, #dcdde1 1px, transparent 1px); background-size: 40px 40px; width: 6000px; height: 4000px; }
+        #tree-wrapper { 
+            position: absolute; top: 0; left: 0; transform-origin: 0 0; 
+            background: radial-gradient(circle, #dcdde1 1px, transparent 1px); 
+            background-size: 40px 40px; width: 6000px; height: 4000px;
+            will-change: transform; 
+            backface-visibility: hidden;
+        }
         #tree-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
         
-        /* НОВЫЙ ДИЗАЙН КАРТОЧЕК */
-        .card { border-radius: 8px; background: white; width: 220px; min-height: 80px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); position: absolute; cursor: grab; z-index: 10; user-select: none; -webkit-user-select: none; box-sizing: border-box; display: flex; align-items: center; padding: 10px; transition: box-shadow 0.2s; border: 1px solid #ebedee; border-left: 6px solid #dcdde1; }
+        /* ДИЗАЙН КАРТОЧЕК */
+        .card { 
+            border-radius: 8px; background: white; width: 220px; min-height: 80px; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); position: absolute; cursor: grab; z-index: 10; 
+            user-select: none; -webkit-user-select: none; box-sizing: border-box; display: flex; 
+            align-items: center; padding: 10px; border: 1px solid #ebedee; border-left: 6px solid #dcdde1;
+            will-change: left, top;
+        }
         .card:active { cursor: grabbing; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); }
         
         .card.me { border-left-color: #f1c40f; background: #fffdf5; }
@@ -82,17 +94,18 @@
         let lang = 'ru';
         let currentMain = 'me'; 
         
-        // --- ЛОГИКА ЗУМА И ПАНОРАМИРОВАНИЯ ---
+        // --- ЛОГИКА ЗУМА И ПАНОРАМИРОВАНИЯ (С ОПТИМИЗАЦИЕЙ 60FPS) ---
         const viewport = document.getElementById('viewport');
         const wrapper = document.getElementById('tree-wrapper');
         const canvas = document.getElementById('tree-canvas');
         const ctx = canvas.getContext('2d');
         
         let scale = 1;
-        let panX = -100; // Начальный сдвиг, чтобы отцентрировать
+        let panX = -100;
         let panY = -50;
         let isPanningView = false;
         let startPanX, startPanY;
+        let panTicking = false;
 
         function updateTransform() {
             wrapper.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
@@ -110,7 +123,14 @@
             if(!isPanningView) return;
             panX = e.clientX - startPanX;
             panY = e.clientY - startPanY;
-            updateTransform();
+            
+            if (!panTicking) {
+                window.requestAnimationFrame(() => {
+                    updateTransform();
+                    panTicking = false;
+                });
+                panTicking = true;
+            }
         });
         window.addEventListener('mouseup', () => { 
             isPanningView = false; 
@@ -140,10 +160,10 @@
         viewport.addEventListener('touchmove', (e) => {
             if (e.target.closest('header') || e.target.closest('#bday-modal')) return;
             e.preventDefault(); 
+            
             if (isPanningView && e.touches.length === 1) {
                 panX = e.touches[0].clientX - startPanX;
                 panY = e.touches[0].clientY - startPanY;
-                updateTransform();
             } else if (e.touches.length === 2) {
                 let currentDistance = Math.hypot(
                     e.touches[0].clientX - e.touches[1].clientX,
@@ -151,7 +171,14 @@
                 );
                 let newScale = initialScale * (currentDistance / initialPinchDistance);
                 scale = Math.min(Math.max(0.3, newScale), 2.5);
-                updateTransform();
+            }
+            
+            if (!panTicking) {
+                window.requestAnimationFrame(() => {
+                    updateTransform();
+                    panTicking = false;
+                });
+                panTicking = true;
             }
         }, {passive: false});
 
@@ -166,7 +193,6 @@
             let delta = -e.deltaY * zoomSensitivity;
             let newScale = Math.min(Math.max(0.3, scale + delta), 2.5);
             
-            // Зум к курсору
             let rect = viewport.getBoundingClientRect();
             let mouseX = e.clientX - rect.left;
             let mouseY = e.clientY - rect.top;
@@ -178,7 +204,13 @@
             panX = mouseX - xs * scale;
             panY = mouseY - ys * scale;
             
-            updateTransform();
+            if (!panTicking) {
+                window.requestAnimationFrame(() => {
+                    updateTransform();
+                    panTicking = false;
+                });
+                panTicking = true;
+            }
         }, {passive: false});
 
 
@@ -290,7 +322,7 @@
 
         function drawLines() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = "#b0c4de"; ctx.lineWidth = 2; // Более тонкие и светлые линии
+            ctx.strokeStyle = "#b0c4de"; ctx.lineWidth = 2; 
 
             treeData.persons.forEach(person => {
                 if (isPersonHidden(person.id)) return; 
@@ -300,7 +332,7 @@
                         const parent = treeData.persons.find(p => p.id === parentId);
                         if (parent) {
                             ctx.beginPath();
-                            ctx.moveTo(person.x + 110, person.y + 80); // Центр новой карточки 220x80
+                            ctx.moveTo(person.x + 110, person.y + 80); 
                             ctx.lineTo(parent.x + 110, parent.y);
                             ctx.stroke();
                         }
@@ -323,8 +355,8 @@
         function centerOnPerson(id) {
             let mainPersonNode = treeData.persons.find(p => p.id === id);
             if (mainPersonNode) {
-                scale = 1.2; // Приближаем при выборе
-                let targetX = mainPersonNode.x + 110; // Центр карточки
+                scale = 1.2; 
+                let targetX = mainPersonNode.x + 110; 
                 let targetY = mainPersonNode.y + 40;
                 panX = (window.innerWidth / 2) - (targetX * scale);
                 panY = (window.innerHeight / 2) - (targetY * scale);
@@ -362,7 +394,6 @@
                 let dynamicRel = getKinship(currentMain, person.id);
                 let displayInfo = dynamicRel ? (bio ? `${dynamicRel} • ${bio}` : dynamicRel) : bio;
                 
-                // ЛОГИКА ФОТОГРАФИИ
                 let avatarHtml = '';
                 if (person.img) {
                     avatarHtml = `<img src="${person.img}" alt="фото">`;
@@ -382,7 +413,7 @@
 
                 function startDrag(e) {
                     if (e.target.closest('.toggle-btn')) return;
-                    e.stopPropagation(); // Важно: не даем фону двигаться вместе с карточкой!
+                    e.stopPropagation(); 
                     
                     let startCx = e.clientX || (e.touches && e.touches[0].clientX);
                     let startCy = e.clientY || (e.touches && e.touches[0].clientY);
@@ -390,15 +421,23 @@
                     
                     let initialNodeX = person.x;
                     let initialNodeY = person.y;
+                    let dragTicking = false;
 
                     function moveAt(pageX, pageY) {
-                        let dx = (pageX - startCx) / scale; // Учитываем масштаб при перетаскивании!
+                        let dx = (pageX - startCx) / scale; 
                         let dy = (pageY - startCy) / scale;
                         person.x = initialNodeX + dx;
                         person.y = initialNodeY + dy;
-                        card.style.left = person.x + 'px';
-                        card.style.top = person.y + 'px';
-                        drawLines();
+                        
+                        if (!dragTicking) {
+                            window.requestAnimationFrame(() => {
+                                card.style.left = person.x + 'px';
+                                card.style.top = person.y + 'px';
+                                drawLines();
+                                dragTicking = false;
+                            });
+                            dragTicking = true;
+                        }
                     }
 
                     function onMove(evt) { 
@@ -451,9 +490,16 @@
                 const savedPositions = JSON.parse(localStorage.getItem('tree_positions') || 'null');
                 if (savedPositions) treeData.persons.forEach(p => { if (savedPositions[p.id]) { p.x = savedPositions[p.id].x; p.y = savedPositions[p.id].y; }});
                 
+                // ИСПРАВЛЕНИЕ БАГА ОБНОВЛЕНИЯ: Сначала жестко сворачиваем всех
+                treeData.persons.forEach(p => p.h = true);
+                
                 const savedCollapsed = JSON.parse(localStorage.getItem('tree_collapsed') || 'null');
-                if (savedCollapsed) treeData.persons.forEach(p => { if (savedCollapsed[p.id] !== undefined) p.h = savedCollapsed[p.id]; });
-                else treeData.persons.forEach(p => p.h = true);
+                if (savedCollapsed) {
+                    // И только потом применяем сохраненные настройки
+                    treeData.persons.forEach(p => {
+                        if (savedCollapsed[p.id] !== undefined) p.h = savedCollapsed[p.id];
+                    });
+                } 
 
                 populateDropdown(); renderTree(); updateTransform();
                 setTimeout(() => centerOnPerson(currentMain), 100);
